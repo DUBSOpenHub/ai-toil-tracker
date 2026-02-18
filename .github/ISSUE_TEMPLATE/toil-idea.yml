@@ -12,7 +12,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        ⚠️ **Security reminder:** keep descriptions high-level—no secrets, customer data, or internal-only URLs. See `SECURITY.md` for guidance.
+        ⚠️ **Security reminder:** keep descriptions high-level—don't paste secrets, customer data, or internal-only URLs. See `SECURITY.md` for details.
 
   - type: input
     id: submitter
@@ -100,8 +100,8 @@ body:
   - type: textarea
     id: automation-idea
     attributes:
-      label: Automation idea (if any)
-      description: How might an agent or script handle this?
-      placeholder: Optional - leave blank if you're not sure
+      label: Automation idea (optional)
+      description: How might an agent, script, or workflow handle this?
+      placeholder: Optional — leave blank if you're not sure
     validations:
       required: false

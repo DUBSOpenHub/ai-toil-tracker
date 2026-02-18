@@ -1,6 +1,8 @@
 name: Stale Toil Reminder
+
+# Runs monthly to nudge inactive toil ideas
 on:
-  workflow_dispatch:  # allows manual testing
+  workflow_dispatch:  # Allows manual testing
   schedule:
     - cron: '0 18 1 * *'  # 1st of each month at 10am PST (18:00 UTC)
 
@@ -10,18 +12,18 @@ jobs:
   stale-check:
     runs-on: ubuntu-latest
     permissions:
-      issues: write
+      issues: write  # Required to comment and close stale issues
     steps:
       - uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639 # v10.0.0
         with:
           stale-issue-message: >
-            👋 Hey! This toil idea has been chilling for 30 days.
-            Still hurting? Drop a comment and we'll keep it alive.
-            Or if it's been solved another way, feel free to close it! 🎉
+            👋 This toil idea has been idle for 30 days.
+            Still a problem? Drop a comment and we'll keep it open.
+            If it's been solved another way, feel free to close it! 🎉
           stale-issue-label: stale
           days-before-stale: 30
           days-before-close: 60
           close-issue-message: >
-            🗂️ Archiving this one — the toil may have faded!
-            If it's still bugging you, reopen anytime. No judgment. 💪
+            🗂️ Closing this due to inactivity — the toil may have faded!
+            If it's still an issue, reopen anytime. No judgment. 💪
           exempt-issue-labels: 'in-progress,automated,high-impact'

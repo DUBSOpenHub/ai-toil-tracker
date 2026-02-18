@@ -1,4 +1,6 @@
 name: AI Triage - Auto-score and label new toil ideas
+
+# Trigger: Runs when a new issue is opened with the 'toil' label, or manually via workflow_dispatch
 on:
   issues:
     types: [opened]
@@ -9,8 +11,8 @@ on:
         required: true
 
 permissions:
-  issues: write
-  models: read
+  issues: write  # Required to add labels and comments
+  models: read   # Required to call GitHub AI Models API
 
 jobs:
   ai-triage:
@@ -41,7 +43,7 @@ jobs:
         run: |
           BODY=$(cat /tmp/issue_body.txt)
 
-          # Parse frequency
+          # ── Parse frequency (how often the toil happens) ──
           if echo "$BODY" | grep -q "Multiple times per day"; then
             FREQ_SCORE=8
             FREQ_LABEL="🔴 multiple-times-daily"
@@ -64,7 +66,7 @@ jobs:
             FREQ_TEXT="monthly or less"
           fi
 
-          # Parse time per occurrence
+          # ── Parse time per occurrence ──
           if echo "$BODY" | grep -q "> 1 hour"; then
             TIME_SCORE=8
           elif echo "$BODY" | grep -q "30.*60 minutes"; then
@@ -77,7 +79,7 @@ jobs:
             TIME_SCORE=1
           fi
 
-          # Parse people affected
+          # ── Parse people affected ──
           if echo "$BODY" | grep -q "Multiple teams"; then
             PEOPLE_SCORE=8
           elif echo "$BODY" | grep -q "Entire team"; then
