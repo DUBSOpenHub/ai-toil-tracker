@@ -37,20 +37,24 @@ jobs:
         run: |
           BODY=$(cat /tmp/issue_body.txt)
 
-          # Parse frequency
-          if echo "$BODY" | grep -q "Multiple times per day"; then
+          # Parse frequency from issue form dropdown.
+          # Uses -i (case-insensitive) and short discriminating substrings
+          # so scoring survives minor template text or emoji changes.
+          if echo "$BODY" | grep -qi "times per day"; then
             FREQ_SCORE=8
             FREQ_LABEL="🔴 multiple-times-daily"
             FREQ_TEXT="multiple times per day"
-          elif echo "$BODY" | grep -q "🟠 Daily"; then
-            FREQ_SCORE=5
-            FREQ_LABEL="🟠 daily"
-            FREQ_TEXT="daily"
-          elif echo "$BODY" | grep -q "Multiple times per week"; then
+          elif echo "$BODY" | grep -qi "times per week"; then
+            # Check "times per week" before "daily" so "multiple times per week"
+            # isn't accidentally caught by a loose "daily" match.
             FREQ_SCORE=3
             FREQ_LABEL="🟡 multiple-times-weekly"
             FREQ_TEXT="multiple times per week"
-          elif echo "$BODY" | grep -q "🔵 Weekly"; then
+          elif echo "$BODY" | grep -qi "daily"; then
+            FREQ_SCORE=5
+            FREQ_LABEL="🟠 daily"
+            FREQ_TEXT="daily"
+          elif echo "$BODY" | grep -qi "weekly"; then
             FREQ_SCORE=2
             FREQ_LABEL="🔵 weekly"
             FREQ_TEXT="weekly"
@@ -60,27 +64,29 @@ jobs:
             FREQ_TEXT="monthly or less"
           fi
 
-          # Parse time per occurrence
-          if echo "$BODY" | grep -q "> 1 hour"; then
+          # Parse time per occurrence from issue form dropdown.
+          # Matches short keywords; order matters (check longest ranges first).
+          if echo "$BODY" | grep -qi "1 hour"; then
             TIME_SCORE=8
-          elif echo "$BODY" | grep -q "30.60 minutes"; then
+          elif echo "$BODY" | grep -qi "30.*60 min"; then
             TIME_SCORE=5
-          elif echo "$BODY" | grep -q "15.30 minutes"; then
+          elif echo "$BODY" | grep -qi "15.*30 min"; then
             TIME_SCORE=3
-          elif echo "$BODY" | grep -q "5.15 minutes"; then
+          elif echo "$BODY" | grep -qi "5.*15 min"; then
             TIME_SCORE=2
           else
             TIME_SCORE=1
           fi
 
-          # Parse people affected
-          if echo "$BODY" | grep -q "Multiple teams"; then
+          # Parse people affected from issue form dropdown.
+          # Uses short discriminating phrases with case-insensitive matching.
+          if echo "$BODY" | grep -qi "multiple teams"; then
             PEOPLE_SCORE=8
-          elif echo "$BODY" | grep -q "Entire team"; then
+          elif echo "$BODY" | grep -qi "entire team"; then
             PEOPLE_SCORE=5
-          elif echo "$BODY" | grep -q "4.6 people"; then
+          elif echo "$BODY" | grep -qi "4.*6 people"; then
             PEOPLE_SCORE=3
-          elif echo "$BODY" | grep -q "2.3 people"; then
+          elif echo "$BODY" | grep -qi "2.*3 people"; then
             PEOPLE_SCORE=2
           else
             PEOPLE_SCORE=1
@@ -221,3 +227,44 @@ jobs:
           _This issue was auto-triaged by AI. Labels and score have been applied. Review the [scoring guide](../blob/main/docs/scoring-guide.md) for details._"
 
           gh issue comment "$ISSUE_NUM" --repo "${{ github.repository }}" --body "$COMMENT"
+
+      - name: Send webhook notification
+        if: ${{ vars.WEBHOOK_URL != '' || secrets.WEBHOOK_URL != '' }}
+        env:
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL || vars.WEBHOOK_URL }}
+        run: |
+          ISSUE_NUM=${{ steps.issue.outputs.number }}
+          TOIL_SCORE=${{ steps.score.outputs.toil_score }}
+          PRIORITY="${{ steps.score.outputs.priority }}"
+          MONTHLY_SAVED="${{ steps.score.outputs.monthly_saved }}"
+          SUGGESTION=$(echo '${{ steps.ai.outputs.suggestion }}' | head -c 500)
+          ISSUE_URL="${{ github.server_url }}/${{ github.repository }}/issues/${ISSUE_NUM}"
+
+          PAYLOAD=$(jq -n \
+            --arg title "🤖 New Toil Idea Triaged (#${ISSUE_NUM})" \
+            --arg score "$TOIL_SCORE" \
+            --arg priority "$PRIORITY" \
+            --arg saved "$MONTHLY_SAVED" \
+            --arg suggestion "$SUGGESTION" \
+            --arg url "$ISSUE_URL" \
+            '{
+              text: "\($title)\nScore: \($score) | \($priority)\nTime saved: \($saved)\n\($suggestion)\n\($url)",
+              title: $title,
+              issue_number: ($score | tonumber),
+              toil_score: ($score | tonumber),
+              priority: $priority,
+              monthly_saved: $saved,
+              suggestion: $suggestion,
+              issue_url: $url
+            }')
+
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST "$WEBHOOK_URL" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD")
+
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 300 ]; then
+            echo "✅ Webhook notification sent (HTTP $HTTP_STATUS)"
+          else
+            echo "⚠️ Webhook returned HTTP $HTTP_STATUS (non-fatal)"
+          fi
