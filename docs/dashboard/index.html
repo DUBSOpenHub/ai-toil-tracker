@@ -70,7 +70,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 
 /* ── Buttons ── */
 .btn { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.3rem 0.65rem; border: 1px solid #d0d7de; border-radius: 6px; background: #fff; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all .15s; white-space: nowrap; }
-.btn:hover { background: #f3f4f6; }
+.btn:hover { background: #f6f8fa; }
 .btn-launch { background: #2ea44f; color: #fff; border-color: #2ea44f; }
 .btn-launch:hover { background: #2c974b; }
 .btn-save { background: #0969da; color: #fff; border-color: #0969da; }
@@ -86,14 +86,97 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
   .cards { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
 }
 
+/* ── Dark Mode Toggle ── */
+.theme-toggle { background: none; border: 1px solid #484f58; border-radius: 6px; color: #fff; padding: 0.3rem 0.6rem; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; gap: 0.35rem; transition: all .15s; }
+.theme-toggle:hover { background: #484f58; }
+
+/* ── Dark Mode (GitHub Primer Dark) ── */
+@media (prefers-color-scheme: dark) { :root:not(.light) { color-scheme: dark; } }
+.dark { color-scheme: dark; }
+.dark body, :root:not(.light) body { background: #0d1117; color: #e6edf3; }
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) body { background: #0d1117; color: #e6edf3; }
+  :root:not(.light) .header { background: #161b22; }
+  :root:not(.light) .header .meta { color: #8b949e; }
+  :root:not(.light) .card { background: #161b22; border-color: #30363d; }
+  :root:not(.light) .card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+  :root:not(.light) .card .label { color: #8b949e; }
+  :root:not(.light) .card .value { color: #58a6ff; }
+  :root:not(.light) .card .value.green { color: #3fb950; }
+  :root:not(.light) .card .value.purple { color: #bc8cff; }
+  :root:not(.light) .card .value.orange { color: #d29922; }
+  :root:not(.light) .section { background: #161b22; border-color: #30363d; }
+  :root:not(.light) .filters label { color: #8b949e; }
+  :root:not(.light) .filters select { background: #0d1117; border-color: #30363d; color: #e6edf3; }
+  :root:not(.light) th { background: #161b22; color: #e6edf3; border-color: #30363d; }
+  :root:not(.light) th:hover { background: #1c2128; }
+  :root:not(.light) td { border-color: #21262d; }
+  :root:not(.light) tr:hover { background: #161b22; }
+  :root:not(.light) tr.total-row { background: #1c2128; }
+  :root:not(.light) td.editable:hover { background: #1c3049; }
+  :root:not(.light) td.editable input, :root:not(.light) td.editable select { background: #0d1117; border-color: #58a6ff; color: #e6edf3; }
+  :root:not(.light) .btn { background: #21262d; border-color: #30363d; color: #e6edf3; }
+  :root:not(.light) .btn:hover { background: #30363d; }
+  :root:not(.light) .btn-launch { background: #238636; color: #fff; border-color: #238636; }
+  :root:not(.light) .btn-launch:hover { background: #2ea043; }
+  :root:not(.light) .btn-save { background: #1f6feb; color: #fff; border-color: #1f6feb; }
+  :root:not(.light) .btn-save:hover { background: #388bfd; }
+  :root:not(.light) .badge-toil { background: #1c3049; color: #58a6ff; }
+  :root:not(.light) .badge-triage { background: #3d2e00; color: #d29922; }
+  :root:not(.light) .badge-in-progress { background: #2d1f4e; color: #bc8cff; }
+  :root:not(.light) .badge-automated { background: #0f2d1c; color: #3fb950; }
+  :root:not(.light) .toast { background: #30363d; color: #e6edf3; }
+  :root:not(.light) .edited-marker { color: #bc8cff; }
+  :root:not(.light) a { color: #58a6ff; }
+}
+
+/* Explicit .dark class overrides (for manual toggle) */
+.dark body { background: #0d1117; color: #e6edf3; }
+.dark .header { background: #161b22; }
+.dark .header .meta { color: #8b949e; }
+.dark .card { background: #161b22; border-color: #30363d; }
+.dark .card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+.dark .card .label { color: #8b949e; }
+.dark .card .value { color: #58a6ff; }
+.dark .card .value.green { color: #3fb950; }
+.dark .card .value.purple { color: #bc8cff; }
+.dark .card .value.orange { color: #d29922; }
+.dark .section { background: #161b22; border-color: #30363d; }
+.dark .filters label { color: #8b949e; }
+.dark .filters select { background: #0d1117; border-color: #30363d; color: #e6edf3; }
+.dark th { background: #161b22; color: #e6edf3; border-color: #30363d; }
+.dark th:hover { background: #1c2128; }
+.dark td { border-color: #21262d; }
+.dark tr:hover { background: #161b22; }
+.dark tr.total-row { background: #1c2128; }
+.dark td.editable:hover { background: #1c3049; }
+.dark td.editable input, .dark td.editable select { background: #0d1117; border-color: #58a6ff; color: #e6edf3; }
+.dark .btn { background: #21262d; border-color: #30363d; color: #e6edf3; }
+.dark .btn:hover { background: #30363d; }
+.dark .btn-launch { background: #238636; color: #fff; border-color: #238636; }
+.dark .btn-launch:hover { background: #2ea043; }
+.dark .btn-save { background: #1f6feb; color: #fff; border-color: #1f6feb; }
+.dark .btn-save:hover { background: #388bfd; }
+.dark .badge-toil { background: #1c3049; color: #58a6ff; }
+.dark .badge-triage { background: #3d2e00; color: #d29922; }
+.dark .badge-in-progress { background: #2d1f4e; color: #bc8cff; }
+.dark .badge-automated { background: #0f2d1c; color: #3fb950; }
+.dark .toast { background: #30363d; color: #e6edf3; }
+.dark .edited-marker { color: #bc8cff; }
+.dark a { color: #58a6ff; }
+.dark .theme-toggle { border-color: #30363d; }
+
 /* ── Print ── */
 @media print {
-  .header { background: #fff; color: #000; border-bottom: 2px solid #000; }
-  .header .meta a { color: #000; }
-  .btn-launch, .btn-save, .filters { display: none !important; }
-  .card { border: 1px solid #ccc; break-inside: avoid; }
-  .section { break-inside: avoid; }
-  body { background: #fff; }
+  .header { background: #fff !important; color: #000 !important; border-bottom: 2px solid #000; }
+  .header .meta a { color: #000 !important; }
+  .btn-launch, .btn-save, .filters, .theme-toggle { display: none !important; }
+  .card { border: 1px solid #ccc !important; break-inside: avoid; background: #fff !important; color: #000 !important; }
+  .card .value { color: #000 !important; }
+  .section { break-inside: avoid; background: #fff !important; border-color: #ccc !important; }
+  body { background: #fff !important; color: #000 !important; }
+  th { background: #f6f8fa !important; color: #000 !important; }
+  td { color: #000 !important; border-color: #d8dee4 !important; }
   .toast { display: none; }
 }
 </style>
@@ -106,6 +189,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
     <span id="headerRepo"></span>
     <span>Generated: <span id="headerDate">—</span></span>
     <a href="#" id="headerRepoLink" target="_blank">View on GitHub ↗</a>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle dark/light mode">🌙 Dark</button>
   </div>
 </div>
 
@@ -169,6 +253,34 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 <div class="toast" id="toast"></div>
 
 <script>
+// ═══════════════════════════════════════════════════
+// THEME — Dark/Light mode with localStorage persistence
+// ═══════════════════════════════════════════════════
+function initTheme() {
+  const saved = localStorage.getItem('toilDashTheme');
+  if (saved === 'dark') { applyDark(); }
+  else if (saved === 'light') { applyLight(); }
+  // else: follow system preference via CSS prefers-color-scheme
+}
+function toggleTheme() {
+  const html = document.documentElement;
+  if (html.classList.contains('dark')) { applyLight(); localStorage.setItem('toilDashTheme', 'light'); }
+  else { applyDark(); localStorage.setItem('toilDashTheme', 'dark'); }
+}
+function applyDark() {
+  document.documentElement.classList.add('dark');
+  document.documentElement.classList.remove('light');
+  const btn = document.getElementById('themeToggle');
+  if (btn) { btn.innerHTML = '☀️ Light'; }
+}
+function applyLight() {
+  document.documentElement.classList.remove('dark');
+  document.documentElement.classList.add('light');
+  const btn = document.getElementById('themeToggle');
+  if (btn) { btn.innerHTML = '🌙 Dark'; }
+}
+initTheme();
+
 // ═══════════════════════════════════════════════════
 // CONFIG — Set your owner/repo here
 // ═══════════════════════════════════════════════════
