@@ -89,7 +89,7 @@ jobs:
             --label "roi-summary"
 
       - name: Notify Microsoft Teams
-        if: env.TEAMS_WEBHOOK_URL != ''
+        if: secrets.TEAMS_WEBHOOK_URL != ''
         env:
           TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

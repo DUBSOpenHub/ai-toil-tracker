@@ -72,6 +72,14 @@ The whole process takes about 30 seconds. No one needs to triage, score, or labe
 
 ## 🍴 Get Started (Any Team)
 
+### Quick Start Checklist (10 minutes)
+
+- ✅ **Fork & enable Actions** – fork this repo, then click **Actions → Enable workflows** so the automations start running.
+- 🔐 **Set secrets up front** – add `TEAMS_WEBHOOK_URL` (optional) and any other integration tokens under **Settings → Secrets and variables → Actions** before enabling notifications.
+- 🔁 **Update contact links** – edit `.github/ISSUE_TEMPLATE/config.yml` plus the Slack/Teams reminder text below so they point at _your_ channels.
+- 📣 **Schedule the reminder** – configure the Slack Workflow Builder or Power Automate recipe so the team gets nudged every week.
+- 🌐 **Publish the dashboard** – enable GitHub Pages (`/docs` folder) so stakeholders can view `https://<org>.github.io/<repo>/dashboard/` immediately.
+
 1. **Copy this project** - Click "Fork" (top right) to get your own copy with all the tools included
 2. **Turn on the automation** — Go to the **Actions** tab and click the green **"Enable workflows"** button (GitHub shows a confirmation — it's safe to proceed)
 3. **Update the links** - In the [Slack Setup](#slack-setup) or [Teams Setup](#microsoft-teams-setup) section, replace `<YOUR_ORG>/<YOUR_REPO>` with your new link.
@@ -131,6 +139,17 @@ A visual dashboard lets your team and manager see all ideas, filter by team, and
 5. **Build & ship** - Automate the toil and eliminate it for good
 6. **Log the win** - Use the [Log Completed Automation](../../issues/new?template=log-win.yml) template to record time saved 🎉
 7. **Review the dashboard** - See all toil ideas, scores, and time saved by team at a glance
+
+## 🧠 Architecture at a Glance
+
+| Loop | Purpose | Key Files |
+|------|---------|-----------|
+| Capture | Collect toil, automation proposals, and wins via GitHub issue forms | `.github/ISSUE_TEMPLATE/*.yml`, `docs/examples.md` |
+| Score & label | AI triage parses form answers, scores impact, labels issues, and optionally posts to Teams | `.github/workflows/ai-triage.yml`, `docs/triage-workflow.md` |
+| Visualize | Scheduled workflow generates `docs/dashboard/dashboard-data.json`, GitHub Pages renders `docs/dashboard/index.html` | `.github/workflows/dashboard-data.yml`, `docs/dashboard/index.html` |
+| Celebrate | Wins close the original toil and monthly ROI summaries brief leadership | `.github/workflows/win-celebration.yml`, `.github/workflows/monthly-roi-summary.yml`, `docs/roi-tracking.md` |
+
+Each loop is independent—disable or extend one without touching the others—and all data flows through GitHub Issues plus JSON stored in `docs/dashboard/`.
 
 ## Quick Links
 
@@ -234,6 +253,14 @@ When a toil idea is submitted, an AI agent automatically:
 - Generates `dashboard-data.json` with all toil metrics
 - Powers the interactive dashboard on GitHub Pages
 - Runs automatically — no manual updates needed
+
+## 🧭 Maintainer Checklist
+
+- **Trigger a data refresh after forking** — run the `Generate Dashboard Data` workflow once (Actions → Run workflow) so `docs/dashboard/dashboard-data.json` reflects your repo instead of the sample data.
+- **Verify secrets quarterly** — confirm `TEAMS_WEBHOOK_URL` (and any other optional tokens) still work, or remove the notification steps to avoid failing Actions runs.
+- **Customize contact links** — replace the placeholder Slack/Teams URLs in `.github/ISSUE_TEMPLATE/config.yml` and the reminder snippets below so contributors know where to coordinate.
+- **Review the forms annually** — ensure the dropdown options in `.github/ISSUE_TEMPLATE/*.yml` still match how you categorize toil; update the scoring constants if you add new values.
+- **Keep Actions pinned SHAs current** — accept Dependabot PRs or manually bump the pinned versions so security patches continue to flow.
 
 ## AI & Data Privacy
 

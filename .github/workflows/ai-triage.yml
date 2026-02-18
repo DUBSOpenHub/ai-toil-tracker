@@ -298,7 +298,7 @@ jobs:
           gh issue comment "$ISSUE_NUM" --repo "$REPO" --body "$COMMENT"
 
       - name: Notify Microsoft Teams
-        if: env.TEAMS_WEBHOOK_URL != ''
+        if: secrets.TEAMS_WEBHOOK_URL != ''
         env:
           TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
           ISSUE_NUM: ${{ steps.issue.outputs.number }}

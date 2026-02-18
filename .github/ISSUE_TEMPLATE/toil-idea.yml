@@ -9,6 +9,11 @@ body:
         📍 **Where to review all submissions:**
         Use the links in the repo README to view all ideas, triage queue, in-progress, and completed items.
 
+  - type: markdown
+    attributes:
+      value: |
+        ⚠️ **Security reminder:** keep descriptions high-level—no secrets, customer data, or internal-only URLs. See `SECURITY.md` for guidance.
+
   - type: input
     id: submitter
     attributes:
