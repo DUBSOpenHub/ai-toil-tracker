@@ -85,10 +85,16 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 /* ── Buttons ── */
 .btn { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.3rem 0.65rem; border: 1px solid #d0d7de; border-radius: 6px; background: #fff; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all .15s; white-space: nowrap; }
 .btn:hover { background: #f6f8fa; }
-.btn-launch { background: #2ea44f; color: #fff; border-color: #2ea44f; }
-.btn-launch:hover { background: #2c974b; }
+.btn-launch { background: #8250df; color: #fff; border-color: #8250df; padding: 0.35rem 0.75rem; font-size: 0.8rem; }
+.btn-launch:hover { background: #6e40c9; }
 .btn-save { background: #0969da; color: #fff; border-color: #0969da; }
 .btn-save:hover { background: #0860ca; }
+
+/* ── Toil Name Cell ── */
+.toil-name { font-weight: 700; font-size: 0.9rem; color: #24292f; line-height: 1.3; }
+.toil-desc { font-size: 0.78rem; color: #57606a; margin-top: 0.15rem; line-height: 1.35; font-weight: 400; }
+.toil-cell { min-width: 320px; }
+.toil-action-cell { white-space: nowrap; }
 
 /* ── Toast ── */
 .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: #24292f; color: #fff; padding: 0.75rem 1.25rem; border-radius: 8px; font-size: 0.85rem; font-weight: 500; z-index: 9999; opacity: 0; transform: translateY(10px); transition: all .3s; pointer-events: none; }
@@ -131,8 +137,10 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
   :root:not(.light) td.editable input, :root:not(.light) td.editable select { background: #0d1117; border-color: #58a6ff; color: #e6edf3; }
   :root:not(.light) .btn { background: #21262d; border-color: #30363d; color: #e6edf3; }
   :root:not(.light) .btn:hover { background: #30363d; }
-  :root:not(.light) .btn-launch { background: #238636; color: #fff; border-color: #238636; }
-  :root:not(.light) .btn-launch:hover { background: #2ea043; }
+  :root:not(.light) .btn-launch { background: #8957e5; color: #fff; border-color: #8957e5; }
+  :root:not(.light) .btn-launch:hover { background: #a371f7; }
+  :root:not(.light) .toil-name { color: #e6edf3; }
+  :root:not(.light) .toil-desc { color: #8b949e; }
   :root:not(.light) .btn-save { background: #1f6feb; color: #fff; border-color: #1f6feb; }
   :root:not(.light) .btn-save:hover { background: #388bfd; }
   :root:not(.light) .badge-toil { background: #1c3049; color: #58a6ff; }
@@ -173,8 +181,8 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 .dark td.editable input, .dark td.editable select { background: #0d1117; border-color: #58a6ff; color: #e6edf3; }
 .dark .btn { background: #21262d; border-color: #30363d; color: #e6edf3; }
 .dark .btn:hover { background: #30363d; }
-.dark .btn-launch { background: #238636; color: #fff; border-color: #238636; }
-.dark .btn-launch:hover { background: #2ea043; }
+.dark .btn-launch { background: #8957e5; color: #fff; border-color: #8957e5; }
+.dark .btn-launch:hover { background: #a371f7; }
 .dark .btn-save { background: #1f6feb; color: #fff; border-color: #1f6feb; }
 .dark .btn-save:hover { background: #388bfd; }
 .dark .badge-toil { background: #1c3049; color: #58a6ff; }
@@ -188,6 +196,8 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 .dark .team-rename-row input { background: #0d1117; border-color: #30363d; color: #e6edf3; }
 .dark .team-rename-row .btn-rename { background: #1f6feb; border-color: #1f6feb; }
 .dark a { color: #58a6ff; }
+.dark .toil-name { color: #e6edf3; }
+.dark .toil-desc { color: #8b949e; }
 .dark .theme-toggle { border-color: #30363d; }
 .dark .details-toggle { background: #161b22; border-color: #30363d; color: #e6edf3; }
 .dark .details-toggle:hover { background: #1c2128; }
@@ -265,6 +275,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
           <tr>
             <th data-col="number">#️⃣</th>
             <th data-col="title">💡 Toil</th>
+            <th data-col="actions"></th>
             <th data-col="submitter">🧑‍💻 Submitter</th>
             <th data-col="team">🏢 Team</th>
             <th data-col="category" class="col-hidden">🏷️ Category</th>
@@ -277,7 +288,6 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
             <th data-col="bonus_factors" class="col-hidden">⚡ Bonus</th>
             <th data-col="status">📍 Status</th>
             <th data-col="monthly_saved_minutes">⏱️ Time Saved / Month</th>
-            <th data-col="actions">🚀 Actions</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -427,7 +437,7 @@ const SAMPLE_DATA = {
   issues: [
     {
       number: 1,
-      title: "[TOIL] Staging Deploy Bot — Manual deployment steps for staging environment",
+      title: "[TOIL] Staging Deploy — Manual deployment steps for staging environment",
       url: `https://github.com/${CONFIG.fullRepo}/issues/1`,
       state: "open",
       labels: ["toil", "high-impact", "🔴 multiple-times-daily"],
@@ -451,7 +461,7 @@ const SAMPLE_DATA = {
     },
     {
       number: 2,
-      title: "[TOIL] Credential Rotator — Manually rotating database credentials every week",
+      title: "[TOIL] Credential Rotation — Rotating database credentials manually every week",
       url: `https://github.com/${CONFIG.fullRepo}/issues/2`,
       state: "open",
       labels: ["toil", "triage"],
@@ -475,7 +485,7 @@ const SAMPLE_DATA = {
     },
     {
       number: 3,
-      title: "[TOIL] Test Results Broadcaster — Copy-pasting test results into Slack every morning",
+      title: "[TOIL] Test Results — Copy-pasting test results into Slack every morning",
       url: `https://github.com/${CONFIG.fullRepo}/issues/3`,
       state: "closed",
       labels: ["toil", "automated"],
@@ -499,7 +509,7 @@ const SAMPLE_DATA = {
     },
     {
       number: 4,
-      title: "[TOIL] Dependency Updater — Manually updating dependency versions across 12 microservices",
+      title: "[TOIL] Dep Updates — Updating dependency versions across 12 microservices",
       url: `https://github.com/${CONFIG.fullRepo}/issues/4`,
       state: "open",
       labels: ["toil", "in-progress", "high-impact"],
@@ -523,7 +533,7 @@ const SAMPLE_DATA = {
     },
     {
       number: 5,
-      title: "[TOIL] Dev Setup Wizard — Onboarding new engineers — manual environment setup",
+      title: "[TOIL] Dev Onboarding — Manual environment setup for new engineers",
       url: `https://github.com/${CONFIG.fullRepo}/issues/5`,
       state: "open",
       labels: ["toil", "triage"],
@@ -547,7 +557,7 @@ const SAMPLE_DATA = {
     },
     {
       number: 6,
-      title: "[TOIL] Ticket Router — Manually triaging incoming support tickets from Zendesk",
+      title: "[TOIL] Ticket Triage — Routing incoming support tickets from Zendesk",
       url: `https://github.com/${CONFIG.fullRepo}/issues/6`,
       state: "open",
       labels: ["toil", "high-impact"],
@@ -978,12 +988,18 @@ function renderToilTable(issues) {
     const status = getStatus(issue);
     const edited = localEdits[issue.number] ? '<span class="edited-marker">✎</span>' : '';
     const bonusStr = (issue.bonus_factors || []).join(' ');
-    const desc = (issue.title || '').replace(/^\[TOIL\]\s*/i, '');
-    const ghCmd = `gh copilot "Automate: ${desc.replace(/"/g, '\\"')}"`;
+    const rawTitle = (issue.title || '').replace(/^\[TOIL\]\s*/i, '');
+    const ghCmd = `gh copilot "Automate: ${rawTitle.replace(/"/g, '\\"')}"`;
+    
+    // Split "Name — Description" into two parts
+    const dashIdx = rawTitle.indexOf(' — ');
+    const toilName = dashIdx > -1 ? rawTitle.substring(0, dashIdx) : rawTitle.split(/\s+/).slice(0, 4).join(' ');
+    const toilDesc = dashIdx > -1 ? rawTitle.substring(dashIdx + 3) : (dashIdx === -1 && rawTitle.length > toilName.length ? rawTitle : '');
 
     return `<tr class="${priorityClass(issue.toil_score)}">
       <td><a href="${issue.url}" target="_blank" style="color:#0969da;font-weight:600;">#${issue.number}</a></td>
-      <td style="max-width:260px">${esc(issue.title)}</td>
+      <td class="toil-cell"><div class="toil-name">${esc(toilName)}</div>${toilDesc ? `<div class="toil-desc">${esc(toilDesc)}</div>` : ''}</td>
+      <td class="toil-action-cell"><button class="btn btn-launch" onclick="copyLaunchCmd(this, ${issue.number})" data-cmd="${esc(ghCmd, true)}" title="Copy Copilot CLI command to clipboard">🚀 Automate</button></td>
       <td>${esc(issue.submitter)}</td>
       <td>${esc(issue.team)}</td>
       <td class="col-hidden">${esc(issue.category)}</td>
@@ -996,10 +1012,6 @@ function renderToilTable(issues) {
       <td class="col-hidden" style="font-size:0.78rem">${esc(bonusStr)}</td>
       <td>${statusBadge(status)}</td>
       <td>${formatMinutes(issue.monthly_saved_minutes)}</td>
-      <td style="white-space:nowrap">
-        <button class="btn btn-launch" onclick="copyLaunchCmd(this, ${issue.number})" data-cmd="${esc(ghCmd, true)}" title="Copy Copilot CLI command to clipboard">🚀 Automate</button>
-        <a class="btn btn-save" href="${issue.url}" target="_blank" title="Edit on GitHub">Save to GitHub</a>
-      </td>
     </tr>`;
   }).join('');
 }
