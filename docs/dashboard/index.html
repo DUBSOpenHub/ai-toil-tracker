@@ -1451,7 +1451,7 @@ function renderToilTable(issues) {
     
     // Render button based on Copilot mode
     const actionBtn = copilotMode === 'm365'
-      ? `<a class="btn btn-m365" href="${m365Url}" target="_blank" rel="noopener noreferrer" title="Ask Copilot in Microsoft Teams">💬 Ask in Teams</a>`
+      ? `<a class="btn btn-m365" href="${m365Url}" target="_blank" rel="noopener noreferrer" title="Solve with Microsoft 365 Copilot">💬 Solve with 365 Copilot</a>`
       : `<button class="btn btn-launch" onclick="copyLaunchCmd(this, ${issue.number})" data-cmd="${esc(ghCmd, true)}" title="Launch GitHub Copilot to solve this">🚀 Launch GH Copilot to Solve</button>`;
 
     return `<tr class="${priorityClass(issue.toil_score)}">
