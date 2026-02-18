@@ -1,0 +1,150 @@
+name: Automation Health Check
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 15 * * 1'  # Every Monday at 7am PST (15:00 UTC)
+
+permissions:
+  issues: write
+  models: read
+
+jobs:
+  health-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find automated issues
+        id: issues
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REPO="${{ github.repository }}"
+
+          # Get all open issues with the "automated" label
+          ISSUES=$(gh issue list --repo "$REPO" --label "automated" --state open --json number,title,body,updatedAt --limit 50)
+          COUNT=$(echo "$ISSUES" | jq length)
+
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+          echo "$ISSUES" > /tmp/automated_issues.json
+
+      - name: Analyze each automation
+        if: steps.issues.outputs.count != '0'
+        id: analyze
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REPO="${{ github.repository }}"
+          ISSUES=$(cat /tmp/automated_issues.json)
+          COUNT=$(echo "$ISSUES" | jq length)
+          REPORT=""
+          STALE_ISSUES=""
+
+          for i in $(seq 0 $((COUNT - 1))); do
+            NUMBER=$(echo "$ISSUES" | jq -r ".[$i].number")
+            TITLE=$(echo "$ISSUES" | jq -r ".[$i].title")
+            BODY=$(echo "$ISSUES" | jq -r ".[$i].body")
+            UPDATED=$(echo "$ISSUES" | jq -r ".[$i].updatedAt")
+
+            # Gather recent activity (comments, linked PRs)
+            COMMENTS=$(gh issue view "$NUMBER" --repo "$REPO" --json comments --jq '[.comments[-3:][] | {author: .author.login, createdAt: .createdAt, body: .body[:200]}]' 2>/dev/null || echo "[]")
+            TIMELINE=$(gh issue view "$NUMBER" --repo "$REPO" --json timelineItems --jq '[.timelineItems[-5:][] | {type: .__typename, createdAt: .createdAt}]' 2>/dev/null || echo "[]")
+
+            PROMPT="You are a concise automation health reviewer. Analyze this issue that was marked as 'automated' and determine if the automation is likely still active and healthy.
+
+          Issue #${NUMBER}: ${TITLE}
+          Last updated: ${UPDATED}
+          Today: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+          Issue body (truncated):
+          $(echo "$BODY" | head -c 1000)
+
+          Recent comments:
+          ${COMMENTS}
+
+          Recent timeline activity:
+          ${TIMELINE}
+
+          Reply in EXACTLY this format (no extra text):
+          STATUS: HEALTHY | NEEDS_REVIEW | UNKNOWN
+          REASON: One sentence explaining why."
+
+            RESULT=$(curl -s "https://models.github.ai/inference/chat/completions" \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "$(jq -n --arg prompt "$PROMPT" '{
+                "model": "openai/gpt-4o-mini",
+                "messages": [{"role": "user", "content": $prompt}],
+                "max_tokens": 100,
+                "temperature": 0.3
+              }')" | jq -r '.choices[0].message.content // "STATUS: UNKNOWN\nREASON: API call failed."')
+
+            STATUS=$(echo "$RESULT" | grep -oP 'STATUS:\s*\K\S+' || echo "UNKNOWN")
+            REASON=$(echo "$RESULT" | grep -oP 'REASON:\s*\K.*' || echo "Could not determine status.")
+
+            # Build report line
+            if [ "$STATUS" = "HEALTHY" ]; then
+              ICON="✅"
+            elif [ "$STATUS" = "NEEDS_REVIEW" ]; then
+              ICON="⚠️"
+              STALE_ISSUES="$STALE_ISSUES $NUMBER"
+            else
+              ICON="❓"
+            fi
+
+            REPORT="${REPORT}| ${ICON} | #${NUMBER} | ${TITLE} | ${REASON} |
+          "
+            # Rate-limit between API calls
+            sleep 2
+          done
+
+          # Save report
+          {
+            echo "report<<REPORT_EOF"
+            echo "$REPORT"
+            echo "REPORT_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "stale_issues=$STALE_ISSUES" >> "$GITHUB_OUTPUT"
+          echo "total=$COUNT" >> "$GITHUB_OUTPUT"
+
+      - name: Label stale automations
+        if: steps.analyze.outputs.stale_issues != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REPO="${{ github.repository }}"
+          for NUM in ${{ steps.analyze.outputs.stale_issues }}; do
+            gh issue edit "$NUM" --repo "$REPO" --add-label "needs-review" || true
+          done
+
+      - name: Post summary comment on each stale issue
+        if: steps.analyze.outputs.stale_issues != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REPO="${{ github.repository }}"
+          for NUM in ${{ steps.analyze.outputs.stale_issues }}; do
+            gh issue comment "$NUM" --repo "$REPO" --body "## 🩺 Automation Health Check
+
+          This automated toil item was flagged for review during a weekly health check. The linked automation may be stale or inactive.
+
+          **Action needed:** Please verify the automation is still running and effective. Remove the \`needs-review\` label once confirmed.
+
+          _Automated by [Automation Health Check](https://github.com/${REPO}/actions/workflows/automation-health-check.yml)_"
+          done
+
+      - name: Log summary
+        if: steps.issues.outputs.count != '0'
+        run: |
+          echo "## 🩺 Automation Health Check Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Checked:** ${{ steps.analyze.outputs.total }} automated issues" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Status | Issue | Title | Finding |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|-------|---------|" >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.analyze.outputs.report }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: No automated issues found
+        if: steps.issues.outputs.count == '0'
+        run: |
+          echo "## 🩺 Automation Health Check" >> $GITHUB_STEP_SUMMARY
+          echo "No open issues with the 'automated' label found. Nothing to check." >> $GITHUB_STEP_SUMMARY
