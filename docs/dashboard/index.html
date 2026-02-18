@@ -24,6 +24,9 @@
 
 /* ── Reset & Base ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
 body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: radial-gradient(1400px 750px at 20% -10%, rgba(130,80,223,0.15), transparent 65%), radial-gradient(1200px 600px at 120% 0%, rgba(9,105,218,0.12), transparent 60%), var(--bg-surface); color: #1f2328; line-height: 1.5; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; min-height: 100vh; position: relative; }
 body::before { content: ""; position: fixed; inset: 0; background-image: radial-gradient(circle at 25% 25%, rgba(130,80,223,0.08), transparent 45%), radial-gradient(circle at 75% 0%, rgba(9,105,218,0.08), transparent 50%), linear-gradient(120deg, rgba(255,255,255,0.15) 0.5px, transparent 0.5px); background-size: 600px 600px, 600px 600px, 60px 60px; opacity: 0.45; pointer-events: none; z-index: -1; filter: blur(0.3px); }
 button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid #0969da; outline-offset: 2px; border-radius: 4px; }
@@ -598,6 +601,22 @@ const BONUS_MAP = {
   '🆕 New team friction': 1
 };
 
+const PRIORITY_BANDS = [
+  { id: 'critical', min: 40, className: 'priority-critical', label: '🔴 Critical' },
+  { id: 'high', min: 20, className: 'priority-high', label: '🟠 High' },
+  { id: 'medium', min: 10, className: 'priority-medium', label: '🟡 Medium' },
+  { id: 'low', min: 0, className: 'priority-low', label: '⚪ Low' }
+];
+const CRITICAL_THRESHOLD = PRIORITY_BANDS[0].min;
+
+function getPriorityBand(score = 0) {
+  return PRIORITY_BANDS.find(band => score >= band.min) || PRIORITY_BANDS[PRIORITY_BANDS.length - 1];
+}
+
+function isCritical(score = 0) {
+  return score >= CRITICAL_THRESHOLD;
+}
+
 // ═══════════════════════════════════════════════════
 // SAMPLE DATA
 // ═══════════════════════════════════════════════════
@@ -826,7 +845,7 @@ function convertApiIssues(apiIssues) {
         bonus_factors: bonus,
         automation_idea: extractField(body, 'Automation idea (if any)') || '',
         toil_score: score,
-        priority: score >= 40 ? '🔴 Critical' : score >= 20 ? '🟠 High' : score >= 10 ? '🟡 Medium' : '⚪ Low',
+        priority: getPriorityLabel(score),
         monthly_saved_minutes: monthlyMins,
         created_at: issue.created_at,
         ai_suggestion: ''
@@ -847,7 +866,8 @@ function calcScore(freq, time, people, bonus) {
   const tObj = TIME_SCORES[time] || { score: 1, mins: 3 };
   const pObj = PEOPLE_SCORES[people] || { score: 1 };
   const base = fObj.score * tObj.score * pObj.score;
-  const bonusTotal = bonus.reduce((s, b) => s + (BONUS_MAP[b] || 0), 0);
+  const bonusList = Array.isArray(bonus) ? bonus : [];
+  const bonusTotal = bonusList.reduce((s, b) => s + (BONUS_MAP[b] || 0), 0);
   const score = base + bonusTotal;
   const monthlyMins = fObj.monthly * tObj.mins * pObj.score;
   return { score, monthlyMins };
@@ -865,7 +885,7 @@ function applyLocalEdits() {
     const { score, monthlyMins } = calcScore(issue.frequency, issue.time_per_occurrence, issue.people_affected, issue.bonus_factors);
     issue.toil_score = score;
     issue.monthly_saved_minutes = monthlyMins;
-    issue.priority = score >= 40 ? '🔴 Critical' : score >= 20 ? '🟠 High' : score >= 10 ? '🟡 Medium' : '⚪ Low';
+    issue.priority = getPriorityLabel(score);
   });
 }
 
@@ -895,10 +915,11 @@ function statusBadge(status) {
 }
 
 function priorityClass(score) {
-  if (score >= 40) return 'priority-critical';
-  if (score >= 20) return 'priority-high';
-  if (score >= 10) return 'priority-medium';
-  return 'priority-low';
+  return getPriorityBand(score).className;
+}
+
+function getPriorityLabel(score) {
+  return getPriorityBand(score).label;
 }
 
 function formatMinutes(mins) {
@@ -995,7 +1016,7 @@ function renderSummaryCards(issues) {
   const totalMinsSaved = issues.reduce((s, i) => s + (i.monthly_saved_minutes || 0), 0);
   const hoursSaved = totalMinsSaved / 60;
   const automationRate = total ? Math.round((automated / total) * 100) : 0;
-  const riskIssues = issues.filter(i => getStatus(i) !== 'automated' && i.toil_score >= 40);
+  const riskIssues = issues.filter(i => getStatus(i) !== 'automated' && isCritical(i.toil_score));
   const riskMins = riskIssues.reduce((s, i) => s + (i.monthly_saved_minutes || 0), 0);
   const riskHours = riskMins / 60;
   const avgHoursPerIdea = total ? (hoursSaved / total) : 0;
@@ -1079,7 +1100,7 @@ function renderHeroPulse(issues) {
   const total = issues.length || 0;
   const automated = issues.filter(i => getStatus(i) === 'automated').length;
   const automationRate = total ? Math.round((automated / total) * 100) : 0;
-  const highImpact = issues.filter(i => i.toil_score >= 40 && getStatus(i) !== 'automated').length;
+  const highImpact = issues.filter(i => isCritical(i.toil_score) && getStatus(i) !== 'automated').length;
   const backlog = issues.filter(i => getStatus(i) === 'toil').length;
   heroPulse.innerHTML = `
     <span class="pulse-pill success">⚡ ${automationRate}% automated</span>
@@ -1283,10 +1304,10 @@ function renderExecSummary() {
 
 // ── Team Name Management ──
 function getTeamRenames() {
-  return JSON.parse(localStorage.getItem('toilTeamRenames') || '{}');
+  return JSON.parse(localStorage.getItem(STORAGE_KEY_TEAM_RENAMES) || '{}');
 }
 function saveTeamRenames(renames) {
-  localStorage.setItem('toilTeamRenames', JSON.stringify(renames));
+  localStorage.setItem(STORAGE_KEY_TEAM_RENAMES, JSON.stringify(renames));
 }
 function applyTeamRenames(issues) {
   const renames = getTeamRenames();
@@ -1490,7 +1511,7 @@ document.addEventListener('click', function(e) {
       const { score, monthlyMins } = calcScore(issue.frequency, issue.time_per_occurrence, issue.people_affected, issue.bonus_factors);
       issue.toil_score = score;
       issue.monthly_saved_minutes = monthlyMins;
-      issue.priority = score >= 40 ? '🔴 Critical' : score >= 20 ? '🟠 High' : score >= 10 ? '🟡 Medium' : '⚪ Low';
+      issue.priority = getPriorityLabel(score);
       saveLocalEdits();
     }
     render();
@@ -1551,12 +1572,20 @@ function showToast(msg) {
 // ═══════════════════════════════════════════════════
 // UTILS
 // ═══════════════════════════════════════════════════
-function esc(str, attr) {
+/**
+ * Escapes HTML special characters to prevent XSS
+ * @param {string} str - String to escape
+ * @param {boolean} attr - If true, also escapes quotes for use in HTML attributes
+ * @returns {string} Escaped string
+ */
+function escapeHtml(str, attr) {
   if (!str) return '';
   const d = document.createElement('div');
   d.textContent = str;
   return attr ? d.innerHTML.replace(/"/g, '&quot;') : d.innerHTML;
 }
+// Compatibility alias (to be removed in future refactor)
+const esc = escapeHtml;
 
 // ═══════════════════════════════════════════════════
 // COLUMN TOGGLE

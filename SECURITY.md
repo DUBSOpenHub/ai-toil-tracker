@@ -4,11 +4,11 @@
 
 | Version | Supported |
 |---------|-----------|
-| Latest  | ✅ Yes     |
+| Latest (main branch) | ✅ Yes |
 
 ## 🚨 Reporting a Vulnerability
 
-We take security seriously! If you discover a security vulnerability in any automation built from this tracker, **please report it responsibly**.
+We take security seriously. If you discover a security vulnerability in this tracker or any automation built from it, **please report it responsibly**.
 
 ### How to Report
 
