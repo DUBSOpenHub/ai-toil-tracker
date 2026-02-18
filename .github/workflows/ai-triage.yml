@@ -313,6 +313,9 @@ jobs:
         run: |
           ISSUE_TITLE=$(gh issue view "$ISSUE_NUM" --repo "$REPO" --json title --jq '.title')
           ISSUE_URL="https://github.com/$REPO/issues/${ISSUE_NUM}"
+          CLEAN_TITLE=$(echo "$ISSUE_TITLE" | sed 's/\[TOIL\] *//')
+          M365_PROMPT=$(python3 -c "import urllib.parse; print(urllib.parse.quote('Help me automate this repetitive task: ${CLEAN_TITLE}. Suggest a step-by-step plan.'))" 2>/dev/null || echo "")
+          M365_URL="https://m365.cloud.microsoft/chat?prompt=${M365_PROMPT}"
 
           TEAMS_BODY=$(jq -n \
             --arg title "🤖 AI Triage Report — ${ISSUE_TITLE}" \
@@ -321,6 +324,7 @@ jobs:
             --arg saved "**Estimated team time saved if automated:** $MONTHLY_SAVED" \
             --arg suggestion "$AI_SUGGESTION" \
             --arg url "$ISSUE_URL" \
+            --arg m365url "$M365_URL" \
             '{
               "type": "message",
               "attachments": [
@@ -341,7 +345,8 @@ jobs:
                       { "type": "TextBlock", "text": $suggestion, "wrap": true }
                     ],
                     "actions": [
-                      { "type": "Action.OpenUrl", "title": "View Issue on GitHub", "url": $url }
+                      { "type": "Action.OpenUrl", "title": "View Issue on GitHub", "url": $url },
+                      { "type": "Action.OpenUrl", "title": "☁️ Ask M365 Copilot", "url": $m365url }
                     ]
                   }
                 }

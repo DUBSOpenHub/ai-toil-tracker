@@ -97,6 +97,18 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 .toil-cell { min-width: 320px; }
 .toil-action-cell { white-space: nowrap; }
 
+/* ── Copilot Tool Toggle ── */
+.copilot-toggle { display: inline-flex; align-items: center; gap: 0.15rem; margin-left: auto; background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 6px; padding: 0.2rem; font-size: 0.78rem; }
+.copilot-toggle button { background: none; border: none; padding: 0.3rem 0.6rem; border-radius: 5px; cursor: pointer; font-size: 0.78rem; font-weight: 600; color: #57606a; transition: all .15s; white-space: nowrap; }
+.copilot-toggle button.active { background: #8250df; color: #fff; }
+.dark .copilot-toggle, :root:not(.light) .copilot-toggle { background: #21262d; border-color: #30363d; }
+.dark .copilot-toggle button, :root:not(.light) .copilot-toggle button { color: #8b949e; }
+.dark .copilot-toggle button.active, :root:not(.light) .copilot-toggle button.active { background: #8957e5; color: #fff; }
+.btn-m365 { background: #0078d4; color: #fff; border-color: #0078d4; padding: 0.35rem 0.75rem; font-size: 0.8rem; }
+.btn-m365:hover { background: #106ebe; }
+.dark .btn-m365, :root:not(.light) .btn-m365 { background: #2b88d8; border-color: #2b88d8; }
+.dark .btn-m365:hover, :root:not(.light) .btn-m365:hover { background: #3c9ae8; }
+
 /* ── Executive Summary ── */
 .exec-summary { background: linear-gradient(135deg, #0d1117 0%, #161b22 100%); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; color: #e6edf3; }
 .exec-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
@@ -285,6 +297,10 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
         <option value="toil_score">🎯 Impact Score</option>
       </select>
       <button class="show-cols-toggle" id="toggleCols" onclick="toggleColumns()">+ Show all details</button>
+      <div class="copilot-toggle" title="Choose your Copilot tool">
+        <button id="btnCopilotCLI" class="active" onclick="setCopilotMode('cli')">⌨️ GitHub CLI</button>
+        <button id="btnCopilotM365" onclick="setCopilotMode('m365')">☁️ M365 Copilot</button>
+      </div>
     </div>
     <div class="table-wrap">
       <table id="toilTable">
@@ -388,6 +404,27 @@ function applyLight() {
   if (btn) { btn.innerHTML = '🌙 Dark'; }
 }
 initTheme();
+
+// ═══════════════════════════════════════════════════
+// COPILOT MODE — GitHub CLI vs M365 Copilot
+// ═══════════════════════════════════════════════════
+let copilotMode = localStorage.getItem('copilotMode') || 'cli';
+
+function setCopilotMode(mode) {
+  copilotMode = mode;
+  localStorage.setItem('copilotMode', mode);
+  document.getElementById('btnCopilotCLI').classList.toggle('active', mode === 'cli');
+  document.getElementById('btnCopilotM365').classList.toggle('active', mode === 'm365');
+  if (dashboardData) renderToilTable(dashboardData.issues);
+}
+
+function initCopilotMode() {
+  const saved = localStorage.getItem('copilotMode') || 'cli';
+  copilotMode = saved;
+  document.getElementById('btnCopilotCLI').classList.toggle('active', saved === 'cli');
+  document.getElementById('btnCopilotM365').classList.toggle('active', saved === 'm365');
+}
+initCopilotMode();
 
 // ═══════════════════════════════════════════════════
 // CONFIG — Set your owner/repo here
@@ -1058,6 +1095,8 @@ function renderToilTable(issues) {
     const bonusStr = (issue.bonus_factors || []).join(' ');
     const rawTitle = (issue.title || '').replace(/^\[TOIL\]\s*/i, '');
     const ghCmd = `gh copilot "Automate: ${rawTitle.replace(/"/g, '\\"')}"`;
+    const m365Prompt = encodeURIComponent(`Help me automate this repetitive task: ${rawTitle}. Suggest a step-by-step plan to eliminate this busywork.`);
+    const m365Url = `https://m365.cloud.microsoft/chat?prompt=${m365Prompt}`;
     
     // Split "Name — Description" into two parts
     const dashIdx = rawTitle.indexOf(' — ');
@@ -1065,10 +1104,16 @@ function renderToilTable(issues) {
     const toilDesc = dashIdx > -1 ? rawTitle.substring(dashIdx + 3) : (dashIdx === -1 && rawTitle.length > toilName.length ? rawTitle : '');
 
     const safeUrl = issue.url && issue.url.startsWith('https://github.com/') ? issue.url : '#';
+    
+    // Render button based on Copilot mode
+    const actionBtn = copilotMode === 'm365'
+      ? `<a class="btn btn-m365" href="${m365Url}" target="_blank" rel="noopener noreferrer" title="Open in Microsoft 365 Copilot">☁️ Ask Copilot</a>`
+      : `<button class="btn btn-launch" onclick="copyLaunchCmd(this, ${issue.number})" data-cmd="${esc(ghCmd, true)}" title="Copy GitHub Copilot CLI command">⌨️ Automate</button>`;
+
     return `<tr class="${priorityClass(issue.toil_score)}">
       <td><a href="${safeUrl}" target="_blank" rel="noopener noreferrer" style="color:#0969da;font-weight:600;">#${issue.number}</a></td>
       <td class="toil-cell"><div class="toil-name">${esc(toilName)}</div>${toilDesc ? `<div class="toil-desc">${esc(toilDesc)}</div>` : ''}</td>
-      <td class="toil-action-cell"><button class="btn btn-launch" onclick="copyLaunchCmd(this, ${issue.number})" data-cmd="${esc(ghCmd, true)}" title="Copy Copilot CLI command to clipboard">🚀 Automate</button></td>
+      <td class="toil-action-cell">${actionBtn}</td>
       <td>${esc(issue.submitter)}</td>
       <td>${esc(issue.team)}</td>
       <td class="col-hidden">${esc(issue.category)}</td>

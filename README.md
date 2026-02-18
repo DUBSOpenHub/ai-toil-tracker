@@ -103,7 +103,7 @@ A visual dashboard lets your team and manager see all ideas, filter by team, and
 - **Summary Cards** — Total ideas, wins, hours saved/month, automation rate, in-progress, and high-impact counts
 - **Team & Individual Breakdown** — Per-person and per-team stats: ideas submitted, automated, and estimated monthly hours saved
 - **Toil Ideas Table** — Every toil idea with sortable columns, inline-editable scores, color-coded priority rows, and status badges
-- **🚀 Automate Button** — One click copies a ready-to-run Copilot command to start automating that specific item
+- **🚀 Automate Button** — Choose your tool: **GitHub Copilot CLI** (copies a command) or **M365 Copilot** (opens in browser). Toggle in the dashboard header
 - **Filters** — Filter by team, category, or status to focus on what matters
 
 ### Setting Up the Dashboard
