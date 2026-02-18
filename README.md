@@ -80,6 +80,18 @@ The whole process takes about 30 seconds. No one needs to triage, score, or labe
 
 That's it. Your team now has a living backlog of automation opportunities.
 
+### ⚡ Quick Setup
+
+After forking, run the setup script to automatically replace all repo references with your fork's path:
+
+```bash
+./setup.sh              # auto-detects org/repo from your git remote
+# or
+./setup.sh myorg/myrepo # pass it explicitly
+```
+
+This updates `README.md`, `SECURITY.md`, and `.github/workflows/stale.yml` in one step.
+
 ---
 
 ## Where Everything Lives
@@ -122,6 +134,8 @@ All toil ideas and automation proposals are tracked as **GitHub Issues** in this
 | [Triage Workflow](docs/triage-workflow.md) | Step-by-step process for reviewing ideas |
 | [ROI Tracking](docs/roi-tracking.md) | Measure and share time saved |
 | [Examples](docs/examples.md) | Common toil patterns to inspire your team |
+| [Webhook Setup](docs/WEBHOOK_SETUP.md) | Send triage notifications to Teams, Discord, or any webhook |
+| [Video Walkthrough](docs/VIDEO_WALKTHROUGH.md) | Step-by-step visual guide to get started |
 | [Contributing](CONTRIBUTING.md) | How to submit ideas and build automations |
 | [Code of Conduct](CODE_OF_CONDUCT.md) | Community standards |
 | [Security](SECURITY.md) | Security policy for automations |
@@ -166,6 +180,11 @@ When a toil idea is submitted, an AI agent automatically:
 - **Estimates monthly time saved** if automated
 - **Suggests an automation approach** using AI
 - **Removes the `triage` label** - no manual triage needed
+
+### 🔔 Webhook Notifications (optional)
+- Optionally sends triage results to **Microsoft Teams**, **Discord**, or any **generic webhook**
+- Configure by adding a `WEBHOOK_URL` secret or variable — see [Webhook Setup](docs/WEBHOOK_SETUP.md)
+- Skips gracefully if not configured — no setup required
 
 ### 🗂️ Stale Issue Cleanup (monthly)
 - Nudges toil ideas with no activity after 30 days
