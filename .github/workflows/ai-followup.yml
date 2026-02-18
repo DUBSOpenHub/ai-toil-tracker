@@ -1,0 +1,109 @@
+name: AI Follow-up - Answer questions on triaged toil issues
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  issues: write
+  models: read
+
+jobs:
+  ai-followup:
+    # Only run on issues with the "toil" label when the comment starts with /ai or @ai
+    if: >-
+      !github.event.issue.pull_request
+      && contains(github.event.issue.labels.*.name, 'toil')
+      && (startsWith(github.event.comment.body, '/ai ')
+          || startsWith(github.event.comment.body, '@ai '))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extract user question
+        id: question
+        run: |
+          # Strip the command prefix (/ai or @ai) to get the actual question
+          COMMENT=$(cat <<'COMMENT_EOF'
+          ${{ github.event.comment.body }}
+          COMMENT_EOF
+          )
+          QUESTION=$(echo "$COMMENT" | sed 's|^/ai ||;s|^@ai ||')
+          {
+            echo "text<<QUESTION_EOF"
+            echo "$QUESTION"
+            echo "QUESTION_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Gather issue context
+        id: context
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_NUM=${{ github.event.issue.number }}
+          REPO="${{ github.repository }}"
+
+          # Fetch issue body
+          BODY=$(gh issue view "$ISSUE_NUM" --repo "$REPO" --json body --jq '.body')
+
+          # Fetch all comments (excluding the trigger comment)
+          COMMENTS=$(gh issue view "$ISSUE_NUM" --repo "$REPO" --json comments \
+            --jq '[.comments[] | select(.id != ${{ github.event.comment.node_id }}) | "**\(.author.login):** \(.body)"] | join("\n\n---\n\n")' 2>/dev/null || echo "")
+
+          # Write context to files to avoid shell escaping issues
+          echo "$BODY" > /tmp/issue_body.txt
+          echo "$COMMENTS" > /tmp/issue_comments.txt
+
+      - name: Ask AI
+        id: ai
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_BODY=$(cat /tmp/issue_body.txt)
+          ISSUE_COMMENTS=$(cat /tmp/issue_comments.txt)
+          QUESTION='${{ steps.question.outputs.text }}'
+
+          PROMPT="You are a helpful automation advisor embedded in a toil-tracking issue on GitHub.
+
+          Here is the original issue:
+          ---
+          ${ISSUE_BODY}
+          ---
+
+          Here are the previous comments on this issue:
+          ---
+          ${ISSUE_COMMENTS}
+          ---
+
+          A team member is now asking a follow-up question:
+          ${QUESTION}
+
+          Answer concisely (3-6 sentences). Be specific and practical. If the question is about automation, suggest concrete tools or steps. If you don't have enough context, say so."
+
+          RESPONSE=$(curl -s "https://models.github.ai/inference/chat/completions" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg prompt "$PROMPT" '{
+              "model": "openai/gpt-4o-mini",
+              "messages": [{"role": "user", "content": $prompt}],
+              "max_tokens": 500,
+              "temperature": 0.7
+            }')" | jq -r '.choices[0].message.content // "Sorry, I was unable to generate a response. Please try again."')
+
+          {
+            echo "response<<RESPONSE_EOF"
+            echo "$RESPONSE"
+            echo "RESPONSE_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Post AI response
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_NUM=${{ github.event.issue.number }}
+
+          COMMENT="### 🤖 AI Follow-up
+
+          ${{ steps.ai.outputs.response }}
+
+          ---
+          _Responding to @${{ github.event.comment.user.login }}'s question. Ask more with \`/ai <your question>\`._"
+
+          gh issue comment "$ISSUE_NUM" --repo "${{ github.repository }}" --body "$COMMENT"

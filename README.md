@@ -18,6 +18,7 @@ This isn't just a tracker - AI is built into the workflow:
 | The team needs to know what to automate | AI **estimates monthly time saved** and ranks by ROI |
 | Nobody knows how to automate it | AI **suggests a specific automation approach** (GitHub Action, script, agent, etc.) using GitHub Models |
 | The idea sits untriaged | AI **removes the triage label** - no manual triage needed |
+| You have a follow-up question | Comment `/ai <question>` and AI **answers using full issue context** via GitHub Models |
 
 **The human role:** Describe the pain. The AI handles the rest.
 
@@ -192,6 +193,12 @@ When a toil idea is submitted, an AI agent automatically:
 - **Estimates monthly time saved** if automated
 - **Suggests an automation approach** using AI
 - **Removes the `triage` label** - no manual triage needed
+
+### 💬 AI Follow-up (`/ai` command)
+Comment `/ai <question>` or `@ai <question>` on any issue with the **toil** label to ask a follow-up question about the AI triage suggestion. The workflow reads the full issue body and all previous comments for context, then posts an AI-generated answer using GitHub Models (GPT-4o-mini). Great for asking things like:
+- `/ai What GitHub Action would work best for this?`
+- `/ai How long would a Copilot agent take to build?`
+- `/ai Can you break the automation into smaller steps?`
 
 ### 🔔 Webhook Notifications (optional)
 - Optionally sends triage results to **Microsoft Teams**, **Discord**, or any **generic webhook**
