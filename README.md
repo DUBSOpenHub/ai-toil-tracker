@@ -126,6 +126,18 @@ All toil ideas and automation proposals are tracked as **GitHub Issues** in this
 - [✅ Automated (completed)](../../issues?q=is%3Aissue+label%3Aautomated)
 - [🎉 Log a win](../../issues/new?template=log-win.yml)
 
+## 📊 Dashboard
+
+A live metrics dashboard is available via GitHub Pages. It shows total toil ideas, wins logged, estimated time saved, frequency breakdown, and top submitters — all fetched client-side from the GitHub API.
+
+**To enable it:**
+1. Go to your repo's **Settings → Pages**
+2. Set the source to **Deploy from a branch**
+3. Select the **main** branch and **`/docs`** folder
+4. Save — your dashboard will be live at `https://<owner>.github.io/<repo>/`
+
+> The dashboard is a single self-contained HTML file at [`docs/index.html`](docs/index.html) with no dependencies.
+
 ## Documentation
 
 | Doc | Description |
