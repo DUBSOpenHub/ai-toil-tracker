@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toil Tracker Dashboard</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --orange: #d29922;
+    --red: #f85149;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  header h1 { font-size: 1.8rem; margin-bottom: 0.25rem; }
+  header p { color: var(--text-muted); font-size: 0.95rem; }
+  header a { color: var(--accent); text-decoration: none; }
+  header a:hover { text-decoration: underline; }
+
+  .config-bar {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+  .config-bar input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    width: 300px;
+  }
+  .config-bar button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  .config-bar button:hover { opacity: 0.9; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    text-align: center;
+  }
+  .stat-card .label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+  }
+  .stat-card .value {
+    font-size: 2rem;
+    font-weight: 700;
+  }
+  .stat-card .value.green { color: var(--green); }
+  .stat-card .value.blue { color: var(--accent); }
+  .stat-card .value.orange { color: var(--orange); }
+
+  .panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  @media (max-width: 700px) {
+    .panels { grid-template-columns: 1fr; }
+  }
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+  }
+  .panel h2 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-muted);
+  }
+  .freq-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .freq-row:last-child { border-bottom: none; }
+  .freq-label { font-size: 0.95rem; }
+  .freq-count {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--accent);
+  }
+  .freq-bar-wrap {
+    flex: 1;
+    margin: 0 0.75rem;
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .freq-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+  }
+
+  .submitter-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .submitter-row:last-child { border-bottom: none; }
+  .submitter-name {
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .submitter-name img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+  }
+  .submitter-count {
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 0.95rem;
+  }
+
+  .loading {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+  }
+  .error {
+    text-align: center;
+    padding: 2rem;
+    color: var(--red);
+  }
+  footer {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+  <header>
+    <h1>🤖 Toil Tracker Dashboard</h1>
+    <p>Live metrics from GitHub Issues &mdash; <a id="repo-link" href="#">repo</a></p>
+  </header>
+
+  <div class="config-bar">
+    <input type="text" id="repo-input" placeholder="owner/repo (e.g. DUBSOpenHub/ai-first-toil-tracker)">
+    <button onclick="loadDashboard()">Load</button>
+  </div>
+
+  <div id="content">
+    <div class="loading" id="loading">Loading data&hellip;</div>
+  </div>
+
+  <footer>
+    Powered by the GitHub REST API &middot; No backend required &middot; Data refreshes on each page load
+  </footer>
+
+<script>
+(function () {
+  const FREQ_LABELS = [
+    { emoji: '🔴', text: 'Multiple times per day', color: '#f85149' },
+    { emoji: '🟠', text: 'Daily', color: '#d29922' },
+    { emoji: '🟡', text: 'Multiple times per week', color: '#e3b341' },
+    { emoji: '🔵', text: 'Weekly', color: '#58a6ff' },
+    { emoji: '⚪', text: 'Monthly or less', color: '#8b949e' },
+  ];
+
+  // Monthly multipliers for time-saved estimation
+  const FREQ_MULTIPLIER = { '🔴': 60, '🟠': 22, '🟡': 10, '🔵': 4, '⚪': 1 };
+  const TIME_MINUTES = {
+    '< 5 minutes': 3, '5–15 minutes': 10, '5-15 minutes': 10,
+    '15–30 minutes': 22, '15-30 minutes': 22,
+    '30–60 minutes': 45, '30-60 minutes': 45,
+    '> 1 hour': 75,
+    '5 minutes': 5, '15 minutes': 15, '30 minutes': 30,
+    '1 hour': 60, '2+ hours': 150,
+  };
+  const PEOPLE_COUNT = {
+    'Just me': 1, '1 person': 1,
+    '2–3 people': 2.5, '2-3 people': 2.5,
+    '4–6 people': 5, '4-6 people': 5, 'Small team (2–5)': 3,
+    'My whole team': 8, 'Entire team': 8,
+    'Multiple teams / org-wide': 20, 'Multiple teams': 20,
+  };
+
+  function detectRepo() {
+    // Try to detect from the GitHub Pages URL: <owner>.github.io/<repo>/
+    const host = location.hostname;
+    const path = location.pathname.split('/').filter(Boolean);
+    if (host.endsWith('.github.io')) {
+      const owner = host.replace('.github.io', '');
+      const repo = path[0] || '';
+      if (owner && repo) return `${owner}/${repo}`;
+    }
+    return 'DUBSOpenHub/ai-first-toil-tracker';
+  }
+
+  function getRepo() {
+    const input = document.getElementById('repo-input');
+    const val = input.value.trim();
+    return val || detectRepo();
+  }
+
+  async function fetchAllIssues(repo) {
+    let page = 1;
+    let all = [];
+    while (true) {
+      const url = `https://api.github.com/repos/${repo}/issues?state=all&per_page=100&page=${page}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`GitHub API error: ${res.status} ${res.statusText}`);
+      const data = await res.json();
+      if (!data.length) break;
+      all = all.concat(data);
+      if (data.length < 100) break;
+      page++;
+    }
+    // Filter out pull requests (GitHub API returns PRs in /issues)
+    return all.filter(i => !i.pull_request);
+  }
+
+  function extractField(body, label) {
+    if (!body) return null;
+    const regex = new RegExp(`###\\s*${label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*\\n+([\\s\\S]*?)(?=\\n###|$)`, 'i');
+    const m = body.match(regex);
+    return m ? m[1].trim() : null;
+  }
+
+  function getFreqEmoji(issue) {
+    const labels = (issue.labels || []).map(l => typeof l === 'string' ? l : l.name);
+    for (const f of FREQ_LABELS) {
+      if (labels.some(l => l.includes(f.emoji))) return f.emoji;
+    }
+    // Try issue body
+    const freq = extractField(issue.body, 'How often does it happen\\?') ||
+                 extractField(issue.body, 'How often did this toil happen\\?');
+    if (freq) {
+      for (const f of FREQ_LABELS) {
+        if (freq.includes(f.emoji)) return f.emoji;
+      }
+    }
+    return null;
+  }
+
+  function estimateMinutesSaved(issue) {
+    const freq = getFreqEmoji(issue);
+    const timeField = extractField(issue.body, 'How long does it take each time\\?') ||
+                      extractField(issue.body, 'Time saved per occurrence');
+    const peopleField = extractField(issue.body, 'Who is affected\\?') ||
+                        extractField(issue.body, 'How many people benefit\\?');
+    // Also check explicit monthly savings field
+    const explicitSavings = extractField(issue.body, 'Estimated time saved per month');
+    if (explicitSavings) {
+      const hoursMatch = explicitSavings.match(/([\d.]+)\s*hours?/i);
+      if (hoursMatch) return parseFloat(hoursMatch[1]) * 60;
+      const minsMatch = explicitSavings.match(/([\d.]+)\s*min/i);
+      if (minsMatch) return parseFloat(minsMatch[1]);
+    }
+
+    const fm = freq ? (FREQ_MULTIPLIER[freq] || 1) : 1;
+    let tm = 10;
+    if (timeField) {
+      for (const [k, v] of Object.entries(TIME_MINUTES)) {
+        if (timeField.includes(k)) { tm = v; break; }
+      }
+    }
+    let pm = 1;
+    if (peopleField) {
+      for (const [k, v] of Object.entries(PEOPLE_COUNT)) {
+        if (peopleField.includes(k)) { pm = v; break; }
+      }
+    }
+    return fm * tm * pm;
+  }
+
+  function getSubmitter(issue) {
+    const field = extractField(issue.body, 'Your name and GitHub handle');
+    if (field) {
+      const handle = field.match(/@(\w[\w-]*)/);
+      if (handle) return handle[1];
+      return field.split(/\s*[\(\[@]/)[0].trim() || issue.user.login;
+    }
+    return issue.user.login;
+  }
+
+  function isToilIdea(issue) {
+    return issue.title.startsWith('[TOIL]') ||
+           (issue.labels || []).some(l => (l.name || l) === 'toil');
+  }
+
+  function isWin(issue) {
+    return issue.title.startsWith('[WIN]') ||
+           (issue.labels || []).some(l => (l.name || l) === 'automated');
+  }
+
+  function render(toilIdeas, wins, repo) {
+    const totalToil = toilIdeas.length;
+    const totalWins = wins.length;
+
+    // Estimate total time saved (from wins if available, otherwise from toil ideas with automated label)
+    let totalMinutes = 0;
+    for (const w of wins) {
+      totalMinutes += estimateMinutesSaved(w);
+    }
+    const totalHours = Math.round(totalMinutes / 60);
+
+    // Frequency breakdown (from toil ideas)
+    const allIssues = [...toilIdeas, ...wins];
+    const freqCounts = {};
+    for (const f of FREQ_LABELS) freqCounts[f.emoji] = 0;
+    for (const issue of allIssues) {
+      const e = getFreqEmoji(issue);
+      if (e && freqCounts[e] !== undefined) freqCounts[e]++;
+    }
+    const maxFreq = Math.max(1, ...Object.values(freqCounts));
+
+    // Top submitters
+    const submitters = {};
+    for (const issue of allIssues) {
+      const s = getSubmitter(issue);
+      submitters[s] = (submitters[s] || 0) + 1;
+    }
+    const topSubmitters = Object.entries(submitters)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10);
+
+    document.getElementById('repo-link').href = `https://github.com/${repo}`;
+    document.getElementById('repo-link').textContent = repo;
+
+    const html = `
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="label">Toil Ideas Submitted</div>
+          <div class="value blue">${totalToil}</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Wins Logged</div>
+          <div class="value green">${totalWins}</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Est. Time Saved / Month</div>
+          <div class="value orange">${totalHours > 0 ? totalHours + 'h' : '—'}</div>
+        </div>
+      </div>
+
+      <div class="panels">
+        <div class="panel">
+          <h2>📊 Frequency Breakdown</h2>
+          ${FREQ_LABELS.map(f => `
+            <div class="freq-row">
+              <span class="freq-label">${f.emoji} ${f.text}</span>
+              <div class="freq-bar-wrap">
+                <div class="freq-bar" style="width:${(freqCounts[f.emoji]/maxFreq)*100}%;background:${f.color}"></div>
+              </div>
+              <span class="freq-count">${freqCounts[f.emoji]}</span>
+            </div>
+          `).join('')}
+        </div>
+
+        <div class="panel">
+          <h2>🏆 Top Submitters</h2>
+          ${topSubmitters.length === 0 ? '<p style="color:var(--text-muted)">No submissions yet</p>' :
+            topSubmitters.map(([name, count]) => `
+              <div class="submitter-row">
+                <span class="submitter-name">
+                  <img src="https://github.com/${name}.png?size=48" alt="" onerror="this.style.display='none'">
+                  ${name}
+                </span>
+                <span class="submitter-count">${count}</span>
+              </div>
+            `).join('')}
+        </div>
+      </div>
+    `;
+
+    document.getElementById('content').innerHTML = html;
+  }
+
+  window.loadDashboard = async function () {
+    const repo = getRepo();
+    document.getElementById('repo-input').value = repo;
+    const content = document.getElementById('content');
+    content.innerHTML = '<div class="loading">Loading data&hellip;</div>';
+
+    try {
+      const issues = await fetchAllIssues(repo);
+      const toilIdeas = issues.filter(isToilIdea);
+      const wins = issues.filter(isWin);
+      render(toilIdeas, wins, repo);
+    } catch (err) {
+      content.innerHTML = `<div class="error">❌ ${err.message}<br><small>Check that the repository exists and is public.</small></div>`;
+    }
+  };
+
+  // Auto-load on page ready
+  const repo = detectRepo();
+  document.getElementById('repo-input').value = repo;
+  loadDashboard();
+})();
+</script>
+</body>
+</html>
