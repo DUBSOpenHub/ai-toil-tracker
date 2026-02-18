@@ -8,17 +8,40 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+:root {
+  --bg-surface: #f5f7fb;
+  --bg-card: rgba(255,255,255,0.92);
+  --bg-glass: rgba(13,17,23,0.75);
+  --border-card: rgba(15,23,42,0.08);
+  --accent: #8250df;
+  --accent-strong: #5e3bc4;
+  --accent-soft: #c084fc;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #f87171;
+  --text-soft: #5a6473;
+}
+
 /* ── Reset & Base ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: radial-gradient(1200px 650px at 20% 0%, rgba(9,105,218,0.06), transparent 58%), radial-gradient(900px 520px at 92% -10%, rgba(130,80,223,0.06), transparent 60%), #f6f8fa; color: #1f2328; line-height: 1.5; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: radial-gradient(1400px 750px at 20% -10%, rgba(130,80,223,0.15), transparent 65%), radial-gradient(1200px 600px at 120% 0%, rgba(9,105,218,0.12), transparent 60%), var(--bg-surface); color: #1f2328; line-height: 1.5; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; min-height: 100vh; position: relative; }
+body::before { content: ""; position: fixed; inset: 0; background-image: radial-gradient(circle at 25% 25%, rgba(130,80,223,0.08), transparent 45%), radial-gradient(circle at 75% 0%, rgba(9,105,218,0.08), transparent 50%), linear-gradient(120deg, rgba(255,255,255,0.15) 0.5px, transparent 0.5px); background-size: 600px 600px, 600px 600px, 60px 60px; opacity: 0.45; pointer-events: none; z-index: -1; filter: blur(0.3px); }
 button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid #0969da; outline-offset: 2px; border-radius: 4px; }
 
 /* ── Header ── */
-.header { position: sticky; top: 0; z-index: 1000; background: linear-gradient(135deg, rgba(9,105,218,0.15), rgba(130,80,223,0.12)), #0b1220; color: #fff; padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid rgba(255,255,255,0.10); box-shadow: 0 12px 30px rgba(0,0,0,0.18); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); overflow: hidden; isolation: isolate; }
-.header::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(700px 200px at 18% 0%, rgba(88,166,255,0.35), transparent 60%), radial-gradient(560px 200px at 82% -10%, rgba(163,113,247,0.28), transparent 62%); opacity: 0.7; }
+.header { position: sticky; top: 0; z-index: 1000; background: linear-gradient(135deg, rgba(13,20,40,0.95), rgba(13,20,30,0.88)); color: #fff; padding: 1.75rem 2.25rem; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 1.25rem; border-bottom: 1px solid rgba(255,255,255,0.08); box-shadow: 0 25px 65px rgba(3,7,18,0.45); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); overflow: hidden; isolation: isolate; border-radius: 0 0 18px 18px; }
+.header::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(720px 320px at 12% 5%, rgba(88,166,255,0.35), transparent 60%), radial-gradient(640px 260px at 88% -15%, rgba(163,113,247,0.28), transparent 70%); opacity: 0.85; }
 .header > * { position: relative; }
-.header h1 { font-size: 1.5rem; font-weight: 750; letter-spacing: -0.02em; display: flex; align-items: center; gap: 0.75rem; color: #fff; }
-.header .meta { font-size: 0.85rem; font-weight: 500; color: rgba(255,255,255,0.72); display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+.hero-left { display: flex; flex-direction: column; gap: 0.55rem; max-width: 640px; }
+.hero-eyebrow { font-size: 0.8rem; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(255,255,255,0.65); font-weight: 600; }
+.header h1 { font-size: clamp(1.6rem, 2.3vw, 2.2rem); font-weight: 750; letter-spacing: -0.02em; display: flex; align-items: center; gap: 0.75rem; color: #fff; }
+.hero-subtitle { font-size: 0.95rem; color: rgba(255,255,255,0.78); max-width: 520px; line-height: 1.6; }
+.hero-pulse { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.35rem; }
+.pulse-pill { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; padding: 0.35rem 0.75rem; border-radius: 999px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08); text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.8); animation: pulseGlow 6s ease-in-out infinite; }
+.pulse-pill.success { border-color: rgba(34,197,94,0.45); background: rgba(34,197,94,0.15); color: #bbf7d0; }
+.pulse-pill.warning { border-color: rgba(245,158,11,0.45); background: rgba(245,158,11,0.15); color: #fcd34d; }
+.pulse-pill.neutral { border-color: rgba(255,255,255,0.25); }
+.header .meta { font-size: 0.85rem; font-weight: 500; color: rgba(255,255,255,0.78); display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; justify-content: flex-end; text-align: right; }
 .header .meta a { color: rgba(255,255,255,0.90); text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.22); }
 .header .meta a:hover { border-bottom-color: rgba(255,255,255,0.55); }
 
@@ -26,15 +49,63 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .container { max-width: 1440px; margin: 0 auto; padding: 1.5rem; }
 
 /* ── Summary Cards ── */
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-.card { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 12px; padding: 1.5rem; transition: all 0.2s ease-out; box-shadow: 0 2px 4px rgba(0,0,0,0.02); text-align: left; position: relative; overflow: hidden; }
-.card:hover { transform: translateY(-2px); box-shadow: 0 8px 16px rgba(0,0,0,0.06); border-color: rgba(0,0,0,0.08); }
-.card .emoji { font-size: 1.5rem; margin-bottom: 0.75rem; display: block; filter: grayscale(0.2); }
-.card .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #888; margin-bottom: 0.25rem; font-weight: 600; }
-.card .value { font-size: 2.25rem; font-weight: 700; color: #111; letter-spacing: -0.03em; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
+.card { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 18px; padding: 1.75rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 20px 45px rgba(15,23,42,0.08); text-align: left; position: relative; overflow: hidden; }
+.card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; border: 1px solid rgba(255,255,255,0.5); opacity: 0; pointer-events: none; }
+.card:hover { transform: translateY(-6px) scale(1.01); box-shadow: 0 35px 65px rgba(15,23,42,0.15); }
+.card:hover::after { opacity: 0.35; }
+.card .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-soft); margin-bottom: 0.35rem; font-weight: 600; }
+.card .value { font-size: 2.65rem; font-weight: 700; color: #0f172a; letter-spacing: -0.03em; line-height: 1.1; font-variant-numeric: tabular-nums; margin-bottom: 0.4rem; display: flex; align-items: baseline; gap: 0.3rem; }
+.card .value-number { display: inline-block; min-width: 0; }
+.card .value sup { font-size: 1.1rem; margin-left: 0.15rem; color: var(--text-soft); font-weight: 600; }
+.card .delta { font-size: 0.82rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.6rem; border-radius: 999px; }
+.delta.positive { background: rgba(34,197,94,0.1); color: #15803d; }
+.delta.negative { background: rgba(248,113,113,0.15); color: #b91c1c; }
+.card .card-subtext { font-size: 0.9rem; color: #4b5563; margin-bottom: 0.85rem; }
+.micro-progress { width: 100%; height: 6px; border-radius: 999px; background: rgba(15,23,42,0.08); overflow: hidden; position: relative; }
+.micro-progress span { position: absolute; inset: 0; border-radius: 999px; background: linear-gradient(90deg, var(--accent), #57a6ff); transform-origin: left; transition: transform 0.4s ease-out; }
+.micro-progress[data-color="warning"] span { background: linear-gradient(90deg, #f97316, #facc15); }
+.micro-progress[data-color="danger"] span { background: linear-gradient(90deg, #f87171, #f43f5e); }
+.card.emerald { background: linear-gradient(135deg, #f0fdf4, #e0f2fe); }
 .dark .card { background: #161b22; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-.dark .card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.4); border-color: rgba(255,255,255,0.15); }
-.dark .card .value { color: #fff; }
+.dark .card .value { color: #f8fafc; }
+.dark .card .card-subtext { color: #cbd5f5; }
+
+/* ── Insight Panels ── */
+.insights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
+.insight-card { background: var(--bg-card); border: 1px solid rgba(15,23,42,0.08); border-radius: 18px; padding: 1.5rem; box-shadow: 0 18px 45px rgba(15,23,42,0.09); position: relative; overflow: hidden; transition: transform .3s ease, box-shadow .3s ease; }
+.insight-card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: radial-gradient(circle at top right, rgba(130,80,223,0.18), transparent 60%); opacity: 0; transition: opacity .3s ease; }
+.insight-card:hover { transform: translateY(-5px); box-shadow: 0 25px 55px rgba(15,23,42,0.18); }
+.insight-card:hover::after { opacity: 1; }
+.insight-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.insight-header .eyebrow { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-soft); font-weight: 600; }
+.mini-pill { font-size: 0.72rem; padding: 0.2rem 0.6rem; border-radius: 999px; border: 1px solid rgba(15,23,42,0.15); text-transform: uppercase; letter-spacing: 0.1em; }
+.mini-pill.live { border-color: rgba(34,197,94,0.4); color: #15803d; background: rgba(34,197,94,0.12); animation: pulseGlow 3s ease-in-out infinite; }
+.mini-link { font-size: 0.8rem; border: none; background: none; color: #2563eb; font-weight: 600; cursor: pointer; padding: 0; }
+.mini-link:hover { text-decoration: underline; }
+.insight-body { display: flex; gap: 1.25rem; flex-wrap: wrap; align-items: center; }
+.radial-progress { --size: 120px; --progress: 0deg; width: var(--size); height: var(--size); border-radius: 50%; background: conic-gradient(var(--accent) var(--progress), rgba(15,23,42,0.08) 0); display: grid; place-items: center; position: relative; }
+.radial-progress::after { content: ""; position: absolute; inset: 12px; background: var(--bg-card); border-radius: 50%; box-shadow: inset 0 0 15px rgba(15,23,42,0.12); }
+.radial-progress strong { position: relative; font-size: 1.8rem; font-weight: 700; color: #0f172a; }
+.radial-progress span { position: relative; font-size: 0.75rem; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.15em; }
+.stat-list { flex: 1; display: flex; flex-direction: column; gap: 0.65rem; }
+.stat-row { display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem; color: #475569; }
+.stat-row strong { font-size: 1.25rem; color: #0f172a; font-variant-numeric: tabular-nums; }
+.risk-list { display: flex; flex-direction: column; gap: 0.85rem; }
+.risk-row { display: flex; justify-content: space-between; gap: 1rem; }
+.risk-row p { font-weight: 600; color: #0f172a; }
+.risk-row small { display: block; color: var(--text-soft); margin-top: 0.2rem; }
+.risk-value { font-weight: 700; color: #b91c1c; }
+.team-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+.team-pill { padding: 0.5rem 0.9rem; border-radius: 12px; border: 1px solid rgba(15,23,42,0.08); background: rgba(15,23,42,0.03); font-size: 0.85rem; display: inline-flex; flex-direction: column; gap: 0.15rem; min-width: 140px; }
+.team-pill strong { font-size: 1.1rem; color: #0f172a; }
+.insight-note { font-size: 0.82rem; color: var(--text-soft); }
+.dark .insight-card { background: #111827; border-color: rgba(255,255,255,0.06); box-shadow: 0 18px 45px rgba(0,0,0,0.5); }
+.dark .insight-card::after { background: radial-gradient(circle at top right, rgba(130,80,223,0.4), transparent 65%); }
+.dark .radial-progress::after { background: #0b1220; box-shadow: inset 0 0 15px rgba(0,0,0,0.45); }
+.dark .radial-progress strong { color: #f8fafc; }
+.dark .stat-row strong, .dark .risk-row p, .dark .team-pill strong { color: #f8fafc; }
+.dark .team-pill { border-color: rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); color: #cbd5f5; }
 
 /* ── Section ── */
 .section { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 12px; padding: 2rem; margin-bottom: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
@@ -58,6 +129,8 @@ th:hover { background: #f0f0f0; color: #000; }
 tr:last-child td { border-bottom: none; }
 tbody tr:nth-child(even):not(.total-row) { background: rgba(248,250,252,0.85); }
 tr:hover td { background: rgba(241,245,255,0.85); }
+.table-wrap { border: 1px solid rgba(15,23,42,0.08); border-radius: 18px; overflow: hidden; background: #fff; box-shadow: 0 30px 60px rgba(15,23,42,0.08); }
+.dark .table-wrap { background: #0f172a; border-color: #30363d; box-shadow: 0 30px 60px rgba(0,0,0,0.65); }
 .dark th { background: #161b22; color: #aaa; border-bottom-color: #30363d; }
 .dark td { border-bottom-color: #30363d; color: #d0d7de; }
 .dark tbody tr:nth-child(even):not(.total-row) { background: rgba(255,255,255,0.02); }
@@ -149,10 +222,23 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: #24292f; color: #fff; padding: 0.75rem 1.25rem; border-radius: 8px; font-size: 0.85rem; font-weight: 500; z-index: 9999; opacity: 0; transform: translateY(10px); transition: all .3s; pointer-events: none; }
 .toast.show { opacity: 1; transform: translateY(0); }
 
+/* ── Micro Animations ── */
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 0 0 rgba(130,80,223,0.35); }
+  60% { box-shadow: 0 0 0 12px rgba(130,80,223,0); }
+  100% { box-shadow: 0 0 0 0 rgba(130,80,223,0); }
+}
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
 /* ── Responsive ── */
 @media (max-width: 900px) {
   .container { padding: 1rem; }
   .cards { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .header { padding: 1.5rem; }
+  .insight-body { flex-direction: column; }
 }
 
 /* ── Dark Mode Toggle ── */
@@ -163,6 +249,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 @media (prefers-color-scheme: dark) { :root:not(.light) { color-scheme: dark; } }
 .dark { color-scheme: dark; }
 .dark body, :root:not(.light) body { background: radial-gradient(1200px 650px at 18% -10%, rgba(56,139,253,0.12), transparent 62%), radial-gradient(950px 520px at 88% -5%, rgba(163,113,247,0.10), transparent 64%), #0b0f17; color: #e6edf3; }
+.dark body::before, :root:not(.light) body::before { opacity: 0.3; filter: blur(0.5px); }
 @media (prefers-color-scheme: dark) {
   :root:not(.light) body { background: radial-gradient(1200px 650px at 18% -10%, rgba(56,139,253,0.12), transparent 62%), radial-gradient(950px 520px at 88% -5%, rgba(163,113,247,0.10), transparent 64%), #0b0f17; color: #e6edf3; }
   :root:not(.light) .header { background: #161b22; }
@@ -281,7 +368,14 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 <body>
 
 <div class="header">
-  <h1>🤖 Task Tracker — Find Busywork, Automate It Away</h1>
+  <div class="hero-left">
+    <p class="hero-eyebrow">Codex Automation Command</p>
+    <h1>⚡ Codex Control Room — Find Busywork, Automate It Away</h1>
+    <p class="hero-subtitle">A premium telemetry dashboard for ruthless prioritization. Track toil load, spotlight automation wins, and broadcast where Codex should strike next.</p>
+    <div class="hero-pulse" id="heroPulse">
+      <span class="pulse-pill neutral">⏱️ Calibrating telemetry…</span>
+    </div>
+  </div>
   <div class="meta">
     <span id="headerRepo"></span>
     <span>Generated: <span id="headerDate">—</span></span>
@@ -298,6 +392,13 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 
   <!-- Summary Cards -->
   <div class="cards" id="summaryCards"></div>
+
+  <!-- Insights Grid -->
+  <div class="insights-grid" id="insightsGrid">
+    <article class="insight-card" id="pipelineCard"></article>
+    <article class="insight-card" id="riskCard"></article>
+    <article class="insight-card" id="teamFocusCard"></article>
+  </div>
 
   <!-- Main Toil Ideas Table (MOVED UP) -->
   <div class="section">
@@ -811,6 +912,13 @@ function formatWeeklyTime(mins) {
   return `${Math.round(mins)} min/wk`;
 }
 
+function formatCurrencyShort(value) {
+  if (!isFinite(value) || value <= 0) return '$0';
+  if (value >= 1_000_000) return `$${(value / 1_000_000).toFixed(1)}M`;
+  if (value >= 1_000) return `$${(value / 1_000).toFixed(0)}K`;
+  return `$${Math.round(value)}`;
+}
+
 // ═══════════════════════════════════════════════════
 // RENDER
 // ═══════════════════════════════════════════════════
@@ -833,6 +941,10 @@ function render() {
 
   // Summary cards
   renderSummaryCards(issues);
+
+  // Hero + insight telemetry
+  renderHeroPulse(issues);
+  renderInsightPanels(issues);
 
   // Executive summary for leadership
   renderExecSummary();
@@ -871,18 +983,212 @@ function fillSelect(id, options) {
 
 // ── Summary Cards ──
 function renderSummaryCards(issues) {
-  const total = issues.length;
-  const automated = issues.filter(i => getStatus(i) === 'automated').length;
+  const total = issues.length || 0;
+  const statusCounts = issues.reduce((acc, issue) => {
+    const status = getStatus(issue);
+    acc[status] = (acc[status] || 0) + 1;
+    return acc;
+  }, {});
+  const automated = statusCounts['automated'] || 0;
+  const inProgress = statusCounts['in-progress'] || 0;
+  const backlog = statusCounts['toil'] || 0;
   const totalMinsSaved = issues.reduce((s, i) => s + (i.monthly_saved_minutes || 0), 0);
-  const hoursSaved = (totalMinsSaved / 60).toFixed(1);
-  const rate = total > 0 ? ((automated / total) * 100).toFixed(0) : 0;
-  const inProgress = issues.filter(i => getStatus(i) === 'in-progress').length;
-  const highImpact = issues.filter(i => i.toil_score >= 40 && getStatus(i) !== 'automated').length;
+  const hoursSaved = totalMinsSaved / 60;
+  const automationRate = total ? Math.round((automated / total) * 100) : 0;
+  const riskIssues = issues.filter(i => getStatus(i) !== 'automated' && i.toil_score >= 40);
+  const riskMins = riskIssues.reduce((s, i) => s + (i.monthly_saved_minutes || 0), 0);
+  const riskHours = riskMins / 60;
+  const avgHoursPerIdea = total ? (hoursSaved / total) : 0;
+  const weeklyBurn = issues.reduce((s, i) => s + (i.team_weekly_time_spent || 0), 0) / 60;
+  const fteRecovered = hoursSaved / 160;
+  const targetRate = 55;
+  const rateDelta = automationRate - targetRate;
+  const deltaClass = rateDelta >= 0 ? 'positive' : 'negative';
+  const deltaLabel = `${rateDelta >= 0 ? '+' : ''}${rateDelta.toFixed(0)} pts vs target`;
+  const mitigationRate = hoursSaved + riskHours > 0 ? Math.round((hoursSaved / (hoursSaved + riskHours)) * 100) : 0;
+  const riskShare = total ? Math.round((riskIssues.length / total) * 100) : 0;
+  const backlogShare = total ? Math.round((backlog / total) * 100) : 0;
 
   document.getElementById('summaryCards').innerHTML = `
-    <div class="card"><div class="emoji">💡</div><div class="label">Ideas Submitted</div><div class="value">${total}</div></div>
-    <div class="card"><div class="emoji">🤖</div><div class="label">Automated</div><div class="value green">${automated}</div></div>
-    <div class="card"><div class="emoji">⏱️</div><div class="label">Hours Saved / Month</div><div class="value green">${hoursSaved}</div></div>
+    <article class="card">
+      <div class="label">Automation Velocity</div>
+      <div class="value"><span class="value-number" data-animate="${automationRate}" data-format="percent">${automationRate}%</span></div>
+      <div class="delta ${deltaClass}">${deltaLabel}</div>
+      <p class="card-subtext">${automated} of ${total} toil signals retired</p>
+      <div class="micro-progress"><span style="width:${Math.min(automationRate, 100)}%"></span></div>
+    </article>
+    <article class="card emerald">
+      <div class="label">Hours Saved / Month</div>
+      <div class="value"><span class="value-number" data-animate="${hoursSaved}" data-format="hours">${hoursSaved.toFixed(1)}</span><sup>hrs</sup></div>
+      <p class="card-subtext">≈ ${fteRecovered.toFixed(1)} FTEs given back</p>
+      <div class="micro-progress" data-color="success"><span style="width:${Math.min(mitigationRate, 100)}%"></span></div>
+    </article>
+    <article class="card">
+      <div class="label">Critical Hotspots</div>
+      <div class="value"><span class="value-number" data-animate="${riskIssues.length}" data-format="number">${riskIssues.length}</span></div>
+      <p class="card-subtext">${riskShare}% of backlog is 🔴 critical</p>
+      <div class="micro-progress" data-color="danger"><span style="width:${Math.min(riskShare, 100)}%"></span></div>
+    </article>
+    <article class="card">
+      <div class="label">Avg Payoff / Idea</div>
+      <div class="value"><span class="value-number" data-animate="${avgHoursPerIdea}" data-format="hours">${avgHoursPerIdea.toFixed(1)}</span><sup>hrs</sup></div>
+      <p class="card-subtext">Teams burn ${weeklyBurn.toFixed(1)} hrs/week on toil</p>
+      <div class="micro-progress" data-color="warning"><span style="width:${Math.min(backlogShare, 100)}%"></span></div>
+    </article>
+  `;
+  animateSummaryNumbers();
+}
+
+function animateSummaryNumbers() {
+  requestAnimationFrame(() => {
+    document.querySelectorAll('#summaryCards [data-animate]').forEach(el => {
+      const target = parseFloat(el.dataset.animate) || 0;
+      const format = el.dataset.format || 'number';
+      animateValue(el, target, format);
+    });
+  });
+}
+
+function animateValue(el, target, format) {
+  const duration = 900;
+  const start = 0;
+  const startTime = performance.now();
+  function frame(now) {
+    const progress = Math.min((now - startTime) / duration, 1);
+    const eased = easeOutCubic(progress);
+    const current = start + (target - start) * eased;
+    el.textContent = formatAnimatedValue(current, format);
+    if (progress < 1) requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+function formatAnimatedValue(value, format) {
+  if (format === 'percent') return `${Math.round(value)}%`;
+  if (format === 'hours') return `${value.toFixed(1)}`;
+  return `${Math.round(value)}`;
+}
+
+function easeOutCubic(t) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+function renderHeroPulse(issues) {
+  const heroPulse = document.getElementById('heroPulse');
+  if (!heroPulse) return;
+  const total = issues.length || 0;
+  const automated = issues.filter(i => getStatus(i) === 'automated').length;
+  const automationRate = total ? Math.round((automated / total) * 100) : 0;
+  const highImpact = issues.filter(i => i.toil_score >= 40 && getStatus(i) !== 'automated').length;
+  const backlog = issues.filter(i => getStatus(i) === 'toil').length;
+  heroPulse.innerHTML = `
+    <span class="pulse-pill success">⚡ ${automationRate}% automated</span>
+    <span class="pulse-pill warning">🔥 ${highImpact} critical</span>
+    <span class="pulse-pill neutral">📦 ${total} signals (${backlog} backlog)</span>
+  `;
+}
+
+function renderInsightPanels(issues) {
+  renderPipelineCard(issues);
+  renderRiskCard(issues);
+  renderTeamFocusCard(issues);
+}
+
+function renderPipelineCard(issues) {
+  const card = document.getElementById('pipelineCard');
+  if (!card) return;
+  const total = issues.length || 0;
+  const counts = { backlog: 0, triage: 0, building: 0, shipped: 0 };
+  issues.forEach(issue => {
+    const status = getStatus(issue);
+    if (status === 'automated') counts.shipped++;
+    else if (status === 'in-progress') counts.building++;
+    else if (status === 'triage') counts.triage++;
+    else counts.backlog++;
+  });
+  const automationRate = total ? Math.round((counts.shipped / total) * 100) : 0;
+  card.innerHTML = `
+    <div class="insight-header">
+      <span class="eyebrow">Pipeline Momentum</span>
+      <span class="mini-pill live">Live</span>
+    </div>
+    <div class="insight-body">
+      <div class="radial-progress"><strong>${automationRate}%</strong><span>Automated</span></div>
+      <div class="stat-list">
+        <div class="stat-row"><span>Automated</span><strong>${counts.shipped}</strong></div>
+        <div class="stat-row"><span>Building</span><strong>${counts.building}</strong></div>
+        <div class="stat-row"><span>Triage</span><strong>${counts.triage}</strong></div>
+        <div class="stat-row"><span>Backlog</span><strong>${counts.backlog}</strong></div>
+      </div>
+    </div>
+  `;
+  const gauge = card.querySelector('.radial-progress');
+  if (gauge) {
+    gauge.style.setProperty('--progress', `${automationRate * 3.6}deg`);
+  }
+}
+
+function renderRiskCard(issues) {
+  const card = document.getElementById('riskCard');
+  if (!card) return;
+  const openIssues = issues.filter(i => getStatus(i) !== 'automated');
+  const ranked = openIssues.sort((a, b) => (b.monthly_saved_minutes || 0) - (a.monthly_saved_minutes || 0)).slice(0, 3);
+  const maxMinutes = ranked[0]?.monthly_saved_minutes || 0;
+  const annualCost = ranked.reduce((sum, issue) => sum + ((issue.monthly_saved_minutes || 0) / 60) * 12 * 85, 0);
+  card.innerHTML = `
+    <div class="insight-header">
+      <span class="eyebrow">Risk Watchlist</span>
+      <span class="mini-pill">Top 3</span>
+    </div>
+    <div class="risk-list">
+      ${ranked.map((issue, idx) => {
+        const title = (issue.title || '').replace(/^\[TOIL\]\s*/i, '').split(' — ')[0] || `#${issue.number}`;
+        const minutes = issue.monthly_saved_minutes || 0;
+        const percent = maxMinutes ? Math.min(100, (minutes / maxMinutes) * 100) : 0;
+        return `<div>
+          <div class="risk-row">
+            <div>
+              <p>${idx + 1}. ${esc(title)}</p>
+              <small>${esc(issue.team || 'Unknown team')} • ${issue.priority || '—'} • ${formatMinutes(minutes)} / mo</small>
+            </div>
+            <span class="risk-value">${issue.toil_score}</span>
+          </div>
+          <div class="micro-progress" data-color="danger"><span style="width:${percent}%"></span></div>
+        </div>`;
+      }).join('')}
+    </div>
+    <p class="insight-note">Inaction tax: ${formatCurrencyShort(annualCost)} annually if these stay unfixed.</p>
+  `;
+}
+
+function renderTeamFocusCard(issues) {
+  const card = document.getElementById('teamFocusCard');
+  if (!card) return;
+  const teamMap = {};
+  issues.forEach(issue => {
+    const team = issue.team || 'Unknown';
+    if (!teamMap[team]) teamMap[team] = { weekly: 0, saved: 0, active: 0 };
+    teamMap[team].weekly += (issue.team_weekly_time_spent || 0);
+    teamMap[team].saved += (issue.monthly_saved_minutes || 0);
+    if (getStatus(issue) !== 'automated') teamMap[team].active++;
+  });
+  const teams = Object.entries(teamMap).sort((a, b) => (b[1].weekly || 0) - (a[1].weekly || 0)).slice(0, 3);
+  const focusTeam = teams[0];
+  card.innerHTML = `
+    <div class="insight-header">
+      <span class="eyebrow">Focus Radar</span>
+      <button class="mini-link" type="button" onclick="document.getElementById('breakdownSection').scrollIntoView({ behavior: 'smooth' });">Jump to leaderboard →</button>
+    </div>
+    <div class="team-pills">
+      ${teams.map(([team, data]) => `
+        <div class="team-pill">
+          <span>${esc(team)}</span>
+          <strong>${formatWeeklyTime(data.weekly)}</strong>
+          <small>${data.active} active toils • ${formatMinutes(data.saved)}</small>
+        </div>
+      `).join('')}
+    </div>
+    <p class="insight-note">${focusTeam ? `${esc(focusTeam[0])} is burning ${formatWeeklyTime(focusTeam[1].weekly)} each week — prime target for Codex automation.` : 'Log a few toils to see team focus insights.'}</p>
   `;
 }
 
@@ -913,7 +1219,6 @@ function renderExecSummary() {
   // 2. Annualized Cost Savings
   const annualSavings = totalMonthlySavedHrs * 12 * hourlyRate;
   const annualCost = totalMonthlyToilHrs * 12 * hourlyRate;
-  const fmtMoney = (v) => v >= 1000000 ? `$${(v/1000000).toFixed(1)}M` : v >= 1000 ? `$${(v/1000).toFixed(0)}K` : `$${v.toFixed(0)}`;
 
   // 3. Sprint Capacity Lost
   const sprintCapacityHrs = totalEngineers * 40 * 0.8; // 80% productive hours
@@ -954,7 +1259,7 @@ function renderExecSummary() {
     </div>
     <div class="exec-card">
       <div class="exec-emoji">💰</div>
-      <div class="exec-value green">${fmtMoney(annualSavings)}</div>
+        <div class="exec-value green">${formatCurrencyShort(annualSavings)}</div>
       <div class="exec-label">Annual Savings</div>
     </div>
     <div class="exec-card">
@@ -972,7 +1277,7 @@ function renderExecSummary() {
 
   document.getElementById('execInsights').innerHTML = `
     <div class="exec-insight">🏆 <strong>Top Win:</strong> "${topWinName}" saves ${topWin ? (topWin.monthly_saved_minutes / 60).toFixed(0) : 0} hrs/month</div>
-    <div class="exec-insight">⚠️ <strong>Biggest Risk:</strong> "${topRiskName}" costs ${topRisk ? fmtMoney((topRisk.monthly_saved_minutes || 0) / 60 * 12 * hourlyRate) : '$0'}/year if unfixed</div>
+     <div class="exec-insight">⚠️ <strong>Biggest Risk:</strong> "${topRiskName}" costs ${topRisk ? formatCurrencyShort((topRisk.monthly_saved_minutes || 0) / 60 * 12 * hourlyRate) : '$0'}/year if unfixed</div>
   `;
 }
 
