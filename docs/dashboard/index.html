@@ -251,7 +251,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 <body>
 
 <div class="header">
-  <h1>🤖 Toil Tracker — Find Busywork, Automate It Away</h1>
+  <h1>🤖 Task Tracker — Find Busywork, Automate It Away</h1>
   <div class="meta">
     <span id="headerRepo"></span>
     <span>Generated: <span id="headerDate">—</span></span>
@@ -271,7 +271,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 
   <!-- Main Toil Ideas Table (MOVED UP) -->
   <div class="section">
-    <h2>🗂️ Toil Hit List</h2>
+    <h2>🗂️ What Should We Automate?</h2>
     <div class="filters">
       <label>Team:</label>
       <select id="filterTeam"><option value="">All</option></select>
@@ -284,9 +284,9 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
         <option value="team_weekly_time_spent">👥 Team Time Spent/Week</option>
         <option value="weekly_time_spent">⏱️ Your Time Spent/Week</option>
         <option value="monthly_saved_minutes">⏱️ Potential Time Saved / Month</option>
-        <option value="toil_score">🎯 Pain Score</option>
+        <option value="toil_score">🎯 Impact Score</option>
       </select>
-      <button class="show-cols-toggle" id="toggleCols" onclick="toggleColumns()">+ Show all columns</button>
+      <button class="show-cols-toggle" id="toggleCols" onclick="toggleColumns()">+ Show all details</button>
     </div>
     <div class="table-wrap">
       <table id="toilTable">
@@ -303,8 +303,8 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
             <th data-col="people_affected">👥 People</th>
             <th data-col="weekly_time_spent" class="col-hidden">⏱️ You/Week</th>
             <th data-col="team_weekly_time_spent" class="col-hidden">👥 Team/Week</th>
-            <th data-col="toil_score">🎯 Pain Score</th>
-            <th data-col="bonus_factors" class="col-hidden">🌶️ Spice Factor</th>
+            <th data-col="toil_score">🎯 Impact Score</th>
+            <th data-col="bonus_factors" class="col-hidden">⚠️ Risk Factors</th>
             <th data-col="status">📍 Status</th>
             <th data-col="monthly_saved_minutes">⏱️ Time Saved / Month</th>
           </tr>
@@ -923,7 +923,7 @@ function renderExecSummary() {
     <div class="exec-card">
       <div class="exec-emoji">👤</div>
       <div class="exec-value red">${fteBurned}</div>
-      <div class="exec-label">FTEs Burned on Toil</div>
+      <div class="exec-label">Full-Time People Lost to Busywork</div>
     </div>
     <div class="exec-card">
       <div class="exec-emoji">🤖</div>
@@ -938,7 +938,7 @@ function renderExecSummary() {
     <div class="exec-card">
       <div class="exec-emoji">🔥</div>
       <div class="exec-value red">${capacityLost}%</div>
-      <div class="exec-label">Sprint Capacity Lost</div>
+      <div class="exec-label">% of Work Week Lost to Busywork</div>
     </div>
     <div class="exec-card">
       <div class="exec-emoji">📈</div>
@@ -953,7 +953,7 @@ function renderExecSummary() {
     <div class="exec-card">
       <div class="exec-emoji">⚠️</div>
       <div class="exec-value red">${fmtMoney(inactionCost)}</div>
-      <div class="exec-label">12-mo Inaction Risk</div>
+      <div class="exec-label">Cost if We Do Nothing (1 Year)</div>
     </div>
   `;
 
@@ -1249,14 +1249,14 @@ document.getElementById('filterSort').addEventListener('change', function() {
 function copyLaunchCmd(btn, issueNum) {
   const cmd = btn.getAttribute('data-cmd');
   navigator.clipboard.writeText(cmd).then(() => {
-    showToast('🚀 Command copied! Paste in your terminal and let Copilot cook 🧑‍🍳');
+    showToast('✅ Copied! Paste into your command line — Copilot will suggest how to automate it.');
   }).catch(() => {
     // Fallback
     const ta = document.createElement('textarea');
     ta.value = cmd; document.body.appendChild(ta);
     ta.select(); document.execCommand('copy');
     document.body.removeChild(ta);
-    showToast('🚀 Command copied! Paste in your terminal and let Copilot cook 🧑‍🍳');
+    showToast('✅ Copied! Paste into your command line — Copilot will suggest how to automate it.');
   });
 }
 

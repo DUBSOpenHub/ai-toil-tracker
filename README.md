@@ -2,7 +2,7 @@
 
 **Stop doing repetitive work. Start automating it.**
 
-Every team has toil - the manual, repetitive tasks that eat up time and could be handled by an agent or script. This repo gives your team a simple, ready-to-use system to surface that toil, track it, and eliminate it.
+Every team has busywork - the manual, repetitive tasks that eat up time and could be handled by an agent or script. This tool gives your team a simple way to track it and fix it.
 
 > 💡 **This is for any team.** Fork it, set up a weekly Slack or Teams reminder, and start collecting ideas in under 10 minutes. No code required.
 
@@ -12,12 +12,10 @@ This isn't just a tracker - AI is built into the workflow:
 
 | What happens | How AI does it |
 |-------------|---------------|
-| Someone submits a toil idea | A **GitHub Actions workflow** fires automatically |
-| The idea needs to be scored | AI **parses the form fields** and calculates the toil score (frequency x time x people) |
-| The idea needs labels | AI **applies the right frequency label** (🔴🟠🟡🔵⚪) and flags high-impact items |
-| The team needs to know what to automate | AI **estimates monthly time saved** and ranks by ROI |
-| Nobody knows how to automate it | AI **suggests a specific automation approach** (GitHub Action, script, agent, etc.) using GitHub Models |
-| The idea sits untriaged | AI **removes the triage label** - no manual triage needed |
+| Someone submits an idea | A **workflow** runs automatically |
+| The idea needs a score | AI **reads the form** and calculates the impact (frequency x time x people) |
+| The idea needs labels | AI **adds a label** (🔴🟠🟡🔵⚪) based on how often it happens |
+| The team needs a plan | AI **estimates time saved** and suggests how to automate it |
 
 **The human role:** Describe the pain. The AI handles the rest.
 
@@ -49,7 +47,7 @@ You click the Slack or Teams link
                         ├─ 3. Applies the frequency label (🔴🟠🟡🔵⚪)
                         ├─ 4. Flags it as high-impact if score is 20+
                         ├─ 5. Estimates how much team time this wastes per month
-                        ├─ 6. Calls GitHub Models API to suggest how to automate it
+                        ├─ 6. Uses GitHub's AI to suggest how to automate it
                         ├─ 7. Posts a triage comment with the full breakdown
                         └─ 8. Removes the "triage" label (done - no human needed)
 ```
@@ -74,11 +72,11 @@ The whole process takes about 30 seconds. No one needs to triage, score, or labe
 
 ## 🍴 Get Started (Any Team)
 
-1. **[Fork this repo](../../fork)** - you get everything: issue templates, labels, workflows, scoring guides, and docs
-2. **Enable GitHub Actions** - go to the **Actions** tab in your fork and click **"I understand my workflows, go ahead and enable them"**
-3. **Update two URLs** - in the [Slack Setup](#slack-setup) or [Teams Setup](#microsoft-teams-setup) section, replace `<YOUR_ORG>/<YOUR_REPO>` with your fork's path. Also update the channel link in `.github/ISSUE_TEMPLATE/config.yml`
-4. **Create a recurring reminder** - follow the [Slack setup](#slack-setup) or [Teams setup](#microsoft-teams-setup) to ping your team every Friday
-5. **Start collecting ideas** - your team clicks the link, fills out a 2-minute form, done
+1. **Copy this project** - Click "Fork" (top right) to get your own copy with all the tools included
+2. **Turn on the automation** — Go to the **Actions** tab and click the green **"Enable workflows"** button (GitHub shows a confirmation — it's safe to proceed)
+3. **Update the links** - In the [Slack Setup](#slack-setup) or [Teams Setup](#microsoft-teams-setup) section, replace `<YOUR_ORG>/<YOUR_REPO>` with your new link.
+4. **Set a reminder** - Follow the [Slack setup](#slack-setup) or [Teams setup](#microsoft-teams-setup) to ping your team every Friday
+5. **Start collecting ideas** - Your team clicks the link, fills out a 2-minute form, done
 
 That's it. Your team now has a living backlog of automation opportunities.
 
@@ -101,14 +99,14 @@ All toil ideas and automation proposals are tracked as **GitHub Issues** in this
 
 ## 📊 Dashboard
 
-A visual, interactive dashboard lets your team and manager see all toil ideas, filter by team, edit scores, and track time savings — all in one place.
+A visual dashboard lets your team and manager see all ideas, filter by team, and track time savings — all in one place.
 
 ### What's on the Dashboard
 
 - **Summary Cards** — Total ideas, wins, hours saved/month, automation rate, in-progress, and high-impact counts
 - **Team & Individual Breakdown** — Per-person and per-team stats: ideas submitted, automated, and estimated monthly hours saved
 - **Toil Ideas Table** — Every toil idea with sortable columns, inline-editable scores, color-coded priority rows, and status badges
-- **🚀 Launch CLI Button** — One click copies a `gh copilot` command to start automating that specific toil item
+- **🚀 Automate Button** — One click copies a ready-to-run Copilot command to start automating that specific item
 - **Filters** — Filter by team, category, or status to focus on what matters
 
 ### Setting Up the Dashboard
@@ -170,9 +168,9 @@ Set up a weekly reminder in your team channel using Slack Workflow Builder:
 
 > 🤖 **Weekly Toil Check-in**
 >
-> What repetitive work are you doing that could be automated with an agent?
+> What repetitive task should a bot handle for you?
 >
-> 👉 File it here: `https://github.com/<YOUR_ORG>/<YOUR_REPO>/issues/new?template=toil-idea.yml` - takes 2 minutes.
+> 👉 Log it here: `https://github.com/<YOUR_ORG>/<YOUR_REPO>/issues/new?template=toil-idea.yml` — takes 2 minutes.
 >
 > Not sure what counts? Check out the examples in the repo's `docs/examples.md`.
 
@@ -204,9 +202,9 @@ Use **Power Automate** (built into Teams) to send a recurring reminder:
 
 > 🤖 **Weekly Toil Check-in**
 >
-> What repetitive work are you doing that could be automated with an agent?
+> What repetitive task should a bot handle for you?
 >
-> 👉 File it here: `https://github.com/<YOUR_ORG>/<YOUR_REPO>/issues/new?template=toil-idea.yml` — takes 2 minutes.
+> 👉 Log it here: `https://github.com/<YOUR_ORG>/<YOUR_REPO>/issues/new?template=toil-idea.yml` — takes 2 minutes.
 >
 > Not sure what counts? Check out the examples in the repo's `docs/examples.md`.
 
@@ -249,7 +247,7 @@ When a toil idea is submitted, an AI agent automatically:
 
 ## AI & Data Privacy
 
-This tool uses the **GitHub Models API** (`openai/gpt-4o-mini`) to generate automation suggestions for each toil idea. When a toil idea is submitted:
+This tool uses **GitHub's built-in AI** to generate automation suggestions for each idea. When someone submits an idea:
 
 - The **issue body text** (including your description of the toil) is sent to the AI model
 - The AI generates a suggested automation approach
