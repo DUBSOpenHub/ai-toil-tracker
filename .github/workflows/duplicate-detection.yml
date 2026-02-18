@@ -1,0 +1,114 @@
+name: AI Duplicate Detection - Flag similar toil issues
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+  models: read
+
+jobs:
+  detect-duplicates:
+    if: contains(github.event.issue.labels.*.name, 'toil')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch existing open toil issues
+        id: existing
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          NEW_NUM=${{ github.event.issue.number }}
+
+          # Fetch all open issues with the "toil" label, excluding the new one
+          ISSUES_JSON=$(gh issue list \
+            --repo "${{ github.repository }}" \
+            --label "toil" \
+            --state open \
+            --json number,title,body \
+            --limit 50 \
+            | jq --argjson new_num "$NEW_NUM" '[.[] | select(.number != $new_num)]')
+
+          COUNT=$(echo "$ISSUES_JSON" | jq 'length')
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+
+          # Save for next step
+          echo "$ISSUES_JSON" > /tmp/existing_issues.json
+
+      - name: Ask AI to find duplicates
+        if: steps.existing.outputs.count != '0'
+        id: ai
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          NEW_TITLE="${{ github.event.issue.title }}"
+          NEW_BODY=$(gh issue view "${{ github.event.issue.number }}" \
+            --repo "${{ github.repository }}" \
+            --json body --jq '.body')
+
+          # Build a summary of existing issues for the prompt
+          EXISTING=$(jq -r '.[] | "- #\(.number): \(.title)\n  Body: \(.body | gsub("\n"; " ") | .[0:300])\n"' /tmp/existing_issues.json)
+
+          PROMPT="You are a duplicate issue detector. A new toil issue was just created. Compare it against existing open toil issues and determine if any are similar or duplicates.
+
+          NEW ISSUE:
+          Title: ${NEW_TITLE}
+          Body: ${NEW_BODY}
+
+          EXISTING OPEN TOIL ISSUES:
+          ${EXISTING}
+
+          Instructions:
+          - Only flag issues that describe the SAME or very similar toil/problem.
+          - Do NOT flag issues that merely share a category but describe different work.
+          - If you find similar issues, respond in this exact JSON format:
+            {\"duplicates\": [{\"number\": 5, \"reason\": \"Both describe manual deployment steps for the staging environment\"}]}
+          - If there are NO similar issues, respond with exactly:
+            {\"duplicates\": []}
+          - Respond ONLY with the JSON object, no other text."
+
+          RESPONSE=$(curl -s "https://models.github.ai/inference/chat/completions" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg prompt "$PROMPT" '{
+              "model": "openai/gpt-4o-mini",
+              "messages": [{"role": "user", "content": $prompt}],
+              "max_tokens": 500,
+              "temperature": 0.2
+            }')" | jq -r '.choices[0].message.content // "{\"duplicates\": []}"')
+
+          # Extract JSON from response (handle markdown code fences)
+          CLEAN_RESPONSE=$(echo "$RESPONSE" | sed 's/^```json//;s/^```//;s/```$//' | tr -d '\n')
+
+          # Parse duplicate count
+          DUP_COUNT=$(echo "$CLEAN_RESPONSE" | jq '.duplicates | length' 2>/dev/null || echo "0")
+          echo "dup_count=$DUP_COUNT" >> "$GITHUB_OUTPUT"
+
+          echo "$CLEAN_RESPONSE" > /tmp/ai_response.json
+
+      - name: Post duplicate comment and label
+        if: steps.existing.outputs.count != '0' && steps.ai.outputs.dup_count != '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_NUM=${{ github.event.issue.number }}
+          REPO="${{ github.repository }}"
+
+          # Build the comment body from AI results
+          ISSUE_REFS=$(jq -r '.duplicates[] | "- #\(.number): \(.reason)"' /tmp/ai_response.json)
+
+          COMMENT="## 🔍 Possible Duplicate Detection
+
+          This issue may be similar to existing toil issues:
+
+          ${ISSUE_REFS}
+
+          _Please review the linked issues. If this is a duplicate, consider closing it in favor of the original. If it covers new ground, no action is needed._
+
+          ---
+          _Detected automatically by AI duplicate analysis._"
+
+          gh issue comment "$ISSUE_NUM" --repo "$REPO" --body "$COMMENT"
+
+          # Add possible-duplicate label
+          gh issue edit "$ISSUE_NUM" --repo "$REPO" --add-label "possible-duplicate"
