@@ -191,26 +191,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 /* ── Copilot Tool Toggle ── */
 
 
-/* ── Executive Summary ── */
-.exec-summary { background: linear-gradient(135deg, #000 0%, #222 100%); border-radius: 16px; padding: 2rem; margin-bottom: 2rem; color: #fff; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); position: relative; overflow: hidden; }
-.exec-summary::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); }
-.exec-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
-.exec-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 1.5rem; text-align: left; backdrop-filter: blur(10px); transition: transform 0.2s; }
-.exec-card:hover { transform: translateY(-2px); background: rgba(255,255,255,0.08); }
-.exec-card .exec-emoji { font-size: 1.75rem; margin-bottom: 1rem; display: block; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
-.exec-card .exec-value { font-size: 2.5rem; font-weight: 700; margin-bottom: 0.25rem; letter-spacing: -0.03em; line-height: 1; }
-.exec-card .exec-label { font-size: 0.75rem; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500; }
-.exec-card .exec-value.green { color: #4ade80; text-shadow: 0 0 20px rgba(74, 222, 128, 0.2); }
-.exec-card .exec-value.red { color: #f87171; text-shadow: 0 0 20px rgba(248, 113, 113, 0.2); }
-.exec-card .exec-value.blue { color: #60a5fa; text-shadow: 0 0 20px rgba(96, 165, 250, 0.2); }
-.exec-card .exec-value.purple { color: #c084fc; text-shadow: 0 0 20px rgba(192, 132, 252, 0.2); }
-.exec-insights { display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; }
-.exec-insight { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.85rem; line-height: 1.5; flex: 1 1 300px; color: rgba(255,255,255,0.8); }
-.exec-insight strong { color: #fff; font-weight: 600; }
-.exec-config { display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1.5rem; }
-.exec-config label { font-size: 0.8rem; color: rgba(255,255,255,0.6); font-weight: 500; }
-.exec-config input { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; padding: 0.4rem 0.6rem; width: 90px; font-size: 0.85rem; text-align: center; }
-.exec-config input:focus { border-color: #fff; outline: none; background: rgba(0,0,0,0.5); }
+
 
 /* ── Toast ── */
 .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: #24292f; color: #fff; padding: 0.75rem 1.25rem; border-radius: 8px; font-size: 0.85rem; font-weight: 500; z-index: 9999; opacity: 0; transform: translateY(10px); transition: all .3s; pointer-events: none; }
@@ -434,25 +415,6 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
     </div>
   </div>
 
-  <!-- Executive Summary for Leadership -->
-  <details class="section-details">
-    <summary class="details-toggle">📊 Executive Summary — Leadership Metrics</summary>
-    <div class="exec-summary" id="execSummary">
-      <details style="margin-bottom:0.75rem">
-        <summary style="font-size:0.78rem;color:#8b949e;cursor:pointer;">⚙️ Adjust assumptions</summary>
-        <div class="exec-config">
-          <label>💰 Avg hourly rate ($):</label>
-          <input type="number" id="execHourlyRate" value="85" min="1" max="500" onchange="renderExecSummary()">
-          <label>👥 Total engineers:</label>
-          <input type="number" id="execTotalEngineers" value="50" min="1" max="10000" onchange="renderExecSummary()">
-          <label>🏢 Total teams:</label>
-          <input type="number" id="execTotalTeams" value="8" min="1" max="500" onchange="renderExecSummary()">
-        </div>
-      </details>
-      <div class="exec-cards" id="execCards"></div>
-      <div class="exec-insights" id="execInsights"></div>
-    </div>
-  </details>
 
   <!-- Collapsible Details -->
   <details class="section-details">
@@ -933,9 +895,6 @@ function render() {
   renderHeroPulse(issues);
   renderInsightPanels(issues);
 
-  // Executive summary for leadership
-  renderExecSummary();
-
   // Team manager + breakdown
   renderTeamManager(issues);
   renderBreakdown(issues);
@@ -1180,93 +1139,6 @@ function renderTeamFocusCard(issues) {
 }
 
 // ── Executive Summary for Leadership ──
-function renderExecSummary() {
-  const data = dashboardData;
-  if (!data) return;
-  const issues = data.issues;
-
-  const hourlyRate = parseFloat(document.getElementById('execHourlyRate')?.value) || 85;
-  const totalEngineers = parseInt(document.getElementById('execTotalEngineers')?.value) || 50;
-  const totalTeamsOrg = parseInt(document.getElementById('execTotalTeams')?.value) || 8;
-
-  // Save config to localStorage
-  localStorage.setItem('execConfig', JSON.stringify({ hourlyRate, totalEngineers, totalTeamsOrg }));
-
-  // Core calculations
-  const totalMonthlySavedMins = issues.reduce((s, i) => s + (i.monthly_saved_minutes || 0), 0);
-  const totalMonthlySavedHrs = totalMonthlySavedMins / 60;
-  const totalWeeklyToilMins = issues.reduce((s, i) => s + (i.team_weekly_time_spent || 0), 0);
-  const totalWeeklyToilHrs = totalWeeklyToilMins / 60;
-  const totalMonthlyToilHrs = totalWeeklyToilHrs * 4.33;
-
-  // 1. FTE Equivalents (toil burns X FTEs, automation recovered Y FTEs)
-  const fteBurned = (totalMonthlyToilHrs / 160).toFixed(1);
-  const fteRecovered = (totalMonthlySavedHrs / 160).toFixed(1);
-
-  // 2. Annualized Cost Savings
-  const annualSavings = totalMonthlySavedHrs * 12 * hourlyRate;
-  const annualCost = totalMonthlyToilHrs * 12 * hourlyRate;
-
-  // 3. Sprint Capacity Lost
-  const sprintCapacityHrs = totalEngineers * 40 * 0.8; // 80% productive hours
-  const capacityLost = sprintCapacityHrs > 0 ? ((totalWeeklyToilHrs / sprintCapacityHrs) * 100).toFixed(1) : 0;
-
-  // 4. Adoption Rate
-  const activeTeams = [...new Set(issues.map(i => i.team).filter(Boolean))].length;
-  const adoptionRate = totalTeamsOrg > 0 ? ((activeTeams / totalTeamsOrg) * 100).toFixed(0) : 0;
-  const uniqueSubmitters = [...new Set(issues.map(i => i.submitter).filter(Boolean))].length;
-
-  // 5. Mean Time to Automate
-  const automated = issues.filter(i => getStatus(i) === 'automated');
-  let mtta = '—';
-  if (automated.length > 0) {
-    const daysArr = automated.map(i => {
-      const created = new Date(i.created_at);
-      const now = new Date();
-      return Math.round((now - created) / (1000 * 60 * 60 * 24));
-    });
-    mtta = Math.round(daysArr.reduce((s, d) => s + d, 0) / daysArr.length) + 'd';
-  }
-
-  // 6. Inaction Risk (cost of NOT fixing top 5 open toils over 12 months)
-  const openToils = issues.filter(i => getStatus(i) !== 'automated').sort((a, b) => (b.monthly_saved_minutes || 0) - (a.monthly_saved_minutes || 0));
-  const top5Open = openToils.slice(0, 5);
-  const inactionCost = top5Open.reduce((s, i) => {
-    const base = (i.monthly_saved_minutes || 0) / 60 * 12 * hourlyRate;
-    const hasGrowing = (i.bonus_factors || []).some(b => b.includes('Growing'));
-    return s + (hasGrowing ? base * 1.5 : base);
-  }, 0);
-
-  // Render cards
-  document.getElementById('execCards').innerHTML = `
-    <div class="exec-card">
-      <div class="exec-emoji">👤</div>
-      <div class="exec-value red">${fteBurned}</div>
-      <div class="exec-label">People Lost to Busywork</div>
-    </div>
-    <div class="exec-card">
-      <div class="exec-emoji">💰</div>
-        <div class="exec-value green">${formatCurrencyShort(annualSavings)}</div>
-      <div class="exec-label">Annual Savings</div>
-    </div>
-    <div class="exec-card">
-      <div class="exec-emoji">📈</div>
-      <div class="exec-value blue">${adoptionRate}%</div>
-      <div class="exec-label">Team Adoption</div>
-    </div>
-  `;
-
-  // Render insight bullets
-  const topRisk = top5Open[0];
-  const topRiskName = topRisk ? (topRisk.title || '').replace(/^\[TOIL\]\s*/i, '').split(' — ')[0] : 'None';
-  const topWin = automated.sort((a, b) => (b.monthly_saved_minutes || 0) - (a.monthly_saved_minutes || 0))[0];
-  const topWinName = topWin ? (topWin.title || '').replace(/^\[TOIL\]\s*/i, '').split(' — ')[0] : 'None yet';
-
-  document.getElementById('execInsights').innerHTML = `
-    <div class="exec-insight">🏆 <strong>Top Win:</strong> "${topWinName}" saves ${topWin ? (topWin.monthly_saved_minutes / 60).toFixed(0) : 0} hrs/month</div>
-     <div class="exec-insight">⚠️ <strong>Biggest Risk:</strong> "${topRiskName}" costs ${topRisk ? formatCurrencyShort((topRisk.monthly_saved_minutes || 0) / 60 * 12 * hourlyRate) : '$0'}/year if unfixed</div>
-  `;
-}
 
 // ── Team Name Management ──
 function getTeamRenames() {
@@ -1559,16 +1431,6 @@ function toggleColumns() {
 
 // ═══════════════════════════════════════════════════
 // INIT
-// ═══════════════════════════════════════════════════
-// Restore exec config from localStorage
-try {
-  const ec = JSON.parse(localStorage.getItem('execConfig'));
-  if (ec) {
-    if (ec.hourlyRate) document.getElementById('execHourlyRate').value = ec.hourlyRate;
-    if (ec.totalEngineers) document.getElementById('execTotalEngineers').value = ec.totalEngineers;
-    if (ec.totalTeamsOrg) document.getElementById('execTotalTeams').value = ec.totalTeamsOrg;
-  }
-} catch(e) {}
 loadData();
 </script>
 </body>
