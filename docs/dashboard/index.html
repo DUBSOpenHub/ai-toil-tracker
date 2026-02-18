@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Toil Tracker — Reduce Toil, Increase AI-First Thinking</title>
+<title>Toil Tracker — Find Busywork, Automate It Away</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -232,7 +232,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 <body>
 
 <div class="header">
-  <h1>🤖 Toil Tracker — Reduce Toil, Increase AI-First Thinking</h1>
+  <h1>🤖 Toil Tracker — Find Busywork, Automate It Away</h1>
   <div class="meta">
     <span id="headerRepo"></span>
     <span>Generated: <span id="headerDate">—</span></span>
@@ -244,7 +244,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 <div class="container">
   <div class="banner" id="sampleBanner" style="display:none; background:#fff8c5; border:1px solid #d4a72c; border-radius:8px; padding:0.75rem 1.25rem; margin-bottom:1rem; font-size:0.85rem; text-align:center;">
     👋 <strong>You're viewing sample data!</strong> 
-    <a href="../../issues/new?template=toil-idea.yml">Submit your first toil idea</a> to see real data here.
+    Don't suffer in silence — <a href="../../issues/new?template=toil-idea.yml">log your first toil</a> (takes 30 seconds!) to see real data here.
   </div>
 
   <!-- Summary Cards -->
@@ -260,12 +260,12 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
       <select id="filterCategory"><option value="">All</option></select>
       <label>Status:</label>
       <select id="filterStatus"><option value="">All</option></select>
-      <label>📊 Stack rank by:</label>
+      <label>📊 Sort by:</label>
       <select id="filterSort">
         <option value="team_weekly_time_spent">👥 Team Time Spent/Week</option>
         <option value="weekly_time_spent">⏱️ Your Time Spent/Week</option>
         <option value="monthly_saved_minutes">⏱️ Potential Time Saved / Month</option>
-        <option value="toil_score">🎯 Toil Score</option>
+        <option value="toil_score">🎯 Pain Score</option>
       </select>
       <button class="show-cols-toggle" id="toggleCols" onclick="toggleColumns()">+ Show all columns</button>
     </div>
@@ -284,8 +284,8 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
             <th data-col="people_affected">👥 People</th>
             <th data-col="weekly_time_spent" class="col-hidden">⏱️ You/Week</th>
             <th data-col="team_weekly_time_spent" class="col-hidden">👥 Team/Week</th>
-            <th data-col="toil_score">🎯 Score</th>
-            <th data-col="bonus_factors" class="col-hidden">⚡ Bonus</th>
+            <th data-col="toil_score">🎯 Pain Score</th>
+            <th data-col="bonus_factors" class="col-hidden">🌶️ Spice Factor</th>
             <th data-col="status">📍 Status</th>
             <th data-col="monthly_saved_minutes">⏱️ Time Saved / Month</th>
           </tr>
@@ -311,7 +311,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
               <th>⏱️ Current Weekly Hours (Team)</th>
               <th>📅 Current Monthly Hours (Team)</th>
               <th>⏱️ Potential Time Saved / Month</th>
-              <th>🔥 Toil Burn Rate</th>
+              <th>🔥 Share of Team Toil</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -323,7 +323,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
     <div class="section" id="breakdownSection">
       <h2>🏆 Team &amp; Individual Leaderboard</h2>
       <details class="team-manager">
-        <summary>✏️ Manage Team Names</summary>
+        <summary>✨ Customize Team Names</summary>
         <div class="team-manager-list" id="teamManagerList">
           <!-- Populated by JS -->
         </div>
@@ -718,7 +718,7 @@ function statusBadge(status) {
     'automated': '✅ shipped',
     'in-progress': '🔨 building',
     'triage': '🔍 triaging',
-    'toil': '💡 identified'
+    'toil': '💡 ready to fix'
   };
   return `<span class="badge badge-${status}">${badges[status] || status}</span>`;
 }
@@ -812,7 +812,7 @@ function renderSummaryCards(issues) {
   document.getElementById('summaryCards').innerHTML = `
     <div class="card"><div class="emoji">💡</div><div class="label">Total Ideas</div><div class="value">${total}</div></div>
     <div class="card"><div class="emoji">🤖</div><div class="label">Automated Wins</div><div class="value green">${automated}</div></div>
-    <div class="card"><div class="emoji">⏱️</div><div class="label">Hours Given Back / Month</div><div class="value green">${hoursSaved}</div></div>
+    <div class="card"><div class="emoji">⏱️</div><div class="label">Hours Saved / Month</div><div class="value green">${hoursSaved}</div></div>
     <div class="card"><div class="emoji">📈</div><div class="label">Automation Rate</div><div class="value purple">${rate}%</div></div>
     <div class="card"><div class="emoji">🔨</div><div class="label">In Progress</div><div class="value">${inProgress}</div></div>
     <div class="card"><div class="emoji">🔥</div><div class="label">High-Impact Open</div><div class="value orange">${highImpact}</div></div>
@@ -1103,7 +1103,7 @@ function copyLaunchCmd(btn, issueNum) {
     ta.value = cmd; document.body.appendChild(ta);
     ta.select(); document.execCommand('copy');
     document.body.removeChild(ta);
-    showToast('🚀 Command copied! Go paste it and watch the magic happen ✨');
+    showToast('🚀 Command copied! Paste in your terminal and let Copilot cook 🧑‍🍳');
   });
 }
 
