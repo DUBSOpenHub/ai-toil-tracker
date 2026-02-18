@@ -79,24 +79,25 @@ body:
     id: weekly-time-spent
     attributes:
       label: How much total time do you spend on this per week?
-      description: Your best estimate — this helps us measure real impact when it gets automated
+      description: "Optional — we'll estimate from your answers above if you skip this"
       placeholder: "e.g. 2 hours, 30 minutes, 4 hours"
     validations:
-      required: true
+      required: false
 
   - type: input
     id: team-weekly-time-spent
     attributes:
       label: How much total time does your TEAM spend on this per week?
-      description: Estimate across everyone affected — we'll use this to calculate ROI
+      description: "Optional — we'll estimate from your answers above if you skip this"
       placeholder: "e.g. 8 hours, 15 hours, 2 hours"
     validations:
-      required: true
+      required: false
 
   - type: dropdown
     id: category
     attributes:
       label: What area does this toil fall under?
+      description: "Optional — helps with dashboard filtering. Skip if unsure!"
       options:
         - 🔧 CI/CD & Builds
         - 💬 Communication & Reporting
@@ -107,13 +108,13 @@ body:
         - 📊 Data & Analytics
         - 🔄 Other
     validations:
-      required: true
+      required: false
 
   - type: checkboxes
     id: bonus-factors
     attributes:
       label: Bonus factors (check all that apply)
-      description: These add weight to the priority score
+      description: "Optional — check any that apply to bump up the priority"
       options:
         - label: "❌ Error-prone — this toil frequently leads to mistakes"
         - label: "😤 Morale killer — this toil is particularly frustrating"
