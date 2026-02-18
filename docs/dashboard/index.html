@@ -421,7 +421,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
       <button class="show-cols-toggle" id="toggleCols" onclick="toggleColumns()">+ Show all details</button>
       <div class="copilot-toggle" title="Choose your Copilot tool">
         <button id="btnCopilotCLI" class="active" onclick="setCopilotMode('cli')">⌨️ GitHub CLI</button>
-        <button id="btnCopilotM365" onclick="setCopilotMode('m365')">☁️ M365 Copilot</button>
+        <button id="btnCopilotM365" onclick="setCopilotMode('m365')">💬 Teams Copilot</button>
       </div>
     </div>
     <div class="table-wrap">
@@ -1440,7 +1440,7 @@ function renderToilTable(issues) {
     const rawTitle = (issue.title || '').replace(/^\[TOIL\]\s*/i, '');
     const ghCmd = `gh copilot "Automate: ${rawTitle.replace(/"/g, '\\"')}"`;
     const m365Prompt = encodeURIComponent(`Help me automate this repetitive task: ${rawTitle}. Suggest a step-by-step plan to eliminate this busywork.`);
-    const m365Url = `https://m365.cloud.microsoft/chat?prompt=${m365Prompt}`;
+    const m365Url = `https://teams.microsoft.com/l/chat/0/0?users=28:orgid:copilot&message=${m365Prompt}`;
     
     // Split "Name — Description" into two parts
     const dashIdx = rawTitle.indexOf(' — ');
@@ -1451,7 +1451,7 @@ function renderToilTable(issues) {
     
     // Render button based on Copilot mode
     const actionBtn = copilotMode === 'm365'
-      ? `<a class="btn btn-m365" href="${m365Url}" target="_blank" rel="noopener noreferrer" title="Open in Microsoft 365 Copilot">☁️ Ask Copilot</a>`
+      ? `<a class="btn btn-m365" href="${m365Url}" target="_blank" rel="noopener noreferrer" title="Ask Copilot in Microsoft Teams">💬 Ask in Teams</a>`
       : `<button class="btn btn-launch" onclick="copyLaunchCmd(this, ${issue.number})" data-cmd="${esc(ghCmd, true)}" title="Copy GitHub Copilot CLI command">⌨️ Automate</button>`;
 
     return `<tr class="${priorityClass(issue.toil_score)}">
