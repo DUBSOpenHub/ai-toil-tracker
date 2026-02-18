@@ -4,7 +4,7 @@
 
 Every team has toil - the manual, repetitive tasks that eat up time and could be handled by an agent or script. This repo gives your team a simple, ready-to-use system to surface that toil, track it, and eliminate it.
 
-> 💡 **This is for any team.** Fork it, set up a weekly Slack reminder, and start collecting ideas in under 10 minutes. No code required.
+> 💡 **This is for any team.** Fork it, set up a weekly Slack or Teams reminder, and start collecting ideas in under 10 minutes. No code required.
 
 ## How AI Is Used
 
@@ -25,20 +25,20 @@ This isn't just a tracker - AI is built into the workflow:
 
 For anyone doing repetitive work who wants to apply AI-first thinking, AI First - Toil Tracker makes it easy to:
 
-- 🎯 **Capture** - Quickly log toil ideas from a single Slack link in under 2 minutes
+- 🎯 **Capture** - Quickly log toil ideas from a single Slack or Teams link in under 2 minutes
 - 🤖 **Identify** - AI auto-scores every idea and surfaces the highest-leverage opportunities
 - ⚡ **Automate** - Get AI-suggested solutions with agents, scripts, and workflows
 - 📈 **Measure** - Track time saved and see the real impact on your team
-- 🔁 **Build the habit** - A weekly Slack prompt keeps the team thinking AI-first
+- 🔁 **Build the habit** - A weekly Slack or Teams prompt keeps the team thinking AI-first
 
-All within Slack and GitHub - no new tools, no new logins. Just a way to find leverage for you and your team.
+All within Slack or Teams and GitHub - no new tools, no new logins. Just a way to find leverage for you and your team.
 
 ## What Happens When You Submit
 
 Here's exactly what the AI agent does when someone files a toil idea:
 
 ```
-You click the Slack link
+You click the Slack or Teams link
     └─> GitHub issue form opens
          └─> You fill it out (name, toil, frequency, time, people)
               └─> You hit Submit
@@ -68,14 +68,16 @@ You click the Slack link
 
 The whole process takes about 30 seconds. No one needs to triage, score, or label anything.
 
+> 💡 **Using Microsoft Teams?** The AI triage workflow can also post notifications to a Teams channel via an Incoming Webhook. See the [Teams Setup](#microsoft-teams-setup) section.
+
 ---
 
 ## 🍴 Get Started (Any Team)
 
 1. **[Fork this repo](../../fork)** - you get everything: issue templates, labels, workflows, scoring guides, and docs
 2. **Enable GitHub Actions** - go to the **Actions** tab in your fork and click **"I understand my workflows, go ahead and enable them"**
-3. **Update two URLs** - in the [Slack Setup](#slack-setup) section, replace `<YOUR_ORG>/<YOUR_REPO>` with your fork's path. Also update the Slack channel link in `.github/ISSUE_TEMPLATE/config.yml`
-4. **Create a Slack reminder** - follow the [3-step Slack setup](#slack-setup) to ping your team every Friday
+3. **Update two URLs** - in the [Slack Setup](#slack-setup) or [Teams Setup](#microsoft-teams-setup) section, replace `<YOUR_ORG>/<YOUR_REPO>` with your fork's path. Also update the channel link in `.github/ISSUE_TEMPLATE/config.yml`
+4. **Create a recurring reminder** - follow the [Slack setup](#slack-setup) or [Teams setup](#microsoft-teams-setup) to ping your team every Friday
 5. **Start collecting ideas** - your team clicks the link, fills out a 2-minute form, done
 
 That's it. Your team now has a living backlog of automation opportunities.
@@ -98,7 +100,7 @@ All toil ideas and automation proposals are tracked as **GitHub Issues** in this
 
 ## How It Works
 
-1. **Weekly Slack ping** - Every Friday at 10:00 AM PST, the team is asked: _"What toil could be automated?"_
+1. **Weekly Slack or Teams ping** - Every Friday at 10:00 AM PST, the team is asked: _"What toil could be automated?"_
 2. **File an issue** - Use the [Toil Automation Idea](../../issues/new?template=toil-idea.yml) template to log ideas
 3. **AI auto-triages** - An agent scores the idea, applies labels, estimates time saved, and suggests an automation approach
 4. **Propose a solution** - Use the [Automation Proposal](../../issues/new?template=automation-proposal.md) template
@@ -145,6 +147,42 @@ Set up a weekly reminder in your team channel using Slack Workflow Builder:
 
 > ⚠️ **Replace** `<YOUR_ORG>/<YOUR_REPO>` with your actual repo path (e.g. `DUBSOpenHub/ai-first-toil-tracker`).
 
+## Microsoft Teams Setup
+
+If your team uses Microsoft Teams instead of (or in addition to) Slack, you can set up the same weekly reminder and get AI triage notifications directly in a Teams channel.
+
+### Step 1: Create an Incoming Webhook
+
+1. In Teams, go to your channel → click **⋯** → **Connectors** (or **Manage channel** → **Connectors**)
+2. Search for **Incoming Webhook** → click **Configure**
+3. Give it a name (e.g. `Toil Tracker Bot`) and optionally upload an icon
+4. Click **Create** and **copy the webhook URL**
+5. In your forked repo, go to **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
+6. Name: `TEAMS_WEBHOOK_URL` — Value: paste the webhook URL
+
+> 💡 Once the `TEAMS_WEBHOOK_URL` secret is set, the AI triage workflow will automatically post triage reports to your Teams channel whenever a new toil idea is submitted.
+
+### Step 2: Set Up a Weekly Reminder
+
+Use **Power Automate** (built into Teams) to send a recurring reminder:
+
+1. Open [Power Automate](https://make.powerautomate.com) → **Create** → **Scheduled cloud flow**
+2. Name it `Weekly Toil Reminder`, set it to run **every Friday at 10:00 AM**
+3. Add action: **Microsoft Teams → Post message in a chat or channel**
+4. Select your team and channel, then paste this message:
+
+> 🤖 **Weekly Toil Check-in**
+>
+> What repetitive work are you doing that could be automated with an agent?
+>
+> 👉 File it here: `https://github.com/<YOUR_ORG>/<YOUR_REPO>/issues/new?template=toil-idea.yml` — takes 2 minutes.
+>
+> Not sure what counts? Check out the examples in the repo's `docs/examples.md`.
+
+5. **Save** the flow. Your team will be prompted every Friday in Teams.
+
+> ⚠️ **Replace** `<YOUR_ORG>/<YOUR_REPO>` with your actual repo path (e.g. `DUBSOpenHub/ai-first-toil-tracker`).
+
 ## Labels
 
 | Label | Purpose |
@@ -166,6 +204,7 @@ When a toil idea is submitted, an AI agent automatically:
 - **Estimates monthly time saved** if automated
 - **Suggests an automation approach** using AI
 - **Removes the `triage` label** - no manual triage needed
+- **Posts to Microsoft Teams** (if `TEAMS_WEBHOOK_URL` secret is configured)
 
 ### 🗂️ Stale Issue Cleanup (monthly)
 - Nudges toil ideas with no activity after 30 days

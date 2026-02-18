@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2026-02-18
+
+### Added
+- 🟣 Microsoft Teams integration as an alternative to Slack
+- Incoming Webhook support: AI triage reports are automatically posted to a Teams channel when `TEAMS_WEBHOOK_URL` secret is configured
+- Adaptive Card formatting for Teams notifications with a direct link to the GitHub issue
+- Microsoft Teams setup guide in README (Power Automate recurring reminder + Incoming Webhook)
+- Teams contact link in issue template chooser (`config.yml`)
+- Updated docs (triage workflow, ROI tracking) to reference Teams alongside Slack
+
 ## [1.0.0] - 2026-02-17
 
 ### Added

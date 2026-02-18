@@ -221,3 +221,51 @@ jobs:
           _This issue was auto-triaged by AI. Labels and score have been applied. Review the [scoring guide](../blob/main/docs/scoring-guide.md) for details._"
 
           gh issue comment "$ISSUE_NUM" --repo "${{ github.repository }}" --body "$COMMENT"
+
+      - name: Notify Microsoft Teams
+        if: env.TEAMS_WEBHOOK_URL != ''
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+        run: |
+          ISSUE_NUM=${{ steps.issue.outputs.number }}
+          ISSUE_TITLE=$(gh issue view "$ISSUE_NUM" --repo "${{ github.repository }}" --json title --jq '.title')
+          ISSUE_URL="https://github.com/${{ github.repository }}/issues/${ISSUE_NUM}"
+
+          TEAMS_BODY=$(jq -n \
+            --arg title "🤖 AI Triage Report — ${ISSUE_TITLE}" \
+            --arg score "**Toil Score:** Frequency (${{ steps.score.outputs.freq_score }}) × Time (${{ steps.score.outputs.time_score }}) × People (${{ steps.score.outputs.people_score }}) = **${{ steps.score.outputs.toil_score }}**" \
+            --arg priority "**Priority:** ${{ steps.score.outputs.priority }}" \
+            --arg saved "**Estimated team time saved if automated:** ${{ steps.score.outputs.monthly_saved }}" \
+            --arg suggestion "${{ steps.ai.outputs.suggestion }}" \
+            --arg url "$ISSUE_URL" \
+            '{
+              "type": "message",
+              "attachments": [
+                {
+                  "contentType": "application/vnd.microsoft.card.adaptive",
+                  "contentUrl": null,
+                  "content": {
+                    "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                    "type": "AdaptiveCard",
+                    "version": "1.4",
+                    "body": [
+                      { "type": "TextBlock", "size": "Medium", "weight": "Bolder", "text": $title },
+                      { "type": "TextBlock", "text": $score, "wrap": true },
+                      { "type": "TextBlock", "text": $priority, "wrap": true },
+                      { "type": "TextBlock", "text": $saved, "wrap": true },
+                      { "type": "TextBlock", "text": "---", "wrap": true },
+                      { "type": "TextBlock", "text": "💡 **Suggested Automation Approach**", "weight": "Bolder", "wrap": true },
+                      { "type": "TextBlock", "text": $suggestion, "wrap": true }
+                    ],
+                    "actions": [
+                      { "type": "Action.OpenUrl", "title": "View Issue on GitHub", "url": $url }
+                    ]
+                  }
+                }
+              ]
+            }')
+
+          curl -s -o /dev/null -w "%{http_code}" \
+            -H "Content-Type: application/json" \
+            -d "$TEAMS_BODY" \
+            "$TEAMS_WEBHOOK_URL"
