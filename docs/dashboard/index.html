@@ -330,8 +330,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 .dark .theme-toggle { border-color: #30363d; }
 .dark .details-toggle { background: #161b22; border-color: #30363d; color: #e6edf3; }
 .dark .details-toggle:hover { background: #1c2128; }
-.dark .banner, :root:not(.light) .banner { background: #1a3a5c; border-color: #54aeff; color: #fff; }
-.dark .banner a, :root:not(.light) .banner a { color: #79c0ff !important; }
+
 
 /* ── Details Toggle ── */
 .section-details { margin-bottom: 1.5rem; }
@@ -379,9 +378,6 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 </div>
 
 <div class="container">
-  <div class="banner" id="sampleBanner" style="display:none; background:#ddf4ff; border:1px solid #54aeff; border-radius:8px; padding:0.5rem 1.25rem; margin-bottom:1rem; font-size:0.85rem; text-align:center; color:#24292f;">
-    👋 <strong>Sample data</strong> — <a href="../../issues/new?template=toil-idea.yml" style="color:#0550ae; font-weight:600;">Log your first toil</a> to see real data here.
-  </div>
 
   <!-- Summary Cards -->
   <div class="cards" id="summaryCards"></div>
@@ -755,7 +751,6 @@ async function loadData() {
 
   // Fallback: sample data
   dashboardData = SAMPLE_DATA;
-  document.getElementById('sampleBanner').style.display = 'block';
   applyLocalEdits();
   render();
 }
@@ -1160,10 +1155,10 @@ function renderTeamFocusCard(issues) {
 
 // ── Team Name Management ──
 function getTeamRenames() {
-  return JSON.parse(localStorage.getItem(STORAGE_KEY_TEAM_RENAMES) || '{}');
+  return JSON.parse(localStorage.getItem('toilTeamRenames') || '{}');
 }
 function saveTeamRenames(renames) {
-  localStorage.setItem(STORAGE_KEY_TEAM_RENAMES, JSON.stringify(renames));
+  localStorage.setItem('toilTeamRenames', JSON.stringify(renames));
 }
 function applyTeamRenames(issues) {
   const renames = getTeamRenames();
