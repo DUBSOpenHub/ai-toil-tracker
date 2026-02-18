@@ -90,10 +90,7 @@ All toil ideas and automation proposals are tracked as **GitHub Issues** in this
 |------|------|
 | 📊 **Dashboard** | Enable GitHub Pages (see [Dashboard setup](#-dashboard)) |
 | 📋 **All toil ideas** | [View](../../issues?q=is%3Aissue+label%3Atoil+sort%3Acreated-desc) |
-| 🏷️ **Needs triage** | [View](../../issues?q=is%3Aissue+label%3Atriage+is%3Aopen+sort%3Acreated-desc) |
-| 🔨 **In progress** | [View](../../issues?q=is%3Aissue+label%3Ain-progress+is%3Aopen+sort%3Acreated-desc) |
 | ✅ **Automated (done)** | [View](../../issues?q=is%3Aissue+label%3Aautomated+sort%3Acreated-desc) |
-| 🎉 **Wins & time saved** | [View](../../issues?q=is%3Aissue+%22%5BWIN%5D%22+label%3Aautomated+sort%3Acreated-desc) |
 
 > **Tip:** Each issue shows the submitter's name, frequency (🔴🟠🟡🔵⚪), time cost, and who's affected - all visible in the issue body. Sort by newest, most commented, or filter by label to find what matters most.
 
@@ -140,22 +137,15 @@ A visual dashboard lets your team and manager see all ideas, filter by team, and
 - [📝 Submit a toil idea](../../issues/new?template=toil-idea.yml)
 - [🔧 Propose an automation](../../issues/new?template=automation-proposal.md)
 - [📋 View all toil ideas](../../issues?q=is%3Aissue+label%3Atoil)
-- [🏷️ Triage queue](../../issues?q=is%3Aissue+label%3Atriage+is%3Aopen)
 - [✅ Automated (completed)](../../issues?q=is%3Aissue+label%3Aautomated)
-- [🎉 Log a win](../../issues/new?template=log-win.yml)
 
 ## Documentation
 
 | Doc | Description |
 |-----|-------------|
-| [Scoring Guide](docs/scoring-guide.md) | How to prioritize toil by impact |
-| [Triage Workflow](docs/triage-workflow.md) | Step-by-step process for reviewing ideas |
-| [ROI Tracking](docs/roi-tracking.md) | Measure and share time saved |
 | [Examples](docs/examples.md) | Common toil patterns to inspire your team |
 | [Contributing](CONTRIBUTING.md) | How to submit ideas and build automations |
-| [Code of Conduct](CODE_OF_CONDUCT.md) | Community standards |
 | [Dashboard](docs/dashboard/index.html) | Interactive team dashboard with time savings |
-| [Security](SECURITY.md) | Security policy for automations |
 
 ## Slack Setup
 
