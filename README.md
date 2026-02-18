@@ -211,6 +211,18 @@ When a toil idea is submitted, an AI agent automatically:
 - Auto-closes after 60 days of inactivity
 - Exempts issues labeled `in-progress`, `automated`, or `high-impact`
 
+## AI & Data Privacy
+
+This tool uses the **GitHub Models API** (`openai/gpt-4o-mini`) to generate automation suggestions for each toil idea. When a toil idea is submitted:
+
+- The **issue body text** (including your description of the toil) is sent to the AI model
+- The AI generates a suggested automation approach
+- No data is stored beyond the issue comment
+
+> ⚠️ **Avoid including sensitive information** in toil descriptions — such as customer names, internal credentials, classified system names, or proprietary process details. Keep descriptions focused on the *type* of repetitive work, not the specific data involved.
+
+For teams with strict data classification policies, review your organization's AI usage guidelines before enabling the AI triage workflow. The workflow can be disabled by removing the `ai-triage.yml` file from `.github/workflows/`.
+
 ## License
 
 [MIT](LICENSE)

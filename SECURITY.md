@@ -35,3 +35,12 @@ We take security seriously! If you discover a security vulnerability in any auto
 - 🔑 **No secrets in code** - Slack webhook URLs, API tokens, and credentials must be stored as GitHub Secrets or in a secret manager, never committed to the repo
 - 🔐 **Least privilege** - Automations should request only the permissions they need
 - 🔍 **Dependency awareness** - Keep GitHub Actions and any dependencies updated via Dependabot
+
+## AI Model Data Handling
+
+The AI triage workflow sends issue body text to the GitHub Models API for generating automation suggestions. To protect sensitive information:
+
+- **Do not include** customer names, credentials, internal system identifiers, or classified information in toil descriptions
+- The AI model processes text in real-time and does not retain submitted data beyond the API request
+- Organizations with data classification requirements should review this workflow against their AI usage policies
+- To disable AI-powered triage, remove `.github/workflows/ai-triage.yml`

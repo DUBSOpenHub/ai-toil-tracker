@@ -1,0 +1,93 @@
+name: Celebrate Automation Wins
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  issues: write
+
+jobs:
+  celebrate-win:
+    if: github.event.label.name == 'automated'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find related toil issue
+        id: find
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          WIN_NUM=${{ github.event.issue.number }}
+          WIN_TITLE=$(gh issue view "$WIN_NUM" --repo "${{ github.repository }}" --json title --jq '.title')
+          BODY=$(gh issue view "$WIN_NUM" --repo "${{ github.repository }}" --json body --jq '.body')
+          
+          # Extract issue reference (e.g. #12) from "Related toil issue" field
+          RELATED=$(echo "$BODY" | grep -oP '#\d+' | head -1)
+          
+          if [ -z "$RELATED" ]; then
+            echo "No related issue found"
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          else
+            RELATED_NUM=$(echo "$RELATED" | tr -d '#')
+            echo "related_num=$RELATED_NUM" >> "$GITHUB_OUTPUT"
+            echo "win_num=$WIN_NUM" >> "$GITHUB_OUTPUT"
+            echo "win_title=$WIN_TITLE" >> "$GITHUB_OUTPUT"
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Comment on original toil issue
+        if: steps.find.outputs.found == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          COMMENT="## 🎉 This toil has been automated!
+
+          Great news — this toil item has been addressed!
+
+          **See:** #${{ steps.find.outputs.win_num }} — ${{ steps.find.outputs.win_title }}
+
+          Thanks to everyone who identified and solved this. The automation is now live.
+
+          _This comment was posted automatically when the automation was logged._"
+
+          gh issue comment "${{ steps.find.outputs.related_num }}" \
+            --repo "${{ github.repository }}" \
+            --body "$COMMENT"
+
+          # Add automated label and close the original issue
+          gh issue edit "${{ steps.find.outputs.related_num }}" \
+            --repo "${{ github.repository }}" \
+            --add-label "automated"
+          
+          gh issue close "${{ steps.find.outputs.related_num }}" \
+            --repo "${{ github.repository }}" \
+            --reason completed || true
+
+      - name: Notify Microsoft Teams
+        if: steps.find.outputs.found == 'true' && env.TEAMS_WEBHOOK_URL != ''
+        env:
+          TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+        run: |
+          TEAMS_BODY=$(jq -n \
+            --arg title "🎉 Toil Automated!" \
+            --arg text "**${{ steps.find.outputs.win_title }}** — The toil from issue #${{ steps.find.outputs.related_num }} has been automated." \
+            --arg url "https://github.com/${{ github.repository }}/issues/${{ steps.find.outputs.win_num }}" \
+            '{
+              "type": "message",
+              "attachments": [{
+                "contentType": "application/vnd.microsoft.card.adaptive",
+                "content": {
+                  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+                  "type": "AdaptiveCard",
+                  "version": "1.4",
+                  "body": [
+                    { "type": "TextBlock", "size": "Medium", "weight": "Bolder", "text": $title },
+                    { "type": "TextBlock", "text": $text, "wrap": true }
+                  ],
+                  "actions": [
+                    { "type": "Action.OpenUrl", "title": "View Win", "url": $url }
+                  ]
+                }
+              }]
+            }')
+          
+          curl -s -o /dev/null -H "Content-Type: application/json" -d "$TEAMS_BODY" "$TEAMS_WEBHOOK_URL"

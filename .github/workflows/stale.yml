@@ -14,8 +14,8 @@ jobs:
         with:
           stale-issue-message: >
             👋 This toil idea has been open for 30+ days without progress.
-            Is it still relevant? If so, consider scoring it using our
-            [scoring guide](https://github.com/DUBSOpenHub/ai-first-toil-tracker/blob/main/docs/scoring-guide.md)
+            Is it still relevant? If so, consider scoring it using the
+            `docs/scoring-guide.md` file in this repo
             and assigning someone to automate it.
           stale-issue-label: stale
           days-before-stale: 30

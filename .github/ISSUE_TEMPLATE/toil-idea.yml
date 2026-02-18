@@ -66,6 +66,32 @@ body:
     validations:
       required: true
 
+  - type: dropdown
+    id: category
+    attributes:
+      label: What area does this toil fall under?
+      options:
+        - 🔧 CI/CD & Builds
+        - 💬 Communication & Reporting
+        - 👥 Onboarding & Access
+        - 🔍 Code Review & Quality
+        - 🖥️ Operations & Infrastructure
+        - 📝 Documentation
+        - 📊 Data & Analytics
+        - 🔄 Other
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: bonus-factors
+    attributes:
+      label: Bonus factors (check all that apply)
+      description: These add weight to the priority score
+      options:
+        - label: "❌ Error-prone — this toil frequently leads to mistakes"
+        - label: "😤 Morale killer — this toil is particularly frustrating"
+        - label: "🔗 Blocking — this toil blocks other people or processes"
+
   - type: textarea
     id: automation-idea
     attributes:

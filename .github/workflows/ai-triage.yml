@@ -63,11 +63,11 @@ jobs:
           # Parse time per occurrence
           if echo "$BODY" | grep -q "> 1 hour"; then
             TIME_SCORE=8
-          elif echo "$BODY" | grep -q "30.60 minutes"; then
+          elif echo "$BODY" | grep -q "30.*60 minutes"; then
             TIME_SCORE=5
-          elif echo "$BODY" | grep -q "15.30 minutes"; then
+          elif echo "$BODY" | grep -q "15.*30 minutes"; then
             TIME_SCORE=3
-          elif echo "$BODY" | grep -q "5.15 minutes"; then
+          elif echo "$BODY" | grep -q "5.*15 minutes"; then
             TIME_SCORE=2
           else
             TIME_SCORE=1
@@ -78,9 +78,9 @@ jobs:
             PEOPLE_SCORE=8
           elif echo "$BODY" | grep -q "Entire team"; then
             PEOPLE_SCORE=5
-          elif echo "$BODY" | grep -q "4.6 people"; then
+          elif echo "$BODY" | grep -q "4.*6 people"; then
             PEOPLE_SCORE=3
-          elif echo "$BODY" | grep -q "2.3 people"; then
+          elif echo "$BODY" | grep -q "2.*3 people"; then
             PEOPLE_SCORE=2
           else
             PEOPLE_SCORE=1
@@ -128,10 +128,6 @@ jobs:
             MONTHLY_SAVED="~${MONTHLY_MINS} minutes/month"
           fi
 
-          # Extract toil description for AI prompt
-          TOIL_DESC=$(echo "$BODY" | sed -n '/What'\''s the toil/,/How often/p' | head -n -1 | tail -n +2)
-          echo "$TOIL_DESC" > /tmp/toil_desc.txt
-
           echo "freq_score=$FREQ_SCORE" >> "$GITHUB_OUTPUT"
           echo "time_score=$TIME_SCORE" >> "$GITHUB_OUTPUT"
           echo "people_score=$PEOPLE_SCORE" >> "$GITHUB_OUTPUT"
@@ -141,22 +137,53 @@ jobs:
           echo "freq_label=$FREQ_LABEL" >> "$GITHUB_OUTPUT"
           echo "monthly_saved=$MONTHLY_SAVED" >> "$GITHUB_OUTPUT"
 
+      - name: Check for similar issues
+        id: dedup
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_NUM=${{ steps.issue.outputs.number }}
+          TITLE=$(gh issue view "$ISSUE_NUM" --repo "${{ github.repository }}" --json title --jq '.title')
+
+          # Extract keywords from title (remove [TOIL] prefix, short words, and punctuation)
+          KEYWORDS=$(echo "$TITLE" | sed 's/\[TOIL\]//g' | tr -cs '[:alnum:]' ' ' | tr ' ' '\n' | awk 'length>=4' | head -5 | tr '\n' ' ')
+
+          # Search for related open issues with toil label
+          RELATED=""
+          if [ -n "$KEYWORDS" ]; then
+            RELATED=$(gh search issues "$KEYWORDS" --repo "${{ github.repository }}" --label toil --state open --limit 5 --json number,title --jq ".[] | select(.number != $ISSUE_NUM) | \"- #\\(.number) \\(.title)\"")
+          fi
+
+          if [ -n "$RELATED" ]; then
+            echo "$RELATED" > /tmp/related_issues.txt
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "" > /tmp/related_issues.txt
+            echo "found=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: AI - Suggest automation approach
         id: ai
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TOIL_DESC=$(cat /tmp/toil_desc.txt)
           BODY=$(cat /tmp/issue_body.txt)
 
-          PROMPT="You are an automation advisor. A team member submitted this toil item:
+          PROMPT="You are a senior automation engineer advising a team. Be specific and actionable.
+
+          A team member submitted this toil item:
 
           ${BODY}
 
-          Suggest a specific, practical automation approach in 3-4 sentences. Focus on:
+          Suggest a specific, practical automation approach. Focus on:
           1. The best tool for the job (GitHub Action, script, Copilot agent, Slack workflow, API integration, etc.)
           2. A brief description of how it would work
           3. Estimated effort to build (hours/days)
+
+          Format your response as: **Tool:** [tool name] | **Approach:** [2-3 sentences] | **Effort:** [estimate] | **Confidence:** [High/Medium/Low]
+
+          Example for a toil item about manually copying deploy logs:
+          **Tool:** GitHub Action | **Approach:** Create a post-deploy workflow that extracts logs via the GitHub API and appends them to a Google Sheet using a service account. Trigger on workflow_run completion for deploy workflows. | **Effort:** 4-6 hours | **Confidence:** High
 
           Be concise and practical. No fluff."
 
@@ -167,8 +194,8 @@ jobs:
             -d "$(jq -n --arg prompt "$PROMPT" '{
               "model": "openai/gpt-4o-mini",
               "messages": [{"role": "user", "content": $prompt}],
-              "max_tokens": 300,
-              "temperature": 0.7
+              "max_tokens": 400,
+              "temperature": 0.5
             }')" | jq -r '.choices[0].message.content // "Unable to generate suggestion at this time."')
 
           # Escape for GitHub output
@@ -202,6 +229,15 @@ jobs:
         run: |
           ISSUE_NUM=${{ steps.issue.outputs.number }}
 
+          RELATED_SECTION=""
+          if [ "${{ steps.dedup.outputs.found }}" = "true" ]; then
+            RELATED_SECTION="---
+
+          ### 🔗 Possibly Related Issues
+
+          $(cat /tmp/related_issues.txt)"
+          fi
+
           COMMENT="## 🤖 AI Triage Report
 
           **Toil Score:** Frequency (${{ steps.score.outputs.freq_score }}) x Time (${{ steps.score.outputs.time_score }}) x People (${{ steps.score.outputs.people_score }}) = **${{ steps.score.outputs.toil_score }}**
@@ -216,9 +252,11 @@ jobs:
 
           ${{ steps.ai.outputs.suggestion }}
 
+          ${RELATED_SECTION}
+
           ---
 
-          _This issue was auto-triaged by AI. Labels and score have been applied. Review the [scoring guide](../blob/main/docs/scoring-guide.md) for details._"
+          _This issue was auto-triaged by AI. Labels and score have been applied. Review the [scoring guide](https://github.com/${{ github.repository }}/blob/main/docs/scoring-guide.md) for details._"
 
           gh issue comment "$ISSUE_NUM" --repo "${{ github.repository }}" --body "$COMMENT"
 
