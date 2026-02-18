@@ -19,6 +19,15 @@ body:
       required: true
 
   - type: input
+    id: team
+    attributes:
+      label: What team or group are you on?
+      description: Used to track wins by team in the dashboard
+      placeholder: e.g. Platform, DevEx, SRE, Marketing
+    validations:
+      required: true
+
+  - type: input
     id: related-issue
     attributes:
       label: Related toil issue

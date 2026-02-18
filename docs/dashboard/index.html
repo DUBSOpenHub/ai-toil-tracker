@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toil Tracker Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: #f6f8fa; color: #24292f; line-height: 1.5; }
+
+/* ── Header ── */
+.header { background: #24292f; color: #fff; padding: 1.25rem 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+.header h1 { font-size: 1.35rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+.header .meta { font-size: 0.8rem; color: #8b949e; display: flex; gap: 1.25rem; }
+.header .meta a { color: #58a6ff; text-decoration: none; }
+
+/* ── Container ── */
+.container { max-width: 1440px; margin: 0 auto; padding: 1.5rem; }
+
+/* ── Summary Cards ── */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(195px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+.card { background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 1.15rem 1.25rem; transition: box-shadow .2s; }
+.card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+.card .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: .04em; color: #57606a; margin-bottom: 0.25rem; font-weight: 600; }
+.card .value { font-size: 1.85rem; font-weight: 700; color: #0969da; }
+.card .value.green { color: #1a7f37; }
+.card .value.purple { color: #8250df; }
+.card .value.orange { color: #bf8700; }
+
+/* ── Section ── */
+.section { background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 1.25rem; margin-bottom: 1.5rem; }
+.section h2 { font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
+
+/* ── Filters ── */
+.filters { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem; align-items: center; }
+.filters label { font-size: 0.8rem; font-weight: 600; color: #57606a; }
+.filters select { padding: 0.35rem 0.6rem; border: 1px solid #d0d7de; border-radius: 6px; font-size: 0.85rem; background: #fff; }
+
+/* ── Tables ── */
+table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+th, td { padding: 0.6rem 0.75rem; text-align: left; border-bottom: 1px solid #d8dee4; }
+th { background: #f6f8fa; font-weight: 600; color: #24292f; position: sticky; top: 0; cursor: pointer; user-select: none; white-space: nowrap; }
+th:hover { background: #eaeef2; }
+th .sort-arrow { font-size: 0.65rem; margin-left: 0.25rem; color: #8b949e; }
+tr:hover { background: #f6f8fa; }
+tr.total-row { font-weight: 700; background: #f0f3f6; }
+.table-wrap { overflow-x: auto; }
+
+/* ── Priority Rows ── */
+tr.priority-critical { border-left: 4px solid #cf222e; }
+tr.priority-high { border-left: 4px solid #bf8700; }
+tr.priority-medium { border-left: 4px solid #1a7f37; }
+tr.priority-low { border-left: 4px solid #8b949e; }
+
+/* ── Status Badges ── */
+.badge { display: inline-block; font-size: 0.7rem; font-weight: 600; padding: 0.15rem 0.55rem; border-radius: 10px; text-transform: capitalize; }
+.badge-toil { background: #ddf4ff; color: #0969da; }
+.badge-triage { background: #fff8c5; color: #7d6b00; }
+.badge-in-progress { background: #e8defc; color: #6e40c9; }
+.badge-automated { background: #dafbe1; color: #116329; }
+
+/* ── Inline Edit ── */
+td.editable { cursor: pointer; position: relative; }
+td.editable:hover { background: #ddf4ff; border-radius: 4px; }
+td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35rem; border: 1px solid #0969da; border-radius: 4px; width: 100%; background: #fff; }
+.edited-marker { color: #8250df; font-weight: 700; margin-left: 2px; font-size: 0.65rem; }
+
+/* ── Buttons ── */
+.btn { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.3rem 0.65rem; border: 1px solid #d0d7de; border-radius: 6px; background: #fff; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all .15s; white-space: nowrap; }
+.btn:hover { background: #f3f4f6; }
+.btn-launch { background: #2ea44f; color: #fff; border-color: #2ea44f; }
+.btn-launch:hover { background: #2c974b; }
+.btn-save { background: #0969da; color: #fff; border-color: #0969da; }
+.btn-save:hover { background: #0860ca; }
+
+/* ── Toast ── */
+.toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: #24292f; color: #fff; padding: 0.75rem 1.25rem; border-radius: 8px; font-size: 0.85rem; font-weight: 500; z-index: 9999; opacity: 0; transform: translateY(10px); transition: all .3s; pointer-events: none; }
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .container { padding: 1rem; }
+  .cards { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+}
+
+/* ── Print ── */
+@media print {
+  .header { background: #fff; color: #000; border-bottom: 2px solid #000; }
+  .header .meta a { color: #000; }
+  .btn-launch, .btn-save, .filters { display: none !important; }
+  .card { border: 1px solid #ccc; break-inside: avoid; }
+  .section { break-inside: avoid; }
+  body { background: #fff; }
+  .toast { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📊 Toil Tracker Dashboard</h1>
+  <div class="meta">
+    <span id="headerRepo"></span>
+    <span>Generated: <span id="headerDate">—</span></span>
+    <a href="#" id="headerRepoLink" target="_blank">View on GitHub ↗</a>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Summary Cards -->
+  <div class="cards" id="summaryCards"></div>
+
+  <!-- Team & Individual Breakdown -->
+  <div class="section" id="breakdownSection">
+    <h2>👥 Team &amp; Individual Breakdown</h2>
+    <div class="filters">
+      <label>Team:</label>
+      <select id="breakdownTeamFilter"><option value="">All Teams</option></select>
+    </div>
+    <div id="teamTables"></div>
+    <h3 style="margin:1.25rem 0 0.5rem;font-size:0.95rem;">Individual Breakdown</h3>
+    <div class="table-wrap">
+      <table id="personTable">
+        <thead><tr><th>Name</th><th># Ideas Submitted</th><th># Automated</th><th>Est. Monthly Hours Saved</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Main Toil Ideas Table -->
+  <div class="section">
+    <h2>📋 Toil Ideas</h2>
+    <div class="filters">
+      <label>Team:</label>
+      <select id="filterTeam"><option value="">All</option></select>
+      <label>Category:</label>
+      <select id="filterCategory"><option value="">All</option></select>
+      <label>Status:</label>
+      <select id="filterStatus"><option value="">All</option></select>
+    </div>
+    <div class="table-wrap">
+      <table id="toilTable">
+        <thead>
+          <tr>
+            <th data-col="number">#</th>
+            <th data-col="title">Title</th>
+            <th data-col="submitter">Submitter</th>
+            <th data-col="team">Team</th>
+            <th data-col="category">Category</th>
+            <th data-col="frequency">Frequency</th>
+            <th data-col="time_per_occurrence">Time</th>
+            <th data-col="people_affected">People</th>
+            <th data-col="toil_score">Score</th>
+            <th data-col="bonus_factors">Bonus Factors</th>
+            <th data-col="status">Status</th>
+            <th data-col="monthly_saved_minutes">Est. Monthly Savings</th>
+            <th data-col="actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// CONFIG — Set your owner/repo here
+// ═══════════════════════════════════════════════════
+const CONFIG = {
+  owner: 'greggcochran',
+  repo: 'ai-first-toil-tracker',
+  get fullRepo() { return `${this.owner}/${this.repo}`; }
+};
+
+// ═══════════════════════════════════════════════════
+// SCORE MULTIPLIERS (matches ai-triage.yml)
+// ═══════════════════════════════════════════════════
+const FREQ_SCORES = {
+  '🔴 Multiple times per day': { score: 8, monthly: 60 },
+  '🟠 Daily': { score: 5, monthly: 20 },
+  '🟡 Multiple times per week': { score: 3, monthly: 10 },
+  '🔵 Weekly': { score: 2, monthly: 4 },
+  '⚪ Monthly or less': { score: 1, monthly: 1 }
+};
+const TIME_SCORES = {
+  '> 1 hour': { score: 8, mins: 75 },
+  '30–60 minutes': { score: 5, mins: 45 },
+  '15–30 minutes': { score: 3, mins: 22 },
+  '5–15 minutes': { score: 2, mins: 10 },
+  '< 5 minutes': { score: 1, mins: 3 }
+};
+const PEOPLE_SCORES = {
+  'Multiple teams': { score: 8 },
+  'Entire team': { score: 5 },
+  '4-6 people': { score: 3 },
+  '2-3 people': { score: 2 },
+  'Just you': { score: 1 }
+};
+const BONUS_MAP = {
+  '❌ Error-prone': 2,
+  '🔗 Blocking': 3,
+  '😤 Morale killer': 1,
+  '📈 Growing worse': 2,
+  '🆕 New team friction': 1
+};
+
+// ═══════════════════════════════════════════════════
+// SAMPLE DATA
+// ═══════════════════════════════════════════════════
+const SAMPLE_DATA = {
+  repo: CONFIG.fullRepo,
+  generated_at: new Date().toISOString(),
+  issues: [
+    {
+      number: 1,
+      title: "[TOIL] Manual deployment steps for staging environment",
+      url: `https://github.com/${CONFIG.fullRepo}/issues/1`,
+      state: "open",
+      labels: ["toil", "high-impact", "🔴 multiple-times-daily"],
+      submitter: "Jane Smith (@janesmith)",
+      team: "Platform",
+      category: "🔧 CI/CD & Builds",
+      frequency: "🔴 Multiple times per day",
+      time_per_occurrence: "30–60 minutes",
+      people_affected: "Entire team",
+      bonus_factors: ["❌ Error-prone", "🔗 Blocking"],
+      automation_idea: "Create a CI/CD pipeline with GitHub Actions to automate staging deployments",
+      toil_score: 200,
+      priority: "🔴 Critical",
+      monthly_saved_minutes: 15000,
+      created_at: "2026-02-10T10:00:00Z",
+      ai_suggestion: "Use reusable GitHub Actions workflow with environment gates"
+    },
+    {
+      number: 2,
+      title: "[TOIL] Manually rotating database credentials every week",
+      url: `https://github.com/${CONFIG.fullRepo}/issues/2`,
+      state: "open",
+      labels: ["toil", "triage"],
+      submitter: "Bob Lee (@boblee)",
+      team: "Security",
+      category: "🔐 Security & Compliance",
+      frequency: "🔵 Weekly",
+      time_per_occurrence: "15–30 minutes",
+      people_affected: "2-3 people",
+      bonus_factors: ["❌ Error-prone"],
+      automation_idea: "Use AWS Secrets Manager automatic rotation",
+      toil_score: 14,
+      priority: "🟡 Medium",
+      monthly_saved_minutes: 176,
+      created_at: "2026-02-11T14:30:00Z",
+      ai_suggestion: "Configure AWS Secrets Manager with Lambda rotation function"
+    },
+    {
+      number: 3,
+      title: "[TOIL] Copy-pasting test results into Slack every morning",
+      url: `https://github.com/${CONFIG.fullRepo}/issues/3`,
+      state: "closed",
+      labels: ["toil", "automated"],
+      submitter: "Alice Chen (@alicechen)",
+      team: "Platform",
+      category: "📊 Reporting & Communication",
+      frequency: "🟠 Daily",
+      time_per_occurrence: "5–15 minutes",
+      people_affected: "Just you",
+      bonus_factors: ["😤 Morale killer"],
+      automation_idea: "Slack bot that posts CI results automatically",
+      toil_score: 11,
+      priority: "🟡 Medium",
+      monthly_saved_minutes: 200,
+      created_at: "2026-02-08T09:00:00Z",
+      ai_suggestion: "GitHub Actions workflow with Slack notification step"
+    },
+    {
+      number: 4,
+      title: "[TOIL] Manually updating dependency versions across 12 microservices",
+      url: `https://github.com/${CONFIG.fullRepo}/issues/4`,
+      state: "open",
+      labels: ["toil", "in-progress", "high-impact"],
+      submitter: "Carlos Diaz (@carlosdiaz)",
+      team: "Platform",
+      category: "🔧 CI/CD & Builds",
+      frequency: "🟡 Multiple times per week",
+      time_per_occurrence: "> 1 hour",
+      people_affected: "4-6 people",
+      bonus_factors: ["❌ Error-prone", "📈 Growing worse"],
+      automation_idea: "Dependabot with auto-merge for patch versions",
+      toil_score: 76,
+      priority: "🔴 Critical",
+      monthly_saved_minutes: 6600,
+      created_at: "2026-02-12T11:00:00Z",
+      ai_suggestion: "Set up Dependabot with grouped updates and auto-merge workflow"
+    },
+    {
+      number: 5,
+      title: "[TOIL] Onboarding new engineers — manual environment setup",
+      url: `https://github.com/${CONFIG.fullRepo}/issues/5`,
+      state: "open",
+      labels: ["toil", "triage"],
+      submitter: "Dana Kim (@danakim)",
+      team: "Developer Experience",
+      category: "🆕 Onboarding & Access",
+      frequency: "⚪ Monthly or less",
+      time_per_occurrence: "> 1 hour",
+      people_affected: "2-3 people",
+      bonus_factors: ["🆕 New team friction", "😤 Morale killer"],
+      automation_idea: "Dev container or Codespaces setup with scripted provisioning",
+      toil_score: 18,
+      priority: "🟡 Medium",
+      monthly_saved_minutes: 150,
+      created_at: "2026-02-14T16:00:00Z",
+      ai_suggestion: "Create devcontainer.json with all tools and extensions pre-configured"
+    },
+    {
+      number: 6,
+      title: "[TOIL] Manually triaging incoming support tickets from Zendesk",
+      url: `https://github.com/${CONFIG.fullRepo}/issues/6`,
+      state: "open",
+      labels: ["toil", "high-impact"],
+      submitter: "Bob Lee (@boblee)",
+      team: "Security",
+      category: "📊 Reporting & Communication",
+      frequency: "🟠 Daily",
+      time_per_occurrence: "30–60 minutes",
+      people_affected: "Entire team",
+      bonus_factors: ["🔗 Blocking", "📈 Growing worse"],
+      automation_idea: "Use an AI classifier to auto-route tickets by category",
+      toil_score: 55,
+      priority: "🔴 Critical",
+      monthly_saved_minutes: 4500,
+      created_at: "2026-02-15T08:00:00Z",
+      ai_suggestion: "Train a classifier on historical ticket data to auto-label and route"
+    }
+  ]
+};
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+let dashboardData = null;
+let sortCol = 'toil_score';
+let sortDir = -1; // -1 = desc
+const localEdits = JSON.parse(localStorage.getItem('toilEdits') || '{}');
+
+// ═══════════════════════════════════════════════════
+// DATA LOADING
+// ═══════════════════════════════════════════════════
+async function loadData() {
+  // Try local JSON first
+  try {
+    const res = await fetch('dashboard-data.json');
+    if (res.ok) {
+      dashboardData = await res.json();
+      applyLocalEdits();
+      render();
+      return;
+    }
+  } catch (_) { /* fall through */ }
+
+  // Fallback: GitHub API
+  try {
+    const apiUrl = `https://api.github.com/repos/${CONFIG.fullRepo}/issues?labels=toil&state=all&per_page=100`;
+    const res = await fetch(apiUrl);
+    if (res.ok) {
+      const apiIssues = await res.json();
+      dashboardData = convertApiIssues(apiIssues);
+      applyLocalEdits();
+      render();
+      return;
+    }
+  } catch (_) { /* fall through */ }
+
+  // Fallback: sample data
+  dashboardData = SAMPLE_DATA;
+  applyLocalEdits();
+  render();
+}
+
+function convertApiIssues(apiIssues) {
+  return {
+    repo: CONFIG.fullRepo,
+    generated_at: new Date().toISOString(),
+    issues: apiIssues.filter(i => !i.pull_request).map(issue => {
+      const body = issue.body || '';
+      const labels = issue.labels.map(l => l.name);
+      const freq = extractField(body, 'Frequency') || '⚪ Monthly or less';
+      const time = extractField(body, 'Time per occurrence') || '< 5 minutes';
+      const people = extractField(body, 'People affected') || 'Just you';
+      const team = extractField(body, 'Team') || 'Unknown';
+      const category = extractField(body, 'Category') || 'Other';
+      const submitter = issue.user ? `${issue.user.login} (@${issue.user.login})` : 'Unknown';
+      const bonusRaw = extractField(body, 'Bonus factors') || '';
+      const bonus = Object.keys(BONUS_MAP).filter(b => bonusRaw.includes(b));
+      const { score, monthlyMins } = calcScore(freq, time, people, bonus);
+      return {
+        number: issue.number,
+        title: issue.title,
+        url: issue.html_url,
+        state: issue.state,
+        labels,
+        submitter,
+        team,
+        category,
+        frequency: freq,
+        time_per_occurrence: time,
+        people_affected: people,
+        bonus_factors: bonus,
+        automation_idea: extractField(body, 'Automation idea') || '',
+        toil_score: score,
+        priority: score >= 40 ? '🔴 Critical' : score >= 20 ? '🟠 High' : score >= 10 ? '🟡 Medium' : '⚪ Low',
+        monthly_saved_minutes: monthlyMins,
+        created_at: issue.created_at,
+        ai_suggestion: ''
+      };
+    })
+  };
+}
+
+function extractField(body, field) {
+  const regex = new RegExp(`###?\\s*${field}[\\s:]*\\n+([^\\n]+)`, 'i');
+  const m = body.match(regex);
+  return m ? m[1].trim() : null;
+}
+
+function calcScore(freq, time, people, bonus) {
+  const fObj = FREQ_SCORES[freq] || { score: 1, monthly: 1 };
+  const tObj = TIME_SCORES[time] || { score: 1, mins: 3 };
+  const pObj = PEOPLE_SCORES[people] || { score: 1 };
+  const base = fObj.score * tObj.score * pObj.score;
+  const bonusTotal = bonus.reduce((s, b) => s + (BONUS_MAP[b] || 0), 0);
+  const score = base + bonusTotal;
+  const monthlyMins = fObj.monthly * tObj.mins * pObj.score;
+  return { score, monthlyMins };
+}
+
+function applyLocalEdits() {
+  if (!dashboardData) return;
+  dashboardData.issues.forEach(issue => {
+    const edits = localEdits[issue.number];
+    if (!edits) return;
+    if (edits.frequency) issue.frequency = edits.frequency;
+    if (edits.time_per_occurrence) issue.time_per_occurrence = edits.time_per_occurrence;
+    if (edits.people_affected) issue.people_affected = edits.people_affected;
+    // Recalculate score
+    const { score, monthlyMins } = calcScore(issue.frequency, issue.time_per_occurrence, issue.people_affected, issue.bonus_factors);
+    issue.toil_score = score;
+    issue.monthly_saved_minutes = monthlyMins;
+    issue.priority = score >= 40 ? '🔴 Critical' : score >= 20 ? '🟠 High' : score >= 10 ? '🟡 Medium' : '⚪ Low';
+  });
+}
+
+function saveLocalEdits() {
+  localStorage.setItem('toilEdits', JSON.stringify(localEdits));
+}
+
+// ═══════════════════════════════════════════════════
+// STATUS HELPERS
+// ═══════════════════════════════════════════════════
+function getStatus(issue) {
+  const labels = issue.labels.map(l => l.toLowerCase());
+  if (labels.includes('automated') || issue.state === 'closed') return 'automated';
+  if (labels.includes('in-progress')) return 'in-progress';
+  if (labels.includes('triage')) return 'triage';
+  return 'toil';
+}
+
+function statusBadge(status) {
+  return `<span class="badge badge-${status}">${status}</span>`;
+}
+
+function priorityClass(score) {
+  if (score >= 40) return 'priority-critical';
+  if (score >= 20) return 'priority-high';
+  if (score >= 10) return 'priority-medium';
+  return 'priority-low';
+}
+
+function formatMinutes(mins) {
+  if (mins >= 60) return `${(mins / 60).toFixed(1)} hrs/mo`;
+  return `${Math.round(mins)} min/mo`;
+}
+
+// ═══════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════
+function render() {
+  const data = dashboardData;
+  if (!data) return;
+
+  // Header
+  document.getElementById('headerRepo').textContent = data.repo;
+  document.getElementById('headerDate').textContent = new Date(data.generated_at).toLocaleDateString();
+  document.getElementById('headerRepoLink').href = `https://github.com/${data.repo}`;
+
+  const issues = data.issues;
+
+  // Populate filter dropdowns
+  populateFilters(issues);
+
+  // Summary cards
+  renderSummaryCards(issues);
+
+  // Team & Individual breakdown
+  renderBreakdown(issues);
+
+  // Main table
+  renderToilTable(issues);
+}
+
+function populateFilters(issues) {
+  const teams = [...new Set(issues.map(i => i.team).filter(Boolean))].sort();
+  const categories = [...new Set(issues.map(i => i.category).filter(Boolean))].sort();
+  const statuses = [...new Set(issues.map(i => getStatus(i)))].sort();
+
+  fillSelect('filterTeam', teams);
+  fillSelect('filterCategory', categories);
+  fillSelect('filterStatus', statuses);
+  fillSelect('breakdownTeamFilter', teams);
+}
+
+function fillSelect(id, options) {
+  const sel = document.getElementById(id);
+  const current = sel.value;
+  // Keep first "All" option
+  while (sel.options.length > 1) sel.remove(1);
+  options.forEach(o => {
+    const opt = document.createElement('option');
+    opt.value = o; opt.textContent = o;
+    sel.appendChild(opt);
+  });
+  sel.value = current;
+}
+
+// ── Summary Cards ──
+function renderSummaryCards(issues) {
+  const total = issues.length;
+  const automated = issues.filter(i => getStatus(i) === 'automated').length;
+  const totalMinsSaved = issues.reduce((s, i) => s + (i.monthly_saved_minutes || 0), 0);
+  const hoursSaved = (totalMinsSaved / 60).toFixed(1);
+  const rate = total > 0 ? ((automated / total) * 100).toFixed(0) : 0;
+  const inProgress = issues.filter(i => getStatus(i) === 'in-progress').length;
+  const highImpact = issues.filter(i => i.toil_score >= 40 && getStatus(i) !== 'automated').length;
+
+  document.getElementById('summaryCards').innerHTML = `
+    <div class="card"><div class="label">Total Ideas</div><div class="value">${total}</div></div>
+    <div class="card"><div class="label">Automated (Wins)</div><div class="value green">${automated}</div></div>
+    <div class="card"><div class="label">Hours Saved / Month</div><div class="value green">${hoursSaved}</div></div>
+    <div class="card"><div class="label">Automation Rate</div><div class="value purple">${rate}%</div></div>
+    <div class="card"><div class="label">In Progress</div><div class="value">${inProgress}</div></div>
+    <div class="card"><div class="label">High-Impact Open</div><div class="value orange">${highImpact}</div></div>
+  `;
+}
+
+// ── Team & Individual Breakdown ──
+function renderBreakdown(issues) {
+  const teamFilter = document.getElementById('breakdownTeamFilter').value;
+  const filtered = teamFilter ? issues.filter(i => i.team === teamFilter) : issues;
+
+  // Per-person
+  const personMap = {};
+  filtered.forEach(i => {
+    const name = i.submitter || 'Unknown';
+    if (!personMap[name]) personMap[name] = { submitted: 0, automated: 0, minsSaved: 0 };
+    personMap[name].submitted++;
+    if (getStatus(i) === 'automated') personMap[name].automated++;
+    personMap[name].minsSaved += (i.monthly_saved_minutes || 0);
+  });
+
+  const tbody = document.querySelector('#personTable tbody');
+  const people = Object.entries(personMap).sort((a, b) => b[1].minsSaved - a[1].minsSaved);
+  let totalSub = 0, totalAuto = 0, totalMins = 0;
+
+  tbody.innerHTML = people.map(([name, d]) => {
+    totalSub += d.submitted; totalAuto += d.automated; totalMins += d.minsSaved;
+    return `<tr><td>${esc(name)}</td><td>${d.submitted}</td><td>${d.automated}</td><td>${formatMinutes(d.minsSaved)}</td></tr>`;
+  }).join('') + `<tr class="total-row"><td>Total</td><td>${totalSub}</td><td>${totalAuto}</td><td>${formatMinutes(totalMins)}</td></tr>`;
+
+  // Per-team table
+  const teamMap = {};
+  issues.forEach(i => {
+    const t = i.team || 'Unknown';
+    if (!teamMap[t]) teamMap[t] = { submitted: 0, automated: 0, minsSaved: 0 };
+    teamMap[t].submitted++;
+    if (getStatus(i) === 'automated') teamMap[t].automated++;
+    teamMap[t].minsSaved += (i.monthly_saved_minutes || 0);
+  });
+
+  const teams = Object.entries(teamMap).sort((a, b) => b[1].minsSaved - a[1].minsSaved);
+  const container = document.getElementById('teamTables');
+  if (teams.length > 1) {
+    let gt = { submitted: 0, automated: 0, minsSaved: 0 };
+    container.innerHTML = `<h3 style="font-size:0.95rem;margin-bottom:0.5rem;">Team Summary</h3>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Team</th><th># Ideas</th><th># Automated</th><th>Est. Monthly Hours Saved</th></tr></thead>
+      <tbody>${teams.map(([t, d]) => {
+        gt.submitted += d.submitted; gt.automated += d.automated; gt.minsSaved += d.minsSaved;
+        return `<tr><td>${esc(t)}</td><td>${d.submitted}</td><td>${d.automated}</td><td>${formatMinutes(d.minsSaved)}</td></tr>`;
+      }).join('')}
+      <tr class="total-row"><td>Grand Total</td><td>${gt.submitted}</td><td>${gt.automated}</td><td>${formatMinutes(gt.minsSaved)}</td></tr>
+      </tbody></table></div>`;
+  } else {
+    container.innerHTML = '';
+  }
+}
+
+// ── Main Toil Table ──
+function renderToilTable(issues) {
+  const teamF = document.getElementById('filterTeam').value;
+  const catF = document.getElementById('filterCategory').value;
+  const statF = document.getElementById('filterStatus').value;
+
+  let filtered = issues.slice();
+  if (teamF) filtered = filtered.filter(i => i.team === teamF);
+  if (catF) filtered = filtered.filter(i => i.category === catF);
+  if (statF) filtered = filtered.filter(i => getStatus(i) === statF);
+
+  // Sort
+  filtered.sort((a, b) => {
+    let va = a[sortCol], vb = b[sortCol];
+    if (typeof va === 'number' && typeof vb === 'number') return (va - vb) * sortDir;
+    va = String(va || '').toLowerCase(); vb = String(vb || '').toLowerCase();
+    return va < vb ? -sortDir : va > vb ? sortDir : 0;
+  });
+
+  // Sort arrows
+  document.querySelectorAll('#toilTable th').forEach(th => {
+    const col = th.dataset.col;
+    const arrow = col === sortCol ? (sortDir === 1 ? ' ▲' : ' ▼') : '';
+    const existing = th.querySelector('.sort-arrow');
+    if (existing) existing.textContent = arrow;
+    else if (col) {
+      const sp = document.createElement('span');
+      sp.className = 'sort-arrow';
+      sp.textContent = arrow;
+      th.appendChild(sp);
+    }
+  });
+
+  const tbody = document.querySelector('#toilTable tbody');
+  tbody.innerHTML = filtered.map(issue => {
+    const status = getStatus(issue);
+    const edited = localEdits[issue.number] ? '<span class="edited-marker">✎</span>' : '';
+    const bonusStr = (issue.bonus_factors || []).join(' ');
+    const desc = (issue.title || '').replace(/^\[TOIL\]\s*/i, '');
+    const ghCmd = `gh copilot "Automate: ${desc.replace(/"/g, '\\"')}"`;
+
+    return `<tr class="${priorityClass(issue.toil_score)}">
+      <td><a href="${issue.url}" target="_blank" style="color:#0969da;font-weight:600;">#${issue.number}</a></td>
+      <td style="max-width:260px">${esc(issue.title)}</td>
+      <td>${esc(issue.submitter)}</td>
+      <td>${esc(issue.team)}</td>
+      <td>${esc(issue.category)}</td>
+      <td class="editable" data-issue="${issue.number}" data-field="frequency">${esc(issue.frequency)}${edited}</td>
+      <td class="editable" data-issue="${issue.number}" data-field="time_per_occurrence">${esc(issue.time_per_occurrence)}</td>
+      <td class="editable" data-issue="${issue.number}" data-field="people_affected">${esc(issue.people_affected)}</td>
+      <td style="font-weight:700">${issue.toil_score}</td>
+      <td style="font-size:0.78rem">${esc(bonusStr)}</td>
+      <td>${statusBadge(status)}</td>
+      <td>${formatMinutes(issue.monthly_saved_minutes)}</td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-launch" onclick="copyLaunchCmd(this, ${issue.number})" data-cmd="${esc(ghCmd, true)}" title="Copy Copilot CLI command">🚀 Launch CLI</button>
+        <a class="btn btn-save" href="${issue.url}" target="_blank" title="Edit on GitHub">Save to GitHub</a>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// INLINE EDITING
+// ═══════════════════════════════════════════════════
+document.addEventListener('click', function(e) {
+  const td = e.target.closest('td.editable');
+  if (!td || td.querySelector('select')) return;
+
+  const field = td.dataset.field;
+  const issueNum = Number(td.dataset.issue);
+  const issue = dashboardData.issues.find(i => i.number === issueNum);
+  if (!issue) return;
+
+  let options;
+  if (field === 'frequency') options = Object.keys(FREQ_SCORES);
+  else if (field === 'time_per_occurrence') options = Object.keys(TIME_SCORES);
+  else if (field === 'people_affected') options = Object.keys(PEOPLE_SCORES);
+  else return;
+
+  const current = issue[field];
+  const sel = document.createElement('select');
+  options.forEach(o => {
+    const opt = document.createElement('option');
+    opt.value = o; opt.textContent = o;
+    if (o === current) opt.selected = true;
+    sel.appendChild(opt);
+  });
+
+  td.textContent = '';
+  td.appendChild(sel);
+  sel.focus();
+
+  function commit() {
+    const newVal = sel.value;
+    if (newVal !== current) {
+      if (!localEdits[issueNum]) localEdits[issueNum] = {};
+      localEdits[issueNum][field] = newVal;
+      issue[field] = newVal;
+      const { score, monthlyMins } = calcScore(issue.frequency, issue.time_per_occurrence, issue.people_affected, issue.bonus_factors);
+      issue.toil_score = score;
+      issue.monthly_saved_minutes = monthlyMins;
+      issue.priority = score >= 40 ? '🔴 Critical' : score >= 20 ? '🟠 High' : score >= 10 ? '🟡 Medium' : '⚪ Low';
+      saveLocalEdits();
+    }
+    render();
+  }
+
+  sel.addEventListener('change', commit);
+  sel.addEventListener('blur', commit);
+});
+
+// ═══════════════════════════════════════════════════
+// SORT
+// ═══════════════════════════════════════════════════
+document.querySelector('#toilTable thead').addEventListener('click', function(e) {
+  const th = e.target.closest('th');
+  if (!th || !th.dataset.col || th.dataset.col === 'actions') return;
+  const col = th.dataset.col;
+  if (col === sortCol) sortDir *= -1;
+  else { sortCol = col; sortDir = -1; }
+  render();
+});
+
+// ═══════════════════════════════════════════════════
+// FILTERS
+// ═══════════════════════════════════════════════════
+['filterTeam', 'filterCategory', 'filterStatus', 'breakdownTeamFilter'].forEach(id => {
+  document.getElementById(id).addEventListener('change', () => render());
+});
+
+// ═══════════════════════════════════════════════════
+// CLIPBOARD & TOAST
+// ═══════════════════════════════════════════════════
+function copyLaunchCmd(btn, issueNum) {
+  const cmd = btn.getAttribute('data-cmd');
+  navigator.clipboard.writeText(cmd).then(() => {
+    showToast('✅ Copilot CLI command copied to clipboard!');
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = cmd; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('✅ Copilot CLI command copied to clipboard!');
+  });
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ═══════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════
+function esc(str, attr) {
+  if (!str) return '';
+  const d = document.createElement('div');
+  d.textContent = str;
+  return attr ? d.innerHTML.replace(/"/g, '&quot;') : d.innerHTML;
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+loadData();
+</script>
+</body>
+</html>

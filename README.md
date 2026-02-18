@@ -90,6 +90,7 @@ All toil ideas and automation proposals are tracked as **GitHub Issues** in this
 
 | View | Link |
 |------|------|
+| 📊 **Dashboard** | Enable GitHub Pages (see [Dashboard setup](#-dashboard)) |
 | 📋 **All toil ideas** | [View](../../issues?q=is%3Aissue+label%3Atoil+sort%3Acreated-desc) |
 | 🏷️ **Needs triage** | [View](../../issues?q=is%3Aissue+label%3Atriage+is%3Aopen+sort%3Acreated-desc) |
 | 🔨 **In progress** | [View](../../issues?q=is%3Aissue+label%3Ain-progress+is%3Aopen+sort%3Acreated-desc) |
@@ -97,6 +98,34 @@ All toil ideas and automation proposals are tracked as **GitHub Issues** in this
 | 🎉 **Wins & time saved** | [View](../../issues?q=is%3Aissue+%22%5BWIN%5D%22+label%3Aautomated+sort%3Acreated-desc) |
 
 > **Tip:** Each issue shows the submitter's name, frequency (🔴🟠🟡🔵⚪), time cost, and who's affected - all visible in the issue body. Sort by newest, most commented, or filter by label to find what matters most.
+
+## 📊 Dashboard
+
+A visual, interactive dashboard lets your team and manager see all toil ideas, filter by team, edit scores, and track time savings — all in one place.
+
+### What's on the Dashboard
+
+- **Summary Cards** — Total ideas, wins, hours saved/month, automation rate, in-progress, and high-impact counts
+- **Team & Individual Breakdown** — Per-person and per-team stats: ideas submitted, automated, and estimated monthly hours saved
+- **Toil Ideas Table** — Every toil idea with sortable columns, inline-editable scores, color-coded priority rows, and status badges
+- **🚀 Launch CLI Button** — One click copies a `gh copilot` command to start automating that specific toil item
+- **Filters** — Filter by team, category, or status to focus on what matters
+
+### Setting Up the Dashboard
+
+1. **Enable GitHub Pages** — Go to **Settings** → **Pages** → Source: **Deploy from a branch** → Branch: `main`, folder: `/docs` → **Save**
+2. **Your dashboard URL** will be: `https://<YOUR_ORG>.github.io/<YOUR_REPO>/dashboard/`
+3. **Data updates automatically** — The `dashboard-data.yml` workflow runs daily and on every issue change, committing fresh data to `docs/dashboard/dashboard-data.json`
+4. **Works immediately** — The dashboard includes sample data so you can see it right away, even before any real issues are filed
+
+### Editing & Interacting
+
+- **Click any score cell** (Frequency, Time, People) to edit it inline — the toil score recalculates in real time
+- **Edits persist** in your browser via localStorage
+- **"Save to GitHub"** link opens the issue on GitHub so you can update the actual issue
+- **Sort** by clicking any column header
+- **Filter** using the dropdowns above the table
+- **Print** the dashboard for leadership presentations (print-friendly styling included)
 
 ## How It Works
 
@@ -106,6 +135,7 @@ All toil ideas and automation proposals are tracked as **GitHub Issues** in this
 4. **Propose a solution** - Use the [Automation Proposal](../../issues/new?template=automation-proposal.md) template
 5. **Build & ship** - Automate the toil and eliminate it for good
 6. **Log the win** - Use the [Log Completed Automation](../../issues/new?template=log-win.yml) template to record time saved 🎉
+7. **Review the dashboard** - See all toil ideas, scores, and time saved by team at a glance
 
 ## Quick Links
 
@@ -126,6 +156,7 @@ All toil ideas and automation proposals are tracked as **GitHub Issues** in this
 | [Examples](docs/examples.md) | Common toil patterns to inspire your team |
 | [Contributing](CONTRIBUTING.md) | How to submit ideas and build automations |
 | [Code of Conduct](CODE_OF_CONDUCT.md) | Community standards |
+| [Dashboard](docs/dashboard/index.html) | Interactive team dashboard with time savings |
 | [Security](SECURITY.md) | Security policy for automations |
 
 ## Slack Setup
@@ -210,6 +241,11 @@ When a toil idea is submitted, an AI agent automatically:
 - Nudges toil ideas with no activity after 30 days
 - Auto-closes after 60 days of inactivity
 - Exempts issues labeled `in-progress`, `automated`, or `high-impact`
+
+### 📊 Dashboard Data (daily + on issue changes)
+- Generates `dashboard-data.json` with all toil metrics
+- Powers the interactive dashboard on GitHub Pages
+- Runs automatically — no manual updates needed
 
 ## AI & Data Privacy
 

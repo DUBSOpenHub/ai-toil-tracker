@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2026-02-18
+
+### Added
+- 📊 **Interactive Dashboard** (`docs/dashboard/index.html`) — visual, single-page GitHub Pages dashboard for teams and managers
+  - Summary cards: total ideas, wins, hours saved/month, automation rate, in-progress, high-impact
+  - Team & individual breakdown: per-person and per-team stats with time-saved tallies
+  - Sortable, filterable toil ideas table with color-coded priority rows and status badges
+  - **Inline-editable scores** — click Frequency, Time, or People cells to edit; score recalculates live; edits persist in localStorage
+  - **🚀 Launch CLI button** per issue — copies `gh copilot` command to clipboard to start automating
+  - "Save to GitHub" link per row to push edits back to the issue
+  - Filters by team, category, and status
+  - Print-friendly for leadership presentations
+  - Works immediately with embedded sample data (no setup required to preview)
+- 📊 **Dashboard data workflow** (`dashboard-data.yml`) — generates `dashboard-data.json` daily and on every issue event
+  - Parses all toil and WIN issues, extracts structured form fields
+  - Calculates scores and monthly time savings using the same formula as AI triage
+  - Commits JSON to `docs/dashboard/` for the dashboard to consume
+- 👥 **Team field** added to toil idea and log-win issue forms — enables grouping and filtering by team in the dashboard
+- Dashboard setup instructions in README with GitHub Pages configuration guide
+
 ## [1.2.0] - 2026-02-18
 
 ### Fixed
