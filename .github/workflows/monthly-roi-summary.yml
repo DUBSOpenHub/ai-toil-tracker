@@ -15,8 +15,8 @@ jobs:
         id: metrics
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
         run: |
-          REPO="${{ github.repository }}"
 
           # Count totals
           TOTAL_TOIL=$(gh issue list --repo "$REPO" --label "toil" --state all --limit 1000 --json number --jq 'length')
@@ -50,6 +50,14 @@ jobs:
       - name: Create summary issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          TOTAL_TOIL: ${{ steps.metrics.outputs.total_toil }}
+          NEW_THIS_MONTH: ${{ steps.metrics.outputs.new_this_month }}
+          AUTOMATED: ${{ steps.metrics.outputs.automated }}
+          IN_PROGRESS: ${{ steps.metrics.outputs.in_progress }}
+          OPEN_TRIAGE: ${{ steps.metrics.outputs.open_triage }}
+          HIGH_IMPACT: ${{ steps.metrics.outputs.high_impact }}
+          AUTOMATION_RATE: ${{ steps.metrics.outputs.automation_rate }}
         run: |
           MONTH=$(date -u '+%B %Y')
 
@@ -57,25 +65,25 @@ jobs:
 
           | Metric | Value |
           |--------|-------|
-          | 📋 Total toil ideas (all time) | ${{ steps.metrics.outputs.total_toil }} |
-          | 🆕 New submissions this month | ${{ steps.metrics.outputs.new_this_month }} |
-          | ✅ Automated (all time) | ${{ steps.metrics.outputs.automated }} |
-          | 🔨 In progress | ${{ steps.metrics.outputs.in_progress }} |
-          | 🏷️ Awaiting triage | ${{ steps.metrics.outputs.open_triage }} |
-          | 🔴 High-impact open | ${{ steps.metrics.outputs.high_impact }} |
-          | 📈 Automation rate | ${{ steps.metrics.outputs.automation_rate }}% |
+          | 📋 Total toil ideas (all time) | $TOTAL_TOIL |
+          | 🆕 New submissions this month | $NEW_THIS_MONTH |
+          | ✅ Automated (all time) | $AUTOMATED |
+          | 🔨 In progress | $IN_PROGRESS |
+          | 🏷️ Awaiting triage | $OPEN_TRIAGE |
+          | 🔴 High-impact open | $HIGH_IMPACT |
+          | 📈 Automation rate | $AUTOMATION_RATE% |
 
           ---
 
           ### Quick Links
-          - [View all toil ideas](https://github.com/${{ github.repository }}/issues?q=is%3Aissue+label%3Atoil+sort%3Acreated-desc)
-          - [High-impact items](https://github.com/${{ github.repository }}/issues?q=is%3Aissue+label%3Ahigh-impact+is%3Aopen)
-          - [Completed automations](https://github.com/${{ github.repository }}/issues?q=is%3Aissue+label%3Aautomated)
-          - [Submit new toil idea](https://github.com/${{ github.repository }}/issues/new?template=toil-idea.yml)
+          - [View all toil ideas](https://github.com/$REPO/issues?q=is%3Aissue+label%3Atoil+sort%3Acreated-desc)
+          - [High-impact items](https://github.com/$REPO/issues?q=is%3Aissue+label%3Ahigh-impact+is%3Aopen)
+          - [Completed automations](https://github.com/$REPO/issues?q=is%3Aissue+label%3Aautomated)
+          - [Submit new toil idea](https://github.com/$REPO/issues/new?template=toil-idea.yml)
 
           _This summary was auto-generated. See docs/roi-tracking.md for methodology._"
 
-          gh issue create --repo "${{ github.repository }}" \
+          gh issue create --repo "$REPO" \
             --title "📊 Monthly ROI Summary — $MONTH" \
             --body "$BODY" \
             --label "roi-summary"
@@ -85,13 +93,18 @@ jobs:
         env:
           TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TOTAL_TOIL: ${{ steps.metrics.outputs.total_toil }}
+          AUTOMATED: ${{ steps.metrics.outputs.automated }}
+          NEW_THIS_MONTH: ${{ steps.metrics.outputs.new_this_month }}
+          AUTOMATION_RATE: ${{ steps.metrics.outputs.automation_rate }}
+          REPO: ${{ github.repository }}
         run: |
           MONTH=$(date -u '+%B %Y')
 
           TEAMS_BODY=$(jq -n \
             --arg title "📊 Toil Tracker — $MONTH Summary" \
-            --arg stats "📋 Total: ${{ steps.metrics.outputs.total_toil }} | ✅ Automated: ${{ steps.metrics.outputs.automated }} | 🆕 New: ${{ steps.metrics.outputs.new_this_month }} | 📈 Rate: ${{ steps.metrics.outputs.automation_rate }}%" \
-            --arg url "https://github.com/${{ github.repository }}/issues?q=is%3Aissue+label%3Aroi-summary" \
+            --arg stats "📋 Total: $TOTAL_TOIL | ✅ Automated: $AUTOMATED | 🆕 New: $NEW_THIS_MONTH | 📈 Rate: $AUTOMATION_RATE%" \
+            --arg url "https://github.com/$REPO/issues?q=is%3Aissue+label%3Aroi-summary" \
             '{
               "type": "message",
               "attachments": [{

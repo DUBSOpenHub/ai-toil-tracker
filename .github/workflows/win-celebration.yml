@@ -15,10 +15,11 @@ jobs:
         id: find
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WIN_NUM: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
         run: |
-          WIN_NUM=${{ github.event.issue.number }}
-          WIN_TITLE=$(gh issue view "$WIN_NUM" --repo "${{ github.repository }}" --json title --jq '.title')
-          BODY=$(gh issue view "$WIN_NUM" --repo "${{ github.repository }}" --json body --jq '.body')
+          WIN_TITLE=$(gh issue view "$WIN_NUM" --repo "$REPO" --json title --jq '.title')
+          BODY=$(gh issue view "$WIN_NUM" --repo "$REPO" --json body --jq '.body')
           
           # Extract issue reference (e.g. #12) from "Related toil issue" field
           RELATED=$(echo "$BODY" | grep -oP '#\d+' | head -1)
@@ -38,39 +39,47 @@ jobs:
         if: steps.find.outputs.found == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          WIN_NUM: ${{ steps.find.outputs.win_num }}
+          WIN_TITLE: ${{ steps.find.outputs.win_title }}
+          RELATED_NUM: ${{ steps.find.outputs.related_num }}
         run: |
           COMMENT="## 🎉 This toil has been automated!
 
           Great news — this toil item has been addressed!
 
-          **See:** #${{ steps.find.outputs.win_num }} — ${{ steps.find.outputs.win_title }}
+          **See:** #$WIN_NUM — $WIN_TITLE
 
           Thanks to everyone who identified and solved this. The automation is now live.
 
           _This comment was posted automatically when the automation was logged._"
 
-          gh issue comment "${{ steps.find.outputs.related_num }}" \
-            --repo "${{ github.repository }}" \
+          gh issue comment "$RELATED_NUM" \
+            --repo "$REPO" \
             --body "$COMMENT"
 
           # Add automated label and close the original issue
-          gh issue edit "${{ steps.find.outputs.related_num }}" \
-            --repo "${{ github.repository }}" \
+          gh issue edit "$RELATED_NUM" \
+            --repo "$REPO" \
             --add-label "automated"
           
-          gh issue close "${{ steps.find.outputs.related_num }}" \
-            --repo "${{ github.repository }}" \
+          gh issue close "$RELATED_NUM" \
+            --repo "$REPO" \
             --reason completed || true
 
       - name: Notify Microsoft Teams
         if: steps.find.outputs.found == 'true' && env.TEAMS_WEBHOOK_URL != ''
         env:
           TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          WIN_TITLE: ${{ steps.find.outputs.win_title }}
+          RELATED_NUM: ${{ steps.find.outputs.related_num }}
+          WIN_NUM: ${{ steps.find.outputs.win_num }}
+          REPO: ${{ github.repository }}
         run: |
           TEAMS_BODY=$(jq -n \
             --arg title "🎉 Toil Automated!" \
-            --arg text "**${{ steps.find.outputs.win_title }}** — The toil from issue #${{ steps.find.outputs.related_num }} has been automated." \
-            --arg url "https://github.com/${{ github.repository }}/issues/${{ steps.find.outputs.win_num }}" \
+            --arg text "**$WIN_TITLE** — The toil from issue #$RELATED_NUM has been automated." \
+            --arg url "https://github.com/$REPO/issues/$WIN_NUM" \
             '{
               "type": "message",
               "attachments": [{

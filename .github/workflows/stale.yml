@@ -4,13 +4,15 @@ on:
   schedule:
     - cron: '0 18 1 * *'  # 1st of each month at 10am PST (18:00 UTC)
 
+permissions: {}
+
 jobs:
   stale-check:
     runs-on: ubuntu-latest
     permissions:
       issues: write
     steps:
-      - uses: actions/stale@v10
+      - uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639 # v10.0.0
         with:
           stale-issue-message: >
             👋 Hey! This toil idea has been chilling for 30 days.

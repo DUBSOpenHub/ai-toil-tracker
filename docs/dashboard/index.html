@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com; img-src 'self' data:;">
 <title>Toil Tracker — Find Busywork, Automate It Away</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -254,7 +255,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
   <div class="meta">
     <span id="headerRepo"></span>
     <span>Generated: <span id="headerDate">—</span></span>
-    <a href="#" id="headerRepoLink" target="_blank">View on GitHub ↗</a>
+    <a href="#" id="headerRepoLink" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a>
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle dark/light mode">🌙 Dark</button>
   </div>
 </div>
@@ -449,11 +450,11 @@ const TIME_SCORES = {
   '< 5 minutes': { score: 1, mins: 3 }
 };
 const PEOPLE_SCORES = {
-  'Multiple teams': { score: 8 },
+  'Multiple teams / org-wide': { score: 8 },
   'Entire team': { score: 5 },
-  '4-6 people': { score: 3 },
-  '2-3 people': { score: 2 },
-  'Just you': { score: 1 }
+  '4\u20136 people': { score: 3 },
+  '2\u20133 people': { score: 2 },
+  'Just me': { score: 1 }
 };
 const BONUS_MAP = {
   '❌ Error-prone': 2,
@@ -667,13 +668,13 @@ function convertApiIssues(apiIssues) {
     issues: apiIssues.filter(i => !i.pull_request).map(issue => {
       const body = issue.body || '';
       const labels = issue.labels.map(l => l.name);
-      const freq = extractField(body, 'Frequency') || '⚪ Monthly or less';
-      const time = extractField(body, 'Time per occurrence') || '< 5 minutes';
-      const people = extractField(body, 'People affected') || 'Just you';
-      const team = extractField(body, 'Team') || 'Unknown';
-      const category = extractField(body, 'Category') || 'Other';
+      const freq = extractField(body, 'How often does it happen?') || '⚪ Monthly or less';
+      const time = extractField(body, 'How long does it take each time?') || '< 5 minutes';
+      const people = extractField(body, 'Who is affected?') || 'Just me';
+      const team = extractField(body, 'What team or group are you on?') || 'Unknown';
+      const category = extractField(body, 'What area does this toil fall under?') || 'Other';
       const submitter = issue.user ? `${issue.user.login} (@${issue.user.login})` : 'Unknown';
-      const bonusRaw = extractField(body, 'Bonus factors') || '';
+      const bonusRaw = extractField(body, 'Bonus factors (check all that apply)') || '';
       const bonus = Object.keys(BONUS_MAP).filter(b => bonusRaw.includes(b));
       const { score, monthlyMins } = calcScore(freq, time, people, bonus);
       return {
@@ -689,7 +690,7 @@ function convertApiIssues(apiIssues) {
         time_per_occurrence: time,
         people_affected: people,
         bonus_factors: bonus,
-        automation_idea: extractField(body, 'Automation idea') || '',
+        automation_idea: extractField(body, 'Automation idea (if any)') || '',
         toil_score: score,
         priority: score >= 40 ? '🔴 Critical' : score >= 20 ? '🟠 High' : score >= 10 ? '🟡 Medium' : '⚪ Low',
         monthly_saved_minutes: monthlyMins,
@@ -701,7 +702,8 @@ function convertApiIssues(apiIssues) {
 }
 
 function extractField(body, field) {
-  const regex = new RegExp(`###?\\s*${field}[\\s:]*\\n+([^\\n]+)`, 'i');
+  const escaped = field.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(`###?\\s*${escaped}[\\s:]*\\n+([^\\n]+)`, 'i');
   const m = body.match(regex);
   return m ? m[1].trim() : null;
 }
@@ -1146,8 +1148,9 @@ function renderToilTable(issues) {
     const toilName = dashIdx > -1 ? rawTitle.substring(0, dashIdx) : rawTitle.split(/\s+/).slice(0, 4).join(' ');
     const toilDesc = dashIdx > -1 ? rawTitle.substring(dashIdx + 3) : (dashIdx === -1 && rawTitle.length > toilName.length ? rawTitle : '');
 
+    const safeUrl = issue.url && issue.url.startsWith('https://github.com/') ? issue.url : '#';
     return `<tr class="${priorityClass(issue.toil_score)}">
-      <td><a href="${issue.url}" target="_blank" style="color:#0969da;font-weight:600;">#${issue.number}</a></td>
+      <td><a href="${safeUrl}" target="_blank" rel="noopener noreferrer" style="color:#0969da;font-weight:600;">#${issue.number}</a></td>
       <td class="toil-cell"><div class="toil-name">${esc(toilName)}</div>${toilDesc ? `<div class="toil-desc">${esc(toilDesc)}</div>` : ''}</td>
       <td class="toil-action-cell"><button class="btn btn-launch" onclick="copyLaunchCmd(this, ${issue.number})" data-cmd="${esc(ghCmd, true)}" title="Copy Copilot CLI command to clipboard">🚀 Automate</button></td>
       <td>${esc(issue.submitter)}</td>

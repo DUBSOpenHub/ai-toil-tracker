@@ -21,15 +21,19 @@ jobs:
         id: issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_ISSUE_NUM: ${{ github.event.inputs.issue_number }}
+          EVENT_ISSUE_NUM: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            ISSUE_NUM=${{ github.event.inputs.issue_number }}
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            ISSUE_NUM=$INPUT_ISSUE_NUM
           else
-            ISSUE_NUM=${{ github.event.issue.number }}
+            ISSUE_NUM=$EVENT_ISSUE_NUM
           fi
           echo "number=$ISSUE_NUM" >> "$GITHUB_OUTPUT"
 
-          BODY=$(gh issue view "$ISSUE_NUM" --repo "${{ github.repository }}" --json body --jq '.body')
+          BODY=$(gh issue view "$ISSUE_NUM" --repo "$REPO" --json body --jq '.body')
           echo "$BODY" > /tmp/issue_body.txt
 
       - name: Parse form fields and calculate score
@@ -152,9 +156,10 @@ jobs:
         id: dedup
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUM: ${{ steps.issue.outputs.number }}
+          REPO: ${{ github.repository }}
         run: |
-          ISSUE_NUM=${{ steps.issue.outputs.number }}
-          TITLE=$(gh issue view "$ISSUE_NUM" --repo "${{ github.repository }}" --json title --jq '.title')
+          TITLE=$(gh issue view "$ISSUE_NUM" --repo "$REPO" --json title --jq '.title')
 
           # Extract keywords from title (remove [TOIL] prefix, short words, and punctuation)
           KEYWORDS=$(echo "$TITLE" | sed 's/\[TOIL\]//g' | tr -cs '[:alnum:]' ' ' | tr ' ' '\n' | awk 'length>=4' | head -5 | tr '\n' ' ')
@@ -162,7 +167,7 @@ jobs:
           # Search for related open issues with toil label
           RELATED=""
           if [ -n "$KEYWORDS" ]; then
-            RELATED=$(gh search issues "$KEYWORDS" --repo "${{ github.repository }}" --label toil --state open --limit 5 --json number,title --jq ".[] | select(.number != $ISSUE_NUM) | \"- #\\(.number) \\(.title)\"")
+            RELATED=$(gh search issues "$KEYWORDS" --repo "$REPO" --label toil --state open --limit 5 --json number,title --jq ".[] | select(.number != $ISSUE_NUM) | \"- #\\(.number) \\(.title)\"")
           fi
 
           if [ -n "$RELATED" ]; then
@@ -177,11 +182,10 @@ jobs:
         id: ai
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WEEKLY_TIME: ${{ steps.score.outputs.weekly_time }}
+          TEAM_WEEKLY_TIME: ${{ steps.score.outputs.team_weekly_time }}
         run: |
           BODY=$(cat /tmp/issue_body.txt)
-
-          WEEKLY_TIME="${{ steps.score.outputs.weekly_time }}"
-          TEAM_WEEKLY_TIME="${{ steps.score.outputs.team_weekly_time }}"
 
           PROMPT="You are a senior automation engineer advising a team. Be specific and actionable.
 
@@ -228,16 +232,17 @@ jobs:
       - name: Apply labels
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUM: ${{ steps.issue.outputs.number }}
+          REPO: ${{ github.repository }}
+          FREQ_LABEL: ${{ steps.score.outputs.freq_label }}
+          PRIORITY_LABEL: ${{ steps.score.outputs.priority_label }}
         run: |
-          ISSUE_NUM=${{ steps.issue.outputs.number }}
-          REPO="${{ github.repository }}"
-
           # Add frequency label
-          gh issue edit "$ISSUE_NUM" --repo "$REPO" --add-label "${{ steps.score.outputs.freq_label }}"
+          gh issue edit "$ISSUE_NUM" --repo "$REPO" --add-label "$FREQ_LABEL"
 
           # Add priority label if high enough
-          if [ -n "${{ steps.score.outputs.priority_label }}" ]; then
-            gh issue edit "$ISSUE_NUM" --repo "$REPO" --add-label "${{ steps.score.outputs.priority_label }}"
+          if [ -n "$PRIORITY_LABEL" ]; then
+            gh issue edit "$ISSUE_NUM" --repo "$REPO" --add-label "$PRIORITY_LABEL"
           fi
 
           # Remove triage label (auto-triaged by AI)
@@ -246,11 +251,21 @@ jobs:
       - name: Post triage comment
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUM: ${{ steps.issue.outputs.number }}
+          REPO: ${{ github.repository }}
+          DEDUP_FOUND: ${{ steps.dedup.outputs.found }}
+          FREQ_SCORE: ${{ steps.score.outputs.freq_score }}
+          TIME_SCORE: ${{ steps.score.outputs.time_score }}
+          PEOPLE_SCORE: ${{ steps.score.outputs.people_score }}
+          TOIL_SCORE: ${{ steps.score.outputs.toil_score }}
+          PRIORITY: ${{ steps.score.outputs.priority }}
+          MONTHLY_SAVED: ${{ steps.score.outputs.monthly_saved }}
+          WEEKLY_TIME: ${{ steps.score.outputs.weekly_time }}
+          TEAM_WEEKLY_TIME: ${{ steps.score.outputs.team_weekly_time }}
+          AI_SUGGESTION: ${{ steps.ai.outputs.suggestion }}
         run: |
-          ISSUE_NUM=${{ steps.issue.outputs.number }}
-
           RELATED_SECTION=""
-          if [ "${{ steps.dedup.outputs.found }}" = "true" ]; then
+          if [ "$DEDUP_FOUND" = "true" ]; then
             RELATED_SECTION="---
 
           ### 🔗 Possibly Related Issues
@@ -260,43 +275,51 @@ jobs:
 
           COMMENT="## 🤖 AI Triage Report
 
-          **Toil Score:** Frequency (${{ steps.score.outputs.freq_score }}) x Time (${{ steps.score.outputs.time_score }}) x People (${{ steps.score.outputs.people_score }}) = **${{ steps.score.outputs.toil_score }}**
+          **Toil Score:** Frequency ($FREQ_SCORE) x Time ($TIME_SCORE) x People ($PEOPLE_SCORE) = **$TOIL_SCORE**
 
-          **Priority:** ${{ steps.score.outputs.priority }}
+          **Priority:** $PRIORITY
 
-          **Estimated team time saved if automated:** ${{ steps.score.outputs.monthly_saved }}
+          **Estimated team time saved if automated:** $MONTHLY_SAVED
 
-          **⏱️ Current time spent:** ${{ steps.score.outputs.weekly_time }} (you) · ${{ steps.score.outputs.team_weekly_time }} (team) per week
+          **⏱️ Current time spent:** $WEEKLY_TIME (you) · $TEAM_WEEKLY_TIME (team) per week
 
           ---
 
           ### 💡 Suggested Automation Approach
 
-          ${{ steps.ai.outputs.suggestion }}
+          $AI_SUGGESTION
 
           ${RELATED_SECTION}
 
           ---
 
-          _This issue was auto-triaged by AI. Labels and score have been applied. Review the [scoring guide](https://github.com/${{ github.repository }}/blob/main/docs/scoring-guide.md) for details._"
+          _This issue was auto-triaged by AI. Labels and score have been applied. Review the [scoring guide](https://github.com/$REPO/blob/main/docs/scoring-guide.md) for details._"
 
-          gh issue comment "$ISSUE_NUM" --repo "${{ github.repository }}" --body "$COMMENT"
+          gh issue comment "$ISSUE_NUM" --repo "$REPO" --body "$COMMENT"
 
       - name: Notify Microsoft Teams
         if: env.TEAMS_WEBHOOK_URL != ''
         env:
           TEAMS_WEBHOOK_URL: ${{ secrets.TEAMS_WEBHOOK_URL }}
+          ISSUE_NUM: ${{ steps.issue.outputs.number }}
+          REPO: ${{ github.repository }}
+          FREQ_SCORE: ${{ steps.score.outputs.freq_score }}
+          TIME_SCORE: ${{ steps.score.outputs.time_score }}
+          PEOPLE_SCORE: ${{ steps.score.outputs.people_score }}
+          TOIL_SCORE: ${{ steps.score.outputs.toil_score }}
+          PRIORITY: ${{ steps.score.outputs.priority }}
+          MONTHLY_SAVED: ${{ steps.score.outputs.monthly_saved }}
+          AI_SUGGESTION: ${{ steps.ai.outputs.suggestion }}
         run: |
-          ISSUE_NUM=${{ steps.issue.outputs.number }}
-          ISSUE_TITLE=$(gh issue view "$ISSUE_NUM" --repo "${{ github.repository }}" --json title --jq '.title')
-          ISSUE_URL="https://github.com/${{ github.repository }}/issues/${ISSUE_NUM}"
+          ISSUE_TITLE=$(gh issue view "$ISSUE_NUM" --repo "$REPO" --json title --jq '.title')
+          ISSUE_URL="https://github.com/$REPO/issues/${ISSUE_NUM}"
 
           TEAMS_BODY=$(jq -n \
             --arg title "🤖 AI Triage Report — ${ISSUE_TITLE}" \
-            --arg score "**Toil Score:** Frequency (${{ steps.score.outputs.freq_score }}) × Time (${{ steps.score.outputs.time_score }}) × People (${{ steps.score.outputs.people_score }}) = **${{ steps.score.outputs.toil_score }}**" \
-            --arg priority "**Priority:** ${{ steps.score.outputs.priority }}" \
-            --arg saved "**Estimated team time saved if automated:** ${{ steps.score.outputs.monthly_saved }}" \
-            --arg suggestion "${{ steps.ai.outputs.suggestion }}" \
+            --arg score "**Toil Score:** Frequency ($FREQ_SCORE) × Time ($TIME_SCORE) × People ($PEOPLE_SCORE) = **$TOIL_SCORE**" \
+            --arg priority "**Priority:** $PRIORITY" \
+            --arg saved "**Estimated team time saved if automated:** $MONTHLY_SAVED" \
+            --arg suggestion "$AI_SUGGESTION" \
             --arg url "$ISSUE_URL" \
             '{
               "type": "message",
