@@ -166,16 +166,47 @@ jobs:
 
           Be concise and practical. No fluff."
 
-          # Use GitHub Models via the API
-          RESPONSE=$(curl -s "https://models.github.ai/inference/chat/completions" \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d "$(jq -n --arg prompt "$PROMPT" '{
-              "model": "openai/gpt-4o-mini",
-              "messages": [{"role": "user", "content": $prompt}],
-              "max_tokens": 300,
-              "temperature": 0.7
-            }')" | jq -r '.choices[0].message.content // "Unable to generate suggestion at this time."')
+          REQUEST_BODY_TEMPLATE='{"messages":[{"role":"user","content":"PLACEHOLDER"}],"max_tokens":300,"temperature":0.7}'
+
+          # Try each model in order; stop on first success
+          MODELS=("openai/gpt-4o-mini" "openai/gpt-4o")
+          RESPONSE=""
+
+          for MODEL in "${MODELS[@]}"; do
+            echo "🔄 Trying model: $MODEL"
+
+            HTTP_RESPONSE=$(curl -s -w "\n%{http_code}" \
+              "https://models.github.ai/inference/chat/completions" \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "$(jq -n --arg prompt "$PROMPT" --arg model "$MODEL" '{
+                "model": $model,
+                "messages": [{"role": "user", "content": $prompt}],
+                "max_tokens": 300,
+                "temperature": 0.7
+              }')")
+
+            HTTP_STATUS=$(echo "$HTTP_RESPONSE" | tail -1)
+            BODY_RESPONSE=$(echo "$HTTP_RESPONSE" | sed '$d')
+
+            if [ "$HTTP_STATUS" -ge 200 ] 2>/dev/null && [ "$HTTP_STATUS" -lt 300 ] 2>/dev/null; then
+              RESPONSE=$(echo "$BODY_RESPONSE" | jq -r '.choices[0].message.content // empty')
+              if [ -n "$RESPONSE" ]; then
+                echo "✅ Success with $MODEL"
+                break
+              else
+                echo "⚠️ $MODEL returned 200 but empty content, trying next model..."
+              fi
+            else
+              echo "⚠️ $MODEL returned HTTP $HTTP_STATUS, trying next model..."
+            fi
+          done
+
+          # Fallback message if all models failed
+          if [ -z "$RESPONSE" ]; then
+            echo "❌ All models failed"
+            RESPONSE="⚠️ AI suggestion temporarily unavailable. The triage scoring above is still valid — a team member can manually review automation options."
+          fi
 
           # Escape for GitHub output
           {
@@ -227,6 +258,60 @@ jobs:
           _This issue was auto-triaged by AI. Labels and score have been applied. Review the [scoring guide](../blob/main/docs/scoring-guide.md) for details._"
 
           gh issue comment "$ISSUE_NUM" --repo "${{ github.repository }}" --body "$COMMENT"
+
+      - name: AI - Generate starter code
+        id: ai_code
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TOIL_DESC=$(cat /tmp/toil_desc.txt)
+          SUGGESTION="${{ steps.ai.outputs.suggestion }}"
+
+          CODE_PROMPT="You are an automation engineer. A team submitted this toil item:
+
+          ${TOIL_DESC}
+
+          An advisor suggested this approach:
+
+          ${SUGGESTION}
+
+          Generate a starter implementation for this automation suggestion. Output a GitHub Actions workflow YAML or bash script.
+          Include comments explaining each section. Keep it practical and ready to customize.
+          Output ONLY the code, no extra explanation."
+
+          CODE_RESPONSE=$(curl -s "https://models.github.ai/inference/chat/completions" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$(jq -n --arg prompt "$CODE_PROMPT" '{
+              "model": "openai/gpt-4o-mini",
+              "messages": [{"role": "user", "content": $prompt}],
+              "max_tokens": 800,
+              "temperature": 0.3
+            }')" | jq -r '.choices[0].message.content // "Unable to generate starter code at this time."')
+
+          # Save to file to avoid output escaping issues
+          echo "$CODE_RESPONSE" > /tmp/starter_code.txt
+
+      - name: Post starter code comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_NUM=${{ steps.issue.outputs.number }}
+          STARTER_CODE=$(cat /tmp/starter_code.txt)
+
+          CODE_COMMENT="## 🛠️ AI-Generated Starter Code
+
+          Here's a starter implementation based on the suggested automation approach above:
+
+          \`\`\`
+          ${STARTER_CODE}
+          \`\`\`
+
+          ---
+
+          _⚠️ This is AI-generated starter code. Review, test, and customize before using in production._"
+
+          gh issue comment "$ISSUE_NUM" --repo "${{ github.repository }}" --body "$CODE_COMMENT"
 
       - name: Send webhook notification
         if: ${{ vars.WEBHOOK_URL != '' || secrets.WEBHOOK_URL != '' }}
