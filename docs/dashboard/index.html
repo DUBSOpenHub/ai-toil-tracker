@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Toil Tracker Dashboard</title>
+<title>Toil Tracker — Reduce Toil, Increase AI-First Thinking</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -22,10 +22,11 @@ body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; back
 
 /* ── Summary Cards ── */
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(195px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
-.card { background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 1.15rem 1.25rem; transition: box-shadow .2s; }
+.card { background: #fff; border: 1px solid #d0d7de; border-radius: 8px; padding: 1.15rem 1.25rem; transition: box-shadow .2s; text-align: center; }
 .card:hover { box-shadow: 0 2px 8px rgba(0,0,0,.08); }
-.card .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: .04em; color: #57606a; margin-bottom: 0.25rem; font-weight: 600; }
-.card .value { font-size: 1.85rem; font-weight: 700; color: #0969da; }
+.card .emoji { font-size: 1.6rem; margin-bottom: 0.25rem; line-height: 1; }
+.card .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: .04em; color: #57606a; margin-bottom: 0.35rem; font-weight: 600; }
+.card .value { font-size: 2rem; font-weight: 700; color: #0969da; }
 .card .value.green { color: #1a7f37; }
 .card .value.purple { color: #8250df; }
 .card .value.orange { color: #bf8700; }
@@ -67,6 +68,19 @@ td.editable { cursor: pointer; position: relative; }
 td.editable:hover { background: #ddf4ff; border-radius: 4px; }
 td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35rem; border: 1px solid #0969da; border-radius: 4px; width: 100%; background: #fff; }
 .edited-marker { color: #8250df; font-weight: 700; margin-left: 2px; font-size: 0.65rem; }
+
+/* ── Team Manager Panel ── */
+.team-manager { margin-bottom: 1.25rem; padding: 1rem; background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; }
+.team-manager summary { font-weight: 600; font-size: 0.9rem; cursor: pointer; user-select: none; color: #24292f; }
+.team-manager summary:hover { color: #0969da; }
+.team-manager-list { margin-top: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.team-rename-row { display: flex; align-items: center; gap: 0.5rem; }
+.team-rename-row .team-current { font-size: 0.85rem; font-weight: 600; min-width: 140px; }
+.team-rename-row span.arrow { color: #8b949e; font-size: 0.8rem; }
+.team-rename-row input { font-size: 0.85rem; padding: 0.3rem 0.5rem; border: 1px solid #d0d7de; border-radius: 6px; width: 180px; }
+.team-rename-row .btn-rename { background: #0969da; color: #fff; border-color: #0969da; font-size: 0.75rem; padding: 0.25rem 0.5rem; }
+.team-rename-row .btn-rename:hover { background: #0860ca; }
+.team-rename-row .btn-rename:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ── Buttons ── */
 .btn { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.3rem 0.65rem; border: 1px solid #d0d7de; border-radius: 6px; background: #fff; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all .15s; white-space: nowrap; }
@@ -127,6 +141,10 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
   :root:not(.light) .badge-automated { background: #0f2d1c; color: #3fb950; }
   :root:not(.light) .toast { background: #30363d; color: #e6edf3; }
   :root:not(.light) .edited-marker { color: #bc8cff; }
+  :root:not(.light) .team-manager { background: #0d1117; border-color: #30363d; }
+  :root:not(.light) .team-manager summary { color: #e6edf3; }
+  :root:not(.light) .team-rename-row input { background: #0d1117; border-color: #30363d; color: #e6edf3; }
+  :root:not(.light) .team-rename-row .btn-rename { background: #1f6feb; border-color: #1f6feb; }
   :root:not(.light) a { color: #58a6ff; }
 }
 
@@ -163,6 +181,10 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 .dark .badge-automated { background: #0f2d1c; color: #3fb950; }
 .dark .toast { background: #30363d; color: #e6edf3; }
 .dark .edited-marker { color: #bc8cff; }
+.dark .team-manager { background: #0d1117; border-color: #30363d; }
+.dark .team-manager summary { color: #e6edf3; }
+.dark .team-rename-row input { background: #0d1117; border-color: #30363d; color: #e6edf3; }
+.dark .team-rename-row .btn-rename { background: #1f6feb; border-color: #1f6feb; }
 .dark a { color: #58a6ff; }
 .dark .theme-toggle { border-color: #30363d; }
 
@@ -184,7 +206,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 <body>
 
 <div class="header">
-  <h1>📊 Toil Tracker Dashboard</h1>
+  <h1>🤖 Toil Tracker — Reduce Toil, Increase AI-First Thinking</h1>
   <div class="meta">
     <span id="headerRepo"></span>
     <span>Generated: <span id="headerDate">—</span></span>
@@ -197,18 +219,44 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
   <!-- Summary Cards -->
   <div class="cards" id="summaryCards"></div>
 
+  <!-- Time Impact -->
+  <div class="section">
+    <h2>⏱️ Time Impact — Where Your Hours Go</h2>
+    <div class="cards" id="timeImpactCards"></div>
+    <div class="table-wrap">
+      <table id="timeImpactTable">
+        <thead>
+          <tr>
+            <th>🏢 Team</th>
+            <th>⏱️ Current Weekly Hours (Team)</th>
+            <th>📅 Current Monthly Hours (Team)</th>
+            <th>⏱️ Potential Time Saved / Month</th>
+            <th>🔥 Toil Burn Rate</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
   <!-- Team & Individual Breakdown -->
   <div class="section" id="breakdownSection">
-    <h2>👥 Team &amp; Individual Breakdown</h2>
+    <h2>🏆 Team &amp; Individual Leaderboard</h2>
+    <details class="team-manager">
+      <summary>✏️ Manage Team Names</summary>
+      <div class="team-manager-list" id="teamManagerList">
+        <!-- Populated by JS -->
+      </div>
+    </details>
     <div class="filters">
       <label>Team:</label>
       <select id="breakdownTeamFilter"><option value="">All Teams</option></select>
     </div>
     <div id="teamTables"></div>
-    <h3 style="margin:1.25rem 0 0.5rem;font-size:0.95rem;">Individual Breakdown</h3>
+    <h3 style="margin:1.25rem 0 0.5rem;font-size:0.95rem;">🧑‍💻 Individual Scoreboard</h3>
     <div class="table-wrap">
       <table id="personTable">
-        <thead><tr><th>Name</th><th># Ideas Submitted</th><th># Automated</th><th>Est. Monthly Hours Saved</th></tr></thead>
+        <thead><tr><th>🧑‍💻 Name</th><th>💡 Ideas Submitted</th><th>🤖 Automated</th><th>⏱️ Weekly Hours Spent</th><th>⏱️ Time Given Back / Month</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -216,7 +264,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 
   <!-- Main Toil Ideas Table -->
   <div class="section">
-    <h2>📋 Toil Ideas</h2>
+    <h2>🗂️ Toil Hit List</h2>
     <div class="filters">
       <label>Team:</label>
       <select id="filterTeam"><option value="">All</option></select>
@@ -224,24 +272,33 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
       <select id="filterCategory"><option value="">All</option></select>
       <label>Status:</label>
       <select id="filterStatus"><option value="">All</option></select>
+      <label>📊 Stack rank by:</label>
+      <select id="filterSort">
+        <option value="team_weekly_time_spent">👥 Team Time Spent/Week</option>
+        <option value="weekly_time_spent">⏱️ Your Time Spent/Week</option>
+        <option value="monthly_saved_minutes">⏱️ Potential Time Saved / Month</option>
+        <option value="toil_score">🎯 Toil Score</option>
+      </select>
     </div>
     <div class="table-wrap">
       <table id="toilTable">
         <thead>
           <tr>
-            <th data-col="number">#</th>
-            <th data-col="title">Title</th>
-            <th data-col="submitter">Submitter</th>
-            <th data-col="team">Team</th>
-            <th data-col="category">Category</th>
-            <th data-col="frequency">Frequency</th>
-            <th data-col="time_per_occurrence">Time</th>
-            <th data-col="people_affected">People</th>
-            <th data-col="toil_score">Score</th>
-            <th data-col="bonus_factors">Bonus Factors</th>
-            <th data-col="status">Status</th>
-            <th data-col="monthly_saved_minutes">Est. Monthly Savings</th>
-            <th data-col="actions">Actions</th>
+            <th data-col="number">#️⃣</th>
+            <th data-col="title">💡 Toil</th>
+            <th data-col="submitter">🧑‍💻 Submitter</th>
+            <th data-col="team">🏢 Team</th>
+            <th data-col="category">🏷️ Category</th>
+            <th data-col="frequency">🔄 Frequency</th>
+            <th data-col="time_per_occurrence">⏱️ Time</th>
+            <th data-col="people_affected">👥 People</th>
+            <th data-col="weekly_time_spent">⏱️ You/Week</th>
+            <th data-col="team_weekly_time_spent">👥 Team/Week</th>
+            <th data-col="toil_score">🎯 Score</th>
+            <th data-col="bonus_factors">⚡ Bonus</th>
+            <th data-col="status">📍 Status</th>
+            <th data-col="monthly_saved_minutes">⏱️ Time Saved / Month</th>
+            <th data-col="actions">🚀 Actions</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -331,7 +388,7 @@ const SAMPLE_DATA = {
   issues: [
     {
       number: 1,
-      title: "[TOIL] Manual deployment steps for staging environment",
+      title: "[TOIL] Staging Deploy Bot — Manual deployment steps for staging environment",
       url: `https://github.com/${CONFIG.fullRepo}/issues/1`,
       state: "open",
       labels: ["toil", "high-impact", "🔴 multiple-times-daily"],
@@ -346,12 +403,16 @@ const SAMPLE_DATA = {
       toil_score: 200,
       priority: "🔴 Critical",
       monthly_saved_minutes: 15000,
+      weekly_time_spent: 300,
+      team_weekly_time_spent: 1500,
+      weekly_time_spent_display: "5 hrs/week",
+      team_weekly_time_spent_display: "25 hrs/week",
       created_at: "2026-02-10T10:00:00Z",
       ai_suggestion: "Use reusable GitHub Actions workflow with environment gates"
     },
     {
       number: 2,
-      title: "[TOIL] Manually rotating database credentials every week",
+      title: "[TOIL] Credential Rotator — Manually rotating database credentials every week",
       url: `https://github.com/${CONFIG.fullRepo}/issues/2`,
       state: "open",
       labels: ["toil", "triage"],
@@ -366,12 +427,16 @@ const SAMPLE_DATA = {
       toil_score: 14,
       priority: "🟡 Medium",
       monthly_saved_minutes: 176,
+      weekly_time_spent: 30,
+      team_weekly_time_spent: 60,
+      weekly_time_spent_display: "30 min/week",
+      team_weekly_time_spent_display: "1 hr/week",
       created_at: "2026-02-11T14:30:00Z",
       ai_suggestion: "Configure AWS Secrets Manager with Lambda rotation function"
     },
     {
       number: 3,
-      title: "[TOIL] Copy-pasting test results into Slack every morning",
+      title: "[TOIL] Test Results Broadcaster — Copy-pasting test results into Slack every morning",
       url: `https://github.com/${CONFIG.fullRepo}/issues/3`,
       state: "closed",
       labels: ["toil", "automated"],
@@ -386,12 +451,16 @@ const SAMPLE_DATA = {
       toil_score: 11,
       priority: "🟡 Medium",
       monthly_saved_minutes: 200,
+      weekly_time_spent: 50,
+      team_weekly_time_spent: 50,
+      weekly_time_spent_display: "50 min/week",
+      team_weekly_time_spent_display: "50 min/week",
       created_at: "2026-02-08T09:00:00Z",
       ai_suggestion: "GitHub Actions workflow with Slack notification step"
     },
     {
       number: 4,
-      title: "[TOIL] Manually updating dependency versions across 12 microservices",
+      title: "[TOIL] Dependency Updater — Manually updating dependency versions across 12 microservices",
       url: `https://github.com/${CONFIG.fullRepo}/issues/4`,
       state: "open",
       labels: ["toil", "in-progress", "high-impact"],
@@ -406,12 +475,16 @@ const SAMPLE_DATA = {
       toil_score: 76,
       priority: "🔴 Critical",
       monthly_saved_minutes: 6600,
+      weekly_time_spent: 120,
+      team_weekly_time_spent: 480,
+      weekly_time_spent_display: "2 hrs/week",
+      team_weekly_time_spent_display: "8 hrs/week",
       created_at: "2026-02-12T11:00:00Z",
       ai_suggestion: "Set up Dependabot with grouped updates and auto-merge workflow"
     },
     {
       number: 5,
-      title: "[TOIL] Onboarding new engineers — manual environment setup",
+      title: "[TOIL] Dev Setup Wizard — Onboarding new engineers — manual environment setup",
       url: `https://github.com/${CONFIG.fullRepo}/issues/5`,
       state: "open",
       labels: ["toil", "triage"],
@@ -426,12 +499,16 @@ const SAMPLE_DATA = {
       toil_score: 18,
       priority: "🟡 Medium",
       monthly_saved_minutes: 150,
+      weekly_time_spent: 90,
+      team_weekly_time_spent: 180,
+      weekly_time_spent_display: "1.5 hrs/week",
+      team_weekly_time_spent_display: "3 hrs/week",
       created_at: "2026-02-14T16:00:00Z",
       ai_suggestion: "Create devcontainer.json with all tools and extensions pre-configured"
     },
     {
       number: 6,
-      title: "[TOIL] Manually triaging incoming support tickets from Zendesk",
+      title: "[TOIL] Ticket Router — Manually triaging incoming support tickets from Zendesk",
       url: `https://github.com/${CONFIG.fullRepo}/issues/6`,
       state: "open",
       labels: ["toil", "high-impact"],
@@ -446,6 +523,10 @@ const SAMPLE_DATA = {
       toil_score: 55,
       priority: "🔴 Critical",
       monthly_saved_minutes: 4500,
+      weekly_time_spent: 150,
+      team_weekly_time_spent: 750,
+      weekly_time_spent_display: "2.5 hrs/week",
+      team_weekly_time_spent_display: "12.5 hrs/week",
       created_at: "2026-02-15T08:00:00Z",
       ai_suggestion: "Train a classifier on historical ticket data to auto-label and route"
     }
@@ -456,7 +537,7 @@ const SAMPLE_DATA = {
 // STATE
 // ═══════════════════════════════════════════════════
 let dashboardData = null;
-let sortCol = 'toil_score';
+let sortCol = 'team_weekly_time_spent';
 let sortDir = -1; // -1 = desc
 const localEdits = JSON.parse(localStorage.getItem('toilEdits') || '{}');
 
@@ -583,7 +664,13 @@ function getStatus(issue) {
 }
 
 function statusBadge(status) {
-  return `<span class="badge badge-${status}">${status}</span>`;
+  const badges = {
+    'automated': '✅ shipped',
+    'in-progress': '🔨 building',
+    'triage': '🔍 triaging',
+    'toil': '😤 suffering'
+  };
+  return `<span class="badge badge-${status}">${badges[status] || status}</span>`;
 }
 
 function priorityClass(score) {
@@ -598,12 +685,21 @@ function formatMinutes(mins) {
   return `${Math.round(mins)} min/mo`;
 }
 
+function formatWeeklyTime(mins) {
+  if (!mins && mins !== 0) return '—';
+  if (mins >= 60) return `${(mins / 60).toFixed(1)} hrs/wk`;
+  return `${Math.round(mins)} min/wk`;
+}
+
 // ═══════════════════════════════════════════════════
 // RENDER
 // ═══════════════════════════════════════════════════
 function render() {
   const data = dashboardData;
   if (!data) return;
+
+  // Apply team renames
+  applyTeamRenames(data.issues);
 
   // Header
   document.getElementById('headerRepo').textContent = data.repo;
@@ -618,7 +714,11 @@ function render() {
   // Summary cards
   renderSummaryCards(issues);
 
-  // Team & Individual breakdown
+  // Time impact
+  renderTimeImpact(issues);
+
+  // Team manager + breakdown
+  renderTeamManager(issues);
   renderBreakdown(issues);
 
   // Main table
@@ -660,13 +760,91 @@ function renderSummaryCards(issues) {
   const highImpact = issues.filter(i => i.toil_score >= 40 && getStatus(i) !== 'automated').length;
 
   document.getElementById('summaryCards').innerHTML = `
-    <div class="card"><div class="label">Total Ideas</div><div class="value">${total}</div></div>
-    <div class="card"><div class="label">Automated (Wins)</div><div class="value green">${automated}</div></div>
-    <div class="card"><div class="label">Hours Saved / Month</div><div class="value green">${hoursSaved}</div></div>
-    <div class="card"><div class="label">Automation Rate</div><div class="value purple">${rate}%</div></div>
-    <div class="card"><div class="label">In Progress</div><div class="value">${inProgress}</div></div>
-    <div class="card"><div class="label">High-Impact Open</div><div class="value orange">${highImpact}</div></div>
+    <div class="card"><div class="emoji">💡</div><div class="label">Total Ideas</div><div class="value">${total}</div></div>
+    <div class="card"><div class="emoji">🤖</div><div class="label">Automated Wins</div><div class="value green">${automated}</div></div>
+    <div class="card"><div class="emoji">⏱️</div><div class="label">Hours Given Back / Month</div><div class="value green">${hoursSaved}</div></div>
+    <div class="card"><div class="emoji">📈</div><div class="label">Automation Rate</div><div class="value purple">${rate}%</div></div>
+    <div class="card"><div class="emoji">🔨</div><div class="label">In Progress</div><div class="value">${inProgress}</div></div>
+    <div class="card"><div class="emoji">🔥</div><div class="label">High-Impact Open</div><div class="value orange">${highImpact}</div></div>
   `;
+}
+
+// ── Time Impact ──
+function renderTimeImpact(issues) {
+  const teamMap = {};
+  issues.forEach(i => {
+    const t = i.team || 'Unknown';
+    if (!teamMap[t]) teamMap[t] = { weeklyMins: 0, monthlySavings: 0 };
+    teamMap[t].weeklyMins += (i.team_weekly_time_spent || 0);
+    teamMap[t].monthlySavings += (i.monthly_saved_minutes || 0);
+  });
+
+  const totalWeeklyMins = Object.values(teamMap).reduce((s, d) => s + d.weeklyMins, 0);
+  const totalWeeklyHrs = (totalWeeklyMins / 60).toFixed(1);
+  const totalMonthlyHrs = (totalWeeklyMins / 60 * 4.33).toFixed(1);
+  const potentialMonthlySavingsHrs = (Object.values(teamMap).reduce((s, d) => s + d.monthlySavings, 0) / 60).toFixed(1);
+  const captureRate = totalMonthlyHrs > 0 ? ((potentialMonthlySavingsHrs / totalMonthlyHrs) * 100).toFixed(0) : 0;
+
+  document.getElementById('timeImpactCards').innerHTML = `
+    <div class="card"><div class="emoji">🔥</div><div class="label">Weekly Hours Burned on Toil</div><div class="value orange">${totalWeeklyHrs}</div></div>
+    <div class="card"><div class="emoji">📅</div><div class="label">Monthly Hours Burned on Toil</div><div class="value orange">${totalMonthlyHrs}</div></div>
+    <div class="card"><div class="emoji">⏱️</div><div class="label">Potential Time Given Back / Month</div><div class="value green">${potentialMonthlySavingsHrs} hrs</div></div>
+    <div class="card"><div class="emoji">🎯</div><div class="label">Time Recovery Rate</div><div class="value purple">${captureRate}%</div></div>
+  `;
+
+  const teams = Object.entries(teamMap).sort((a, b) => b[1].weeklyMins - a[1].weeklyMins);
+  const tbody = document.querySelector('#timeImpactTable tbody');
+  tbody.innerHTML = teams.map(([t, d]) => {
+    const weeklyHrs = (d.weeklyMins / 60).toFixed(1);
+    const monthlyHrs = (d.weeklyMins / 60 * 4.33).toFixed(1);
+    const savingsHrs = (d.monthlySavings / 60).toFixed(1);
+    const burnRate = monthlyHrs > 0 ? ((d.weeklyMins / totalWeeklyMins) * 100).toFixed(0) : 0;
+    return `<tr><td>${esc(t)}</td><td>${weeklyHrs} hrs</td><td>${monthlyHrs} hrs</td><td>${savingsHrs} hrs</td><td>${burnRate}%</td></tr>`;
+  }).join('');
+}
+
+// ── Team Name Management ──
+function getTeamRenames() {
+  return JSON.parse(localStorage.getItem('toilTeamRenames') || '{}');
+}
+function saveTeamRenames(renames) {
+  localStorage.setItem('toilTeamRenames', JSON.stringify(renames));
+}
+function applyTeamRenames(issues) {
+  const renames = getTeamRenames();
+  issues.forEach(i => {
+    if (i._originalTeam === undefined) i._originalTeam = i.team;
+    if (renames[i._originalTeam]) i.team = renames[i._originalTeam];
+  });
+}
+function renderTeamManager(issues) {
+  const renames = getTeamRenames();
+  const originalTeams = [...new Set(issues.map(i => i._originalTeam || i.team))].sort();
+  const container = document.getElementById('teamManagerList');
+  if (!originalTeams.length) { container.innerHTML = '<p style="font-size:0.85rem;color:#8b949e;">No teams found yet.</p>'; return; }
+  container.innerHTML = originalTeams.map(t => {
+    const current = renames[t] || t;
+    return `<div class="team-rename-row">
+      <span class="team-current">${esc(t)}</span>
+      <span class="arrow">→</span>
+      <input type="text" value="${esc(current)}" data-original="${esc(t)}" placeholder="New team name" />
+      <button class="btn btn-rename" onclick="renameTeam(this)">Rename</button>
+    </div>`;
+  }).join('');
+}
+function renameTeam(btn) {
+  const row = btn.closest('.team-rename-row');
+  const input = row.querySelector('input');
+  const original = input.dataset.original;
+  const newName = input.value.trim();
+  if (!newName) return;
+  const renames = getTeamRenames();
+  if (newName === original) { delete renames[original]; }
+  else { renames[original] = newName; }
+  saveTeamRenames(renames);
+  applyTeamRenames(dashboardData.issues);
+  render();
+  showToast(`🏷️ Team glow-up complete: ${original} → ${newName} ✨`);
 }
 
 // ── Team & Individual Breakdown ──
@@ -678,20 +856,21 @@ function renderBreakdown(issues) {
   const personMap = {};
   filtered.forEach(i => {
     const name = i.submitter || 'Unknown';
-    if (!personMap[name]) personMap[name] = { submitted: 0, automated: 0, minsSaved: 0 };
+    if (!personMap[name]) personMap[name] = { submitted: 0, automated: 0, minsSaved: 0, weeklyMins: 0 };
     personMap[name].submitted++;
     if (getStatus(i) === 'automated') personMap[name].automated++;
     personMap[name].minsSaved += (i.monthly_saved_minutes || 0);
+    personMap[name].weeklyMins += (i.weekly_time_spent || 0);
   });
 
   const tbody = document.querySelector('#personTable tbody');
   const people = Object.entries(personMap).sort((a, b) => b[1].minsSaved - a[1].minsSaved);
-  let totalSub = 0, totalAuto = 0, totalMins = 0;
+  let totalSub = 0, totalAuto = 0, totalMins = 0, totalWeekly = 0;
 
   tbody.innerHTML = people.map(([name, d]) => {
-    totalSub += d.submitted; totalAuto += d.automated; totalMins += d.minsSaved;
-    return `<tr><td>${esc(name)}</td><td>${d.submitted}</td><td>${d.automated}</td><td>${formatMinutes(d.minsSaved)}</td></tr>`;
-  }).join('') + `<tr class="total-row"><td>Total</td><td>${totalSub}</td><td>${totalAuto}</td><td>${formatMinutes(totalMins)}</td></tr>`;
+    totalSub += d.submitted; totalAuto += d.automated; totalMins += d.minsSaved; totalWeekly += d.weeklyMins;
+    return `<tr><td>${esc(name)}</td><td>${d.submitted}</td><td>${d.automated}</td><td>${formatWeeklyTime(d.weeklyMins)}</td><td>${formatMinutes(d.minsSaved)}</td></tr>`;
+  }).join('') + `<tr class="total-row"><td>Total</td><td>${totalSub}</td><td>${totalAuto}</td><td>${formatWeeklyTime(totalWeekly)}</td><td>${formatMinutes(totalMins)}</td></tr>`;
 
   // Per-team table
   const teamMap = {};
@@ -707,9 +886,9 @@ function renderBreakdown(issues) {
   const container = document.getElementById('teamTables');
   if (teams.length > 1) {
     let gt = { submitted: 0, automated: 0, minsSaved: 0 };
-    container.innerHTML = `<h3 style="font-size:0.95rem;margin-bottom:0.5rem;">Team Summary</h3>
+    container.innerHTML = `<h3 style="font-size:0.95rem;margin-bottom:0.5rem;">🏢 Team Scoreboard</h3>
     <div class="table-wrap"><table>
-      <thead><tr><th>Team</th><th># Ideas</th><th># Automated</th><th>Est. Monthly Hours Saved</th></tr></thead>
+      <thead><tr><th>🏢 Team</th><th>💡 Ideas</th><th>🤖 Automated</th><th>⏱️ Time Given Back / Month</th></tr></thead>
       <tbody>${teams.map(([t, d]) => {
         gt.submitted += d.submitted; gt.automated += d.automated; gt.minsSaved += d.minsSaved;
         return `<tr><td>${esc(t)}</td><td>${d.submitted}</td><td>${d.automated}</td><td>${formatMinutes(d.minsSaved)}</td></tr>`;
@@ -771,12 +950,14 @@ function renderToilTable(issues) {
       <td class="editable" data-issue="${issue.number}" data-field="frequency">${esc(issue.frequency)}${edited}</td>
       <td class="editable" data-issue="${issue.number}" data-field="time_per_occurrence">${esc(issue.time_per_occurrence)}</td>
       <td class="editable" data-issue="${issue.number}" data-field="people_affected">${esc(issue.people_affected)}</td>
+      <td>${formatWeeklyTime(issue.weekly_time_spent)}</td>
+      <td>${formatWeeklyTime(issue.team_weekly_time_spent)}</td>
       <td style="font-weight:700">${issue.toil_score}</td>
       <td style="font-size:0.78rem">${esc(bonusStr)}</td>
       <td>${statusBadge(status)}</td>
       <td>${formatMinutes(issue.monthly_saved_minutes)}</td>
       <td style="white-space:nowrap">
-        <button class="btn btn-launch" onclick="copyLaunchCmd(this, ${issue.number})" data-cmd="${esc(ghCmd, true)}" title="Copy Copilot CLI command">🚀 Launch CLI</button>
+        <button class="btn btn-launch" onclick="copyLaunchCmd(this, ${issue.number})" data-cmd="${esc(ghCmd, true)}" title="Copy Copilot CLI command to clipboard">🚀 Solve this with Copilot CLI</button>
         <a class="btn btn-save" href="${issue.url}" target="_blank" title="Edit on GitHub">Save to GitHub</a>
       </td>
     </tr>`;
@@ -851,6 +1032,11 @@ document.querySelector('#toilTable thead').addEventListener('click', function(e)
 ['filterTeam', 'filterCategory', 'filterStatus', 'breakdownTeamFilter'].forEach(id => {
   document.getElementById(id).addEventListener('change', () => render());
 });
+document.getElementById('filterSort').addEventListener('change', function() {
+  sortCol = this.value;
+  sortDir = -1;
+  render();
+});
 
 // ═══════════════════════════════════════════════════
 // CLIPBOARD & TOAST
@@ -858,14 +1044,14 @@ document.querySelector('#toilTable thead').addEventListener('click', function(e)
 function copyLaunchCmd(btn, issueNum) {
   const cmd = btn.getAttribute('data-cmd');
   navigator.clipboard.writeText(cmd).then(() => {
-    showToast('✅ Copilot CLI command copied to clipboard!');
+    showToast('🚀 Command copied! Paste in your terminal and let Copilot cook 🧑‍🍳');
   }).catch(() => {
     // Fallback
     const ta = document.createElement('textarea');
     ta.value = cmd; document.body.appendChild(ta);
     ta.select(); document.execCommand('copy');
     document.body.removeChild(ta);
-    showToast('✅ Copilot CLI command copied to clipboard!');
+    showToast('🚀 Command copied! Go paste it and watch the magic happen ✨');
   });
 }
 

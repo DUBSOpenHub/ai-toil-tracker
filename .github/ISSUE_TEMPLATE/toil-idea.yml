@@ -75,6 +75,24 @@ body:
     validations:
       required: true
 
+  - type: input
+    id: weekly-time-spent
+    attributes:
+      label: How much total time do you spend on this per week?
+      description: Your best estimate — this helps us measure real impact when it gets automated
+      placeholder: "e.g. 2 hours, 30 minutes, 4 hours"
+    validations:
+      required: true
+
+  - type: input
+    id: team-weekly-time-spent
+    attributes:
+      label: How much total time does your TEAM spend on this per week?
+      description: Estimate across everyone affected — we'll use this to calculate ROI
+      placeholder: "e.g. 8 hours, 15 hours, 2 hours"
+    validations:
+      required: true
+
   - type: dropdown
     id: category
     attributes:

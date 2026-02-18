@@ -71,6 +71,24 @@ body:
     validations:
       required: true
 
+  - type: input
+    id: actual-weekly-time-before
+    attributes:
+      label: How much time did the team spend on this per week BEFORE automation?
+      description: The actual time spent — helps us calculate real ROI
+      placeholder: "e.g. 10 hours/week"
+    validations:
+      required: true
+
+  - type: input
+    id: actual-weekly-time-after
+    attributes:
+      label: How much time does the team spend on this per week AFTER automation?
+      description: Should be close to zero if fully automated!
+      placeholder: "e.g. 0, 30 minutes, 1 hour"
+    validations:
+      required: true
+
   - type: dropdown
     id: people-benefited
     attributes:

@@ -86,6 +86,17 @@ jobs:
             PEOPLE_SCORE=1
           fi
 
+          # Parse weekly time spent (individual)
+          WEEKLY_TIME=$(echo "$BODY" | sed -n '/How much total time do you spend/,/###/{/###/!p;}' | grep -v '^$' | head -1 | xargs)
+          if [ -z "$WEEKLY_TIME" ]; then WEEKLY_TIME="Not specified"; fi
+
+          # Parse team weekly time spent
+          TEAM_WEEKLY_TIME=$(echo "$BODY" | sed -n '/How much total time does your TEAM/,/###/{/###/!p;}' | grep -v '^$' | head -1 | xargs)
+          if [ -z "$TEAM_WEEKLY_TIME" ]; then TEAM_WEEKLY_TIME="Not specified"; fi
+
+          echo "weekly_time=$WEEKLY_TIME" >> "$GITHUB_OUTPUT"
+          echo "team_weekly_time=$TEAM_WEEKLY_TIME" >> "$GITHUB_OUTPUT"
+
           # Calculate toil score
           TOIL_SCORE=$((FREQ_SCORE * TIME_SCORE * PEOPLE_SCORE))
 
@@ -169,11 +180,20 @@ jobs:
         run: |
           BODY=$(cat /tmp/issue_body.txt)
 
+          WEEKLY_TIME="${{ steps.score.outputs.weekly_time }}"
+          TEAM_WEEKLY_TIME="${{ steps.score.outputs.team_weekly_time }}"
+
           PROMPT="You are a senior automation engineer advising a team. Be specific and actionable.
 
           A team member submitted this toil item:
 
           ${BODY}
+
+          The submitter reports spending ${WEEKLY_TIME} per week personally on this,
+          and estimates the team spends ${TEAM_WEEKLY_TIME} per week total.
+
+          Factor these real time numbers into your suggestion. Compare the current time
+          spent vs. what it would cost to automate. Calculate the payback period.
 
           Suggest a specific, practical automation approach. Focus on:
           1. The best tool for the job (GitHub Action, script, Copilot agent, Slack workflow, API integration, etc.)
@@ -245,6 +265,8 @@ jobs:
           **Priority:** ${{ steps.score.outputs.priority }}
 
           **Estimated team time saved if automated:** ${{ steps.score.outputs.monthly_saved }}
+
+          **⏱️ Current time spent:** ${{ steps.score.outputs.weekly_time }} (you) · ${{ steps.score.outputs.team_weekly_time }} (team) per week
 
           ---
 
