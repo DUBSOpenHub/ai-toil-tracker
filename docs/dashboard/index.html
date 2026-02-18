@@ -20,6 +20,15 @@
   --warning: #f59e0b;
   --danger: #f87171;
   --text-soft: #5a6473;
+  --text-primary: #1f2328;
+}
+.dark, :root:not(.light) {
+  --bg-surface: #0b0f17;
+  --bg-card: rgba(22,27,34,0.92);
+  --bg-glass: rgba(13,17,23,0.85);
+  --border-card: rgba(255,255,255,0.08);
+  --text-soft: #8b949e;
+  --text-primary: #e6edf3;
 }
 
 /* ── Reset & Base ── */
@@ -221,7 +230,16 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 .theme-toggle:hover { background: #484f58; }
 
 /* ── Dark Mode (GitHub Primer Dark) ── */
-@media (prefers-color-scheme: dark) { :root:not(.light) { color-scheme: dark; } }
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    color-scheme: dark;
+    --bg-surface: #0b0f17;
+    --bg-card: rgba(22,27,34,0.92);
+    --border-card: rgba(255,255,255,0.08);
+    --text-soft: #8b949e;
+    --text-primary: #e6edf3;
+  }
+}
 .dark { color-scheme: dark; }
 .dark body, :root:not(.light) body { background: radial-gradient(1200px 650px at 18% -10%, rgba(56,139,253,0.12), transparent 62%), radial-gradient(950px 520px at 88% -5%, rgba(163,113,247,0.10), transparent 64%), #0b0f17; color: #e6edf3; }
 .dark body::before, :root:not(.light) body::before { opacity: 0.3; filter: blur(0.5px); }
