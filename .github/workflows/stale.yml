@@ -17,6 +17,7 @@ jobs:
             Is it still relevant? If so, consider scoring it using our
             [scoring guide](https://github.com/DUBSOpenHub/ai-first-toil-tracker/blob/main/docs/scoring-guide.md)
             and assigning someone to automate it.
+          # ⚠️ Replace DUBSOpenHub/ai-first-toil-tracker above with your org/repo — or run ./setup.sh
           stale-issue-label: stale
           days-before-stale: 30
           days-before-close: 60
