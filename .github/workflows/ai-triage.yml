@@ -317,7 +317,7 @@ jobs:
           ISSUE_URL="https://github.com/$REPO/issues/${ISSUE_NUM}"
           CLEAN_TITLE=$(echo "$ISSUE_TITLE" | sed 's/\[TOIL\] *//')
           M365_PROMPT=$(python3 -c "import urllib.parse; print(urllib.parse.quote('Help me automate this repetitive task: ${CLEAN_TITLE}. Suggest a step-by-step plan.'))" 2>/dev/null || echo "")
-          M365_URL="https://teams.microsoft.com/l/chat/0/0?users=28:orgid:copilot&message=${M365_PROMPT}"
+          M365_URL="https://teams.microsoft.com/l/entity/fb172f18-fc48-4d13-b2cf-30c268157fa3/copilot"
 
           TEAMS_BODY=$(jq -n \
             --arg title "🤖 AI Triage Report — ${ISSUE_TITLE}" \

@@ -1440,7 +1440,7 @@ function renderToilTable(issues) {
     const rawTitle = (issue.title || '').replace(/^\[TOIL\]\s*/i, '');
     const ghCmd = `gh copilot "Automate: ${rawTitle.replace(/"/g, '\\"')}"`;
     const m365Prompt = encodeURIComponent(`Help me automate this repetitive task: ${rawTitle}. Suggest a step-by-step plan to eliminate this busywork.`);
-    const m365Url = `https://teams.microsoft.com/l/chat/0/0?users=28:orgid:copilot&message=${m365Prompt}`;
+    const m365Url = `https://teams.microsoft.com/l/entity/fb172f18-fc48-4d13-b2cf-30c268157fa3/copilot?context=${encodeURIComponent(JSON.stringify({prompt: rawTitle}))}`;
     
     // Split "Name — Description" into two parts
     const dashIdx = rawTitle.indexOf(' — ');
