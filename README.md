@@ -4,7 +4,7 @@
 
 Every team has busywork - the manual, repetitive tasks that eat up time and could be handled by an agent or script. This tool gives your team a simple way to track it and fix it.
 
-> 💡 **This is for any team.** Fork it, set up a weekly Slack or Teams reminder, and start collecting ideas in under 10 minutes. No code required.
+> 💡 **This is for any team.** Fork it, set up a weekly Slack reminder, and start collecting ideas in under 10 minutes. No code required.
 
 ## How AI Is Used
 
@@ -23,20 +23,20 @@ This isn't just a tracker - AI is built into the workflow:
 
 For anyone doing repetitive work who wants to apply AI-first thinking, AI First - Toil Tracker makes it easy to:
 
-- 🎯 **Capture** - Quickly log toil ideas from a single Slack or Teams link in under 2 minutes
+- 🎯 **Capture** - Quickly log toil ideas from a single Slack link in under 2 minutes
 - 🤖 **Identify** - AI auto-scores every idea and surfaces the highest-leverage opportunities
 - ⚡ **Automate** - Get AI-suggested solutions with agents, scripts, and workflows
 - 📈 **Measure** - Track time saved and see the real impact on your team
-- 🔁 **Build the habit** - A weekly Slack or Teams prompt keeps the team thinking AI-first
+- 🔁 **Build the habit** - A weekly Slack prompt keeps the team thinking AI-first
 
-All within Slack or Teams and GitHub - no new tools, no new logins. Just a way to find leverage for you and your team.
+All within Slack and GitHub - no new tools, no new logins. Just a way to find leverage for you and your team.
 
 ## What Happens When You Submit
 
 Here's exactly what the AI agent does when someone files a toil idea:
 
 ```
-You click the Slack or Teams link
+You click the Slack link
     └─> GitHub issue form opens
          └─> You fill it out (name, toil, frequency, time, people)
               └─> You hit Submit
@@ -66,8 +66,6 @@ You click the Slack or Teams link
 
 The whole process takes about 30 seconds. No one needs to triage, score, or label anything.
 
-> 💡 **Using Microsoft Teams?** The AI triage workflow can also post notifications to a Teams channel via an Incoming Webhook. See the [Teams Setup](#microsoft-teams-setup) section.
-
 ---
 
 ## 🍴 Get Started (Any Team)
@@ -75,15 +73,15 @@ The whole process takes about 30 seconds. No one needs to triage, score, or labe
 ### Quick Start Checklist (10 minutes)
 
 - ✅ **Fork & enable Actions** – fork this repo, then click **Actions → Enable workflows** so the automations start running.
-- 🔐 **Set secrets up front** – add `TEAMS_WEBHOOK_URL` (optional) and any other integration tokens under **Settings → Secrets and variables → Actions** before enabling notifications.
-- 🔁 **Update contact links** – edit `.github/ISSUE_TEMPLATE/config.yml` plus the Slack/Teams reminder text below so they point at _your_ channels.
-- 📣 **Schedule the reminder** – configure the Slack Workflow Builder or Power Automate recipe so the team gets nudged every week.
+- 🔐 **Set secrets up front** – add any integration tokens under **Settings → Secrets and variables → Actions** before enabling notifications.
+- 🔁 **Update contact links** – edit `.github/ISSUE_TEMPLATE/config.yml` plus the Slack reminder text below so they point at _your_ channels.
+- 📣 **Schedule the reminder** – configure the Slack Workflow Builder so the team gets nudged every week.
 - 🌐 **Publish the dashboard** – enable GitHub Pages (`/docs` folder) so stakeholders can view `https://<org>.github.io/<repo>/dashboard/` immediately.
 
 1. **Copy this project** - Click "Fork" (top right) to get your own copy with all the tools included
 2. **Turn on the automation** — Go to the **Actions** tab and click the green **"Enable workflows"** button (GitHub shows a confirmation — it's safe to proceed)
-3. **Update the links** - In the [Slack Setup](#slack-setup) or [Teams Setup](#microsoft-teams-setup) section, replace `<YOUR_ORG>/<YOUR_REPO>` with your new link.
-4. **Set a reminder** - Follow the [Slack setup](#slack-setup) or [Teams setup](#microsoft-teams-setup) to ping your team every Friday
+3. **Update the links** - In the [Slack Setup](#slack-setup) section, replace `<YOUR_ORG>/<YOUR_REPO>` with your new link.
+4. **Set a reminder** - Follow the [Slack setup](#slack-setup) to ping your team every Friday
 5. **Start collecting ideas** - Your team clicks the link, fills out a 2-minute form, done
 
 That's it. Your team now has a living backlog of automation opportunities.
@@ -111,7 +109,7 @@ A visual dashboard lets your team and manager see all ideas, filter by team, and
 - **Summary Cards** — Total ideas, wins, hours saved/month, automation rate, in-progress, and high-impact counts
 - **Team & Individual Breakdown** — Per-person and per-team stats: ideas submitted, automated, and estimated monthly hours saved
 - **Toil Ideas Table** — Every toil idea with sortable columns, inline-editable scores, color-coded priority rows, and status badges
-- **🚀 Automate Button** — Choose your tool: **GitHub Copilot CLI** (copies a command) or **M365 Copilot** (opens in browser). Toggle in the dashboard header
+- **🚀 Automate Button** — Choose your tool: **GitHub Copilot CLI** (copies a command). Toggle in the dashboard header
 - **Filters** — Filter by team, category, or status to focus on what matters
 
 ### Setting Up the Dashboard
@@ -132,7 +130,7 @@ A visual dashboard lets your team and manager see all ideas, filter by team, and
 
 ## How It Works
 
-1. **Weekly Slack or Teams ping** - Every Friday at 10:00 AM PST, the team is asked: _"What toil could be automated?"_
+1. **Weekly Slack ping** - Every Friday at 10:00 AM PST, the team is asked: _"What toil could be automated?"_
 2. **File an issue** - Use the [Toil Automation Idea](../../issues/new?template=toil-idea.yml) template to log ideas
 3. **AI auto-triages** - An agent scores the idea, applies labels, estimates time saved, and suggests an automation approach
 4. **Propose a solution** - Use the [Automation Proposal](../../issues/new?template=automation-proposal.md) template
@@ -145,7 +143,7 @@ A visual dashboard lets your team and manager see all ideas, filter by team, and
 | Loop | Purpose | Key Files |
 |------|---------|-----------|
 | Capture | Collect toil, automation proposals, and wins via GitHub issue forms | `.github/ISSUE_TEMPLATE/*.yml`, `docs/examples.md` |
-| Score & label | AI triage parses form answers, scores impact, labels issues, and optionally posts to Teams | `.github/workflows/ai-triage.yml`, `docs/triage-workflow.md` |
+| Score & label | AI triage parses form answers, scores impact, labels issues | `.github/workflows/ai-triage.yml`, `docs/triage-workflow.md` |
 | Visualize | Scheduled workflow generates `docs/dashboard/dashboard-data.json`, GitHub Pages renders `docs/dashboard/index.html` | `.github/workflows/dashboard-data.yml`, `docs/dashboard/index.html` |
 | Celebrate | Wins close the original toil and monthly ROI summaries brief leadership | `.github/workflows/win-celebration.yml`, `.github/workflows/monthly-roi-summary.yml`, `docs/roi-tracking.md` |
 
@@ -185,42 +183,6 @@ Set up a weekly reminder in your team channel using Slack Workflow Builder:
 
 > ⚠️ **Replace** `<YOUR_ORG>/<YOUR_REPO>` with your actual repo path (e.g. `DUBSOpenHub/ai-first-toil-tracker`).
 
-## Microsoft Teams Setup
-
-If your team uses Microsoft Teams instead of (or in addition to) Slack, you can set up the same weekly reminder and get AI triage notifications directly in a Teams channel.
-
-### Step 1: Create an Incoming Webhook
-
-1. In Teams, go to your channel → click **⋯** → **Connectors** (or **Manage channel** → **Connectors**)
-2. Search for **Incoming Webhook** → click **Configure**
-3. Give it a name (e.g. `Toil Tracker Bot`) and optionally upload an icon
-4. Click **Create** and **copy the webhook URL**
-5. In your forked repo, go to **Settings** → **Secrets and variables** → **Actions** → **New repository secret**
-6. Name: `TEAMS_WEBHOOK_URL` — Value: paste the webhook URL
-
-> 💡 Once the `TEAMS_WEBHOOK_URL` secret is set, the AI triage workflow will automatically post triage reports to your Teams channel whenever a new toil idea is submitted.
-
-### Step 2: Set Up a Weekly Reminder
-
-Use **Power Automate** (built into Teams) to send a recurring reminder:
-
-1. Open [Power Automate](https://make.powerautomate.com) → **Create** → **Scheduled cloud flow**
-2. Name it `Weekly Toil Reminder`, set it to run **every Friday at 10:00 AM**
-3. Add action: **Microsoft Teams → Post message in a chat or channel**
-4. Select your team and channel, then paste this message:
-
-> 🤖 **Weekly Toil Check-in**
->
-> What repetitive task should a bot handle for you?
->
-> 👉 Log it here: `https://github.com/<YOUR_ORG>/<YOUR_REPO>/issues/new?template=toil-idea.yml` — takes 2 minutes.
->
-> Not sure what counts? Check out the examples in the repo's `docs/examples.md`.
-
-5. **Save** the flow. Your team will be prompted every Friday in Teams.
-
-> ⚠️ **Replace** `<YOUR_ORG>/<YOUR_REPO>` with your actual repo path (e.g. `DUBSOpenHub/ai-first-toil-tracker`).
-
 ## Labels
 
 | Label | Purpose |
@@ -242,7 +204,6 @@ When a toil idea is submitted, an AI agent automatically:
 - **Estimates monthly time saved** if automated
 - **Suggests an automation approach** using AI
 - **Removes the `triage` label** - no manual triage needed
-- **Posts to Microsoft Teams** (if `TEAMS_WEBHOOK_URL` secret is configured)
 
 ### 🗂️ Stale Issue Cleanup (monthly)
 - Nudges toil ideas with no activity after 30 days
@@ -257,8 +218,8 @@ When a toil idea is submitted, an AI agent automatically:
 ## 🧭 Maintainer Checklist
 
 - **Trigger a data refresh after forking** — run the `Generate Dashboard Data` workflow once (Actions → Run workflow) so `docs/dashboard/dashboard-data.json` reflects your repo instead of the sample data.
-- **Verify secrets quarterly** — confirm `TEAMS_WEBHOOK_URL` (and any other optional tokens) still work, or remove the notification steps to avoid failing Actions runs.
-- **Customize contact links** — replace the placeholder Slack/Teams URLs in `.github/ISSUE_TEMPLATE/config.yml` and the reminder snippets below so contributors know where to coordinate.
+- **Verify secrets quarterly** — confirm any optional tokens still work, or remove the notification steps to avoid failing Actions runs.
+- **Customize contact links** — replace the placeholder Slack URLs in `.github/ISSUE_TEMPLATE/config.yml` and the reminder snippets below so contributors know where to coordinate.
 - **Review the forms annually** — ensure the dropdown options in `.github/ISSUE_TEMPLATE/*.yml` still match how you categorize toil; update the scoring constants if you add new values.
 - **Keep Actions pinned SHAs current** — accept Dependabot PRs or manually bump the pinned versions so security patches continue to flow.
 

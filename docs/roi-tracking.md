@@ -48,7 +48,7 @@ Monthly savings = Frequency × Time per occurrence × People affected
 
 ## Sharing Results
 
-Use this monthly summary template in Slack, Teams, or team meetings:
+Use this monthly summary template in Slack or team meetings:
 
 > **🤖 Toil Tracker - Monthly Update**
 >

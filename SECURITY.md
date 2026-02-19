@@ -38,7 +38,7 @@ We take security seriously. If you discover a security vulnerability in this tra
 
 ## 🔐 Secret Management Checklist
 
-- Store the `TEAMS_WEBHOOK_URL` (and any other integration tokens) in **Settings → Secrets and variables → Actions** and scope them only to the workflows that need them.
+- Store integration tokens in **Settings → Secrets and variables → Actions** and scope them only to the workflows that need them.
 - Rotate chat webhooks and API tokens whenever someone leaves the team or a channel is archived, then update the GitHub secret immediately.
 - Review workflow logs for unexpected secret usage—if a workflow no longer needs a secret, delete it to shrink the blast radius.
 - Never paste secrets into issues, templates, or `docs/dashboard/dashboard-data.json`; redact sensitive values before attaching sample data.
