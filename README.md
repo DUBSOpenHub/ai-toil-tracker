@@ -247,6 +247,6 @@ For teams with strict data classification policies, review your organization's A
 
 ## 🐙 Built with Love
 
-Built with 💜 by DUBSOpenHub to help more people discover the joy of GitHub Copilot CLI.
+Created with 💜 by DUBSOpenHub to help more people discover the joy of GitHub Copilot CLI.
 
 Let's build! 🚀✨
