@@ -97,6 +97,16 @@ body:
     validations:
       required: false
 
+  - type: checkboxes
+    id: bonus-factors
+    attributes:
+      label: Does this toil have any of these extra impacts? (optional)
+      description: Check any that apply — these boost the priority score
+      options:
+        - label: "❌ Error-prone — frequently causes mistakes or rework"
+        - label: "😤 Morale killer — drains energy or causes frustration"
+        - label: "🔗 Blocking — blocks other work until completed"
+
   - type: textarea
     id: automation-idea
     attributes:
