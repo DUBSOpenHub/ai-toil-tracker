@@ -915,6 +915,10 @@ function saveLocalEdits() {
 // STATUS HELPERS
 // ═══════════════════════════════════════════════════
 function getStatus(issue) {
+  // Check local overrides first
+  if (localEdits[issue.number] && localEdits[issue.number].status) {
+    return localEdits[issue.number].status;
+  }
   const labels = issue.labels.map(l => l.toLowerCase());
   if (labels.includes('automated') || issue.state === 'closed') return 'automated';
   if (labels.includes('in-progress')) return 'in-progress';
@@ -922,14 +926,15 @@ function getStatus(issue) {
   return 'toil';
 }
 
-function statusBadge(status) {
+function statusBadge(status, issueNum) {
   const badges = {
     'automated': '✅ shipped',
     'in-progress': '🔨 building',
     'triage': '🔍 triaging',
     'toil': '💡 ready to fix'
   };
-  return `<span class="badge badge-${status}">${badges[status] || status}</span>`;
+  const edited = issueNum && localEdits[issueNum] && localEdits[issueNum].status ? '<span class="edited-marker">✎</span>' : '';
+  return `<span class="badge badge-${status} status-toggle" data-issue="${issueNum || ''}" style="cursor:pointer" title="Click to update status">${badges[status] || status}${edited}</span>`;
 }
 
 function priorityClass(score) {
@@ -1399,7 +1404,7 @@ function renderToilTable(issues) {
       <td class="editable" data-issue="${issue.number}" data-field="time_per_occurrence">${esc(issue.time_per_occurrence)}</td>
       <td class="editable" data-issue="${issue.number}" data-field="people_affected">${esc(issue.people_affected)}</td>
       <td style="font-weight:700">${issue.toil_score}</td>
-      <td>${statusBadge(status)}</td>
+      <td>${statusBadge(status, issue.number)}</td>
       <td>${formatMinutes(issue.monthly_saved_minutes)}</td>
     </tr>`;
   }).join('');
@@ -1453,6 +1458,28 @@ document.addEventListener('click', function(e) {
 
   sel.addEventListener('change', commit);
   sel.addEventListener('blur', commit);
+});
+
+// ═══════════════════════════════════════════════════
+// STATUS TOGGLE — click badge to cycle status
+// ═══════════════════════════════════════════════════
+const STATUS_CYCLE = ['toil', 'triage', 'in-progress', 'automated'];
+document.addEventListener('click', function(e) {
+  const badge = e.target.closest('.status-toggle');
+  if (!badge) return;
+  const issueNum = Number(badge.dataset.issue);
+  if (!issueNum) return;
+  const issue = dashboardData.issues.find(i => i.number === issueNum);
+  if (!issue) return;
+  const current = getStatus(issue);
+  const idx = STATUS_CYCLE.indexOf(current);
+  const next = STATUS_CYCLE[(idx + 1) % STATUS_CYCLE.length];
+  if (!localEdits[issueNum]) localEdits[issueNum] = {};
+  localEdits[issueNum].status = next;
+  saveLocalEdits();
+  const labels = { 'automated': '✅ shipped', 'in-progress': '🔨 building', 'triage': '🔍 triaging', 'toil': '💡 ready to fix' };
+  showToast(`Status updated → ${labels[next]}`);
+  render();
 });
 
 // ═══════════════════════════════════════════════════
