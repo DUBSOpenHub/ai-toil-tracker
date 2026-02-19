@@ -165,6 +165,8 @@ Each loop is independent—disable or extend one without touching the others—a
 | [Security](SECURITY.md) | Threat model, secret management, and AI data handling |
 | [Examples](docs/examples.md) | Common toil patterns to inspire your team |
 | [Scoring Guide](docs/scoring-guide.md) | How the toil score is calculated |
+| [Triage Workflow](docs/triage-workflow.md) | Weekly triage process and completion steps |
+| [ROI Tracking](docs/roi-tracking.md) | How to measure and report time saved |
 | [Contributing](CONTRIBUTING.md) | How to submit ideas and build automations |
 | [Dashboard](docs/dashboard/index.html) | Interactive team dashboard with time savings |
 
