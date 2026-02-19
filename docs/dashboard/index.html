@@ -522,7 +522,6 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
             <th data-col="title">💡 Toil</th>
             <th data-col="actions"></th>
             <th data-col="submitter">🧑‍💻 Submitter</th>
-            <th data-col="team">🏢 Team</th>
             <th data-col="category" class="col-hidden">🏷️ Category</th>
             <th data-col="frequency">🔄 Frequency</th>
             <th data-col="time_per_occurrence">⏱️ Time</th>
@@ -1419,7 +1418,6 @@ function renderToilTable(issues) {
       <td class="toil-cell"><div class="toil-name">${esc(toilName)}</div>${toilDesc ? `<div class="toil-desc">${esc(toilDesc)}</div>` : ''}</td>
       <td class="toil-action-cell">${actionBtn} ${statusBadge(status, issue.number)}</td>
       <td>${esc(issue.submitter)}</td>
-      <td>${esc(issue.team)}</td>
       <td class="col-hidden">${esc(issue.category)}</td>
       <td class="editable" data-issue="${issue.number}" data-field="frequency">${esc(issue.frequency)}${edited}</td>
       <td class="editable" data-issue="${issue.number}" data-field="time_per_occurrence">${esc(issue.time_per_occurrence)}</td>
