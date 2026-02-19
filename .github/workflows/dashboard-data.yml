@@ -21,8 +21,8 @@ jobs:
       - name: Fetch issues and generate dashboard JSON
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
         run: |
-          REPO="${{ github.repository }}"
 
           # ── Helper: parse a markdown form field value ──
           # Given the full issue body and a field heading, extract the value
