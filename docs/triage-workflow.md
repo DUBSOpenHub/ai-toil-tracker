@@ -18,7 +18,8 @@ For each new issue:
 
 ### 2. Score
 - Apply the [scoring formula](scoring-guide.md) in a comment
-- Format: `**Toil Score:** Frequency (X) × Time (X) × People (X) = **XX**`
+- Format: `**Toil Score:** (Frequency (X) × Time (X) × People (X)) + Bonus (X) = **XX**`
+- Bonus factors: ❌ Error-prone (+2), 😤 Morale killer (+1), 🔗 Blocking (+3)
 
 ### 3. Label
 - Remove `triage` label

@@ -4,7 +4,7 @@ Use this framework to prioritize which toil to automate first.
 
 ## Scoring Formula
 
-**Toil Score = Frequency × Time per Occurrence × People Affected**
+**Toil Score = (Frequency × Time per Occurrence × People Affected) + Bonus**
 
 | Factor | Score | Description |
 |--------|-------|-------------|
@@ -46,8 +46,12 @@ Use this framework to prioritize which toil to automate first.
 
 ## Bonus Factors
 
-Add **+10** to the score if any of these apply:
+Each bonus factor adds individually to the base score (max bonus: +6):
 
-- ❌ **Error-prone** - The toil frequently leads to mistakes
-- 😤 **Morale killer** - The toil is particularly frustrating or demoralizing
-- 🔗 **Blocking** - The toil blocks other people or processes
+| Factor | Bonus | Description |
+|--------|-------|-------------|
+| ❌ **Error-prone** | +2 | The toil frequently leads to mistakes |
+| 😤 **Morale killer** | +1 | The toil is particularly frustrating or demoralizing |
+| 🔗 **Blocking** | +3 | The toil blocks other people or processes |
+
+**Formula**: `Score = (Frequency × Time × People) + Bonus`

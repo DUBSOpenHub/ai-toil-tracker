@@ -84,14 +84,16 @@ flowchart LR
     PARSE --> FREQ["Frequency\n1 · 2 · 3 · 5 · 8"]
     PARSE --> TIME["Time\n1 · 2 · 3 · 5 · 8"]
     PARSE --> PPL["People\n1 · 2 · 3 · 5 · 8"]
-    FREQ & TIME & PPL --> CALC["Score =\nF × T × P"]
-    CALC --> PRI{"Priority"}
+    FREQ & TIME & PPL --> CALC["Base =\nF × T × P"]
+    CALC --> BONUS["Bonus\n+2 error-prone\n+1 morale\n+3 blocking"]
+    BONUS --> FINAL["Final Score =\nBase + Bonus"]
+    FINAL --> PRI{"Priority"}
     PRI -- "≥ 40" --> CRIT["🔴 Critical"]
     PRI -- "≥ 20" --> HIGH["🟡 High"]
     PRI -- "≥ 10" --> MED["🟢 Medium"]
     PRI -- "< 10" --> LOW["⚪ Low"]
-    CALC --> EST["Monthly mins =\nmult × mins × people"]
-    CALC --> AI["GitHub Models API\nSuggest automation"]
+    FINAL --> EST["Monthly mins =\nmult × mins × people"]
+    FINAL --> AI["GitHub Models API\nSuggest automation"]
 ```
 
 ## Dashboard Data Pipeline

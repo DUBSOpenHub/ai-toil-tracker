@@ -28,7 +28,7 @@ A zero-dependency, GitHub-native system that lets any team member log toil in un
 ### 2. Score & Triage — AI Workflow
 
 - Triggers automatically on every new toil issue (`ai-triage.yml`)
-- **Scoring formula**: `frequency × time × people = toil score`
+- **Scoring formula**: `Score = (frequency × time × people) + bonus`
 - Score-to-priority mapping:
   - 🔴 Critical ≥ 40
   - 🟡 High ≥ 20
@@ -100,6 +100,18 @@ All data lives in GitHub Issues. No external database.
 | 4–6 people | 3 |
 | 2–3 people | 2 |
 | Just me | 1 |
+
+### Bonus Factors
+
+| Factor | Bonus |
+|--------|-------|
+| ❌ Error-prone | +2 |
+| 😤 Morale killer | +1 |
+| 🔗 Blocking | +3 |
+
+**Max bonus**: +6
+
+**Scoring formula**: `Score = (frequency × time × people) + bonus`
 
 **Monthly time estimate** = `monthly_multiplier × minutes × people_score`
 

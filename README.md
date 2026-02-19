@@ -13,7 +13,7 @@ This isn't just a tracker - AI is built into the workflow:
 | What happens | How AI does it |
 |-------------|---------------|
 | Someone submits an idea | A **workflow** runs automatically |
-| The idea needs a score | AI **reads the form** and calculates the impact (frequency x time x people) |
+| The idea needs a score | AI **reads the form** and calculates the impact (frequency × time × people) plus optional bonus factors (+1 to +3 each for morale, error-prone, or blocking) |
 | The idea needs labels | AI **adds a label** (🔴🟠🟡🔵⚪) based on how often it happens |
 | The team needs a plan | AI **estimates time saved** and suggests how to automate it |
 
@@ -205,7 +205,7 @@ Set up a weekly reminder in your team channel using Slack Workflow Builder:
 
 ### 🤖 AI Triage (on every new issue)
 When a toil idea is submitted, an AI agent automatically:
-- **Calculates the toil score** (frequency x time x people)
+- **Calculates the toil score** (frequency × time × people + bonus factors)
 - **Applies the frequency label** (🔴🟠🟡🔵⚪)
 - **Flags high-impact items** (score 20+)
 - **Estimates monthly time saved** if automated
