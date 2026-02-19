@@ -22,7 +22,7 @@
   --text-soft: #5a6473;
   --text-primary: #1f2328;
 }
-.dark, :root:not(.light) {
+.dark {
   --bg-surface: #0b0f17;
   --bg-card: rgba(22,27,34,0.92);
   --bg-glass: rgba(13,17,23,0.85);
@@ -241,8 +241,8 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
   }
 }
 .dark { color-scheme: dark; }
-.dark body, :root:not(.light) body { background: radial-gradient(1200px 650px at 18% -10%, rgba(56,139,253,0.12), transparent 62%), radial-gradient(950px 520px at 88% -5%, rgba(163,113,247,0.10), transparent 64%), #0b0f17; color: #e6edf3; }
-.dark body::before, :root:not(.light) body::before { opacity: 0.3; filter: blur(0.5px); }
+.dark body { background: radial-gradient(1200px 650px at 18% -10%, rgba(56,139,253,0.12), transparent 62%), radial-gradient(950px 520px at 88% -5%, rgba(163,113,247,0.10), transparent 64%), #0b0f17; color: #e6edf3; }
+.dark body::before { opacity: 0.3; filter: blur(0.5px); }
 @media (prefers-color-scheme: dark) {
   :root:not(.light) body { background: radial-gradient(1200px 650px at 18% -10%, rgba(56,139,253,0.12), transparent 62%), radial-gradient(950px 520px at 88% -5%, rgba(163,113,247,0.10), transparent 64%), #0b0f17; color: #e6edf3; }
   :root:not(.light) .header { background: #161b22; }
@@ -393,13 +393,13 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
   <div class="section">
     <h2>🗂️ What Should We Automate?</h2>
     <div class="filters">
-      <label>Team:</label>
+      <label for="filterTeam">Team:</label>
       <select id="filterTeam"><option value="">All</option></select>
-      <label>Category:</label>
+      <label for="filterCategory">Category:</label>
       <select id="filterCategory"><option value="">All</option></select>
-      <label>Status:</label>
+      <label for="filterStatus">Status:</label>
       <select id="filterStatus"><option value="">All</option></select>
-      <label>📊 Sort by:</label>
+      <label for="filterSort">📊 Sort by:</label>
       <select id="filterSort">
         <option value="monthly_saved_minutes">⏱️ Potential Time Saved / Month</option>
         <option value="toil_score">🎯 Impact Score</option>
@@ -444,7 +444,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
         </div>
       </details>
       <div class="filters">
-        <label>Team:</label>
+        <label for="breakdownTeamFilter">Team:</label>
         <select id="breakdownTeamFilter"><option value="">All Teams</option></select>
       </div>
       <div id="teamTables"></div>
@@ -459,7 +459,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
   </details>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 // ═══════════════════════════════════════════════════
@@ -545,8 +545,8 @@ const BONUS_MAP = {
 
 const PRIORITY_BANDS = [
   { id: 'critical', min: 40, className: 'priority-critical', label: '🔴 Critical' },
-  { id: 'high', min: 20, className: 'priority-high', label: '🟠 High' },
-  { id: 'medium', min: 10, className: 'priority-medium', label: '🟡 Medium' },
+  { id: 'high', min: 20, className: 'priority-high', label: '🟡 High' },
+  { id: 'medium', min: 10, className: 'priority-medium', label: '🟢 Medium' },
   { id: 'low', min: 0, className: 'priority-low', label: '⚪ Low' }
 ];
 const CRITICAL_THRESHOLD = PRIORITY_BANDS[0].min;
@@ -580,9 +580,9 @@ const SAMPLE_DATA = {
       people_affected: "Entire team",
       bonus_factors: ["❌ Error-prone", "🔗 Blocking"],
       automation_idea: "Create a CI/CD pipeline with GitHub Actions to automate staging deployments",
-      toil_score: 200,
+      toil_score: 205,
       priority: "🔴 Critical",
-      monthly_saved_minutes: 15000,
+      monthly_saved_minutes: 13500,
       weekly_time_spent: 300,
       team_weekly_time_spent: 1500,
       weekly_time_spent_display: "5 hrs/week",
@@ -601,11 +601,11 @@ const SAMPLE_DATA = {
       category: "🔐 Security & Compliance",
       frequency: "🔵 Weekly",
       time_per_occurrence: "15–30 minutes",
-      people_affected: "2-3 people",
+      people_affected: "2\u20133 people",
       bonus_factors: ["❌ Error-prone"],
       automation_idea: "Use AWS Secrets Manager automatic rotation",
       toil_score: 14,
-      priority: "🟡 Medium",
+      priority: "🟢 Medium",
       monthly_saved_minutes: 176,
       weekly_time_spent: 30,
       team_weekly_time_spent: 60,
@@ -625,11 +625,11 @@ const SAMPLE_DATA = {
       category: "📊 Reporting & Communication",
       frequency: "🟠 Daily",
       time_per_occurrence: "5–15 minutes",
-      people_affected: "Just you",
+      people_affected: "Just me",
       bonus_factors: ["😤 Morale killer"],
       automation_idea: "Slack bot that posts CI results automatically",
       toil_score: 11,
-      priority: "🟡 Medium",
+      priority: "🟢 Medium",
       monthly_saved_minutes: 200,
       weekly_time_spent: 50,
       team_weekly_time_spent: 50,
@@ -649,12 +649,12 @@ const SAMPLE_DATA = {
       category: "🔧 CI/CD & Builds",
       frequency: "🟡 Multiple times per week",
       time_per_occurrence: "> 1 hour",
-      people_affected: "4-6 people",
+      people_affected: "4\u20136 people",
       bonus_factors: ["❌ Error-prone", "📈 Growing worse"],
       automation_idea: "Dependabot with auto-merge for patch versions",
       toil_score: 76,
       priority: "🔴 Critical",
-      monthly_saved_minutes: 6600,
+      monthly_saved_minutes: 2250,
       weekly_time_spent: 120,
       team_weekly_time_spent: 480,
       weekly_time_spent_display: "2 hrs/week",
@@ -673,11 +673,11 @@ const SAMPLE_DATA = {
       category: "🆕 Onboarding & Access",
       frequency: "⚪ Monthly or less",
       time_per_occurrence: "> 1 hour",
-      people_affected: "2-3 people",
+      people_affected: "2\u20133 people",
       bonus_factors: ["🆕 New team friction", "😤 Morale killer"],
       automation_idea: "Dev container or Codespaces setup with scripted provisioning",
       toil_score: 18,
-      priority: "🟡 Medium",
+      priority: "🟢 Medium",
       monthly_saved_minutes: 150,
       weekly_time_spent: 90,
       team_weekly_time_spent: 180,
@@ -700,7 +700,7 @@ const SAMPLE_DATA = {
       people_affected: "Entire team",
       bonus_factors: ["🔗 Blocking", "📈 Growing worse"],
       automation_idea: "Use an AI classifier to auto-route tickets by category",
-      toil_score: 55,
+      toil_score: 130,
       priority: "🔴 Critical",
       monthly_saved_minutes: 4500,
       weekly_time_spent: 150,
@@ -717,19 +717,59 @@ const SAMPLE_DATA = {
 // STATE
 // ═══════════════════════════════════════════════════
 let dashboardData = null;
-let sortCol = 'team_weekly_time_spent';
+let sortCol = 'monthly_saved_minutes';
 let sortDir = -1; // -1 = desc
 const localEdits = JSON.parse(localStorage.getItem('toilEdits') || '{}');
 
 // ═══════════════════════════════════════════════════
 // DATA LOADING
 // ═══════════════════════════════════════════════════
+
+// Normalize dashboard-data.json (from dashboard-data.yml) to the internal schema
+function normalizeDashboardJson(raw) {
+  if (raw.issues) return raw;
+  const freqEmojiMap = {
+    'Multiple times per day': '🔴 Multiple times per day',
+    'Daily': '🟠 Daily',
+    'Multiple times per week': '🟡 Multiple times per week',
+    'Weekly': '🔵 Weekly',
+    'Monthly or less': '⚪ Monthly or less'
+  };
+  return {
+    repo: raw.repository || CONFIG.fullRepo,
+    generated_at: raw.generatedAt || new Date().toISOString(),
+    issues: (raw.toilItems || []).map(item => {
+      const freqLabel = item.frequency?.label || '';
+      return {
+        number: item.number,
+        title: item.title,
+        url: item.url,
+        state: (item.state || 'open').toLowerCase(),
+        labels: typeof item.labels === 'string' ? item.labels.split(',').filter(Boolean) : (item.labels || []),
+        submitter: item.submitter || '',
+        team: item.team || '',
+        category: item.category || '',
+        frequency: freqEmojiMap[freqLabel] || freqLabel,
+        time_per_occurrence: item.time?.label || '',
+        people_affected: item.people?.label || '',
+        bonus_factors: item.bonusFactors || [],
+        automation_idea: item.automationIdea || '',
+        toil_score: item.toilScore || 0,
+        priority: item.priority || '',
+        monthly_saved_minutes: item.monthlyMinutes || 0,
+        created_at: item.createdAt || '',
+        ai_suggestion: ''
+      };
+    })
+  };
+}
+
 async function loadData() {
   // Try local JSON first
   try {
     const res = await fetch('dashboard-data.json');
     if (res.ok) {
-      dashboardData = await res.json();
+      dashboardData = normalizeDashboardJson(await res.json());
       applyLocalEdits();
       render();
       return;
