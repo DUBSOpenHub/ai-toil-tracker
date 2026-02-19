@@ -1132,11 +1132,11 @@ function renderHeroPulse(issues) {
   heroPulse.innerHTML = `
     <span class="pulse-pill success">⚡ ${automationRate}% automated</span>
     <span class="pulse-pill warning">🔥 ${highImpact} critical</span>
-    <span class="pulse-pill neutral" data-filter-status="" style="cursor:pointer" title="Show all">📦 ${total} signals (${backlog} backlog)</span>
-    <span class="pulse-pill success" data-filter-status="automated" style="cursor:pointer" title="Filter to shipped">✅ ${automated} shipped</span>
-    <span class="pulse-pill" data-filter-status="in-progress" style="cursor:pointer;border-color:rgba(165,107,255,0.45);background:rgba(165,107,255,0.15);color:#dec0ff;" title="Filter to building">🔨 ${inProgress} building</span>
-    <span class="pulse-pill neutral" data-filter-status="triage" style="cursor:pointer" title="Filter to triaging">🔍 ${triage} triaging</span>
-    <span class="pulse-pill neutral" data-filter-status="toil" style="cursor:pointer" title="Filter to ready">💡 ${backlog} ready to fix</span>
+    <span class="pulse-pill" data-filter-status="" style="cursor:pointer;border-color:rgba(67,198,255,0.45);background:rgba(67,198,255,0.12);color:#7dd8ff;" title="Show all">📦 ${total} signals (${backlog} backlog)</span>
+    <span class="pulse-pill" data-filter-status="automated" style="cursor:pointer;border-color:rgba(61,214,140,0.5);background:rgba(61,214,140,0.18);color:#6eeeb0;" title="Filter to shipped">✅ ${automated} shipped</span>
+    <span class="pulse-pill" data-filter-status="in-progress" style="cursor:pointer;border-color:rgba(165,107,255,0.5);background:rgba(165,107,255,0.18);color:#dec0ff;" title="Filter to building">🔨 ${inProgress} building</span>
+    <span class="pulse-pill" data-filter-status="triage" style="cursor:pointer;border-color:rgba(246,192,92,0.5);background:rgba(246,192,92,0.15);color:#fcd77a;" title="Filter to triaging">🔍 ${triage} triaging</span>
+    <span class="pulse-pill" data-filter-status="toil" style="cursor:pointer;border-color:rgba(255,102,122,0.45);background:rgba(255,102,122,0.12);color:#ff99aa;" title="Filter to ready">💡 ${backlog} ready to fix</span>
   `;
 }
 
