@@ -3,6 +3,4 @@ contact_links:
   - name: 💬 Discuss in Slack
     url: https://slack.com  # ⚠️ Replace with your team's actual Slack channel URL
     about: Chat about toil ideas in our team Slack channel before filing an issue
-  - name: 💬 Discuss in Microsoft Teams
-    url: https://teams.microsoft.com  # ⚠️ Replace with your team's actual Teams channel URL
-    about: Chat about toil ideas in our Microsoft Teams channel before filing an issue
+
