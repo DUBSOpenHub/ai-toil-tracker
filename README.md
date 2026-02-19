@@ -197,6 +197,8 @@ Set up a weekly reminder in your team channel using Slack Workflow Builder:
 | `quick-win` | Could be automated quickly |
 | `in-progress` | Automation is being built |
 | `automated` | Toil has been eliminated 🎉 |
+| `stale` | Auto-applied after 30 days of inactivity |
+| `roi-summary` | Auto-applied to monthly ROI summary issues |
 
 ## Automations
 

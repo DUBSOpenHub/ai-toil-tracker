@@ -99,7 +99,7 @@ Every workflow declares **explicit, minimal permissions**. No workflow requests 
 | `dashboard-data.yml` | `contents: write`, `issues: read` |
 | `win-celebration.yml` | `issues: write` |
 | `monthly-roi-summary.yml` | `issues: write` |
-| `stale.yml` | `issues: write`, `pull-requests: write` |
+| `stale.yml` | `issues: write` |
 
 ---
 

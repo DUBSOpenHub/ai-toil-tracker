@@ -43,6 +43,8 @@ Once a toil idea is approved:
 | `quick-win` | Can be automated in a day or less |
 | `in-progress` | Someone is actively building the automation |
 | `automated` | The toil has been eliminated |
+| `stale` | Auto-applied after 30 days of inactivity |
+| `roi-summary` | Auto-applied to monthly ROI summary issues |
 
 ## Code of Conduct
 
