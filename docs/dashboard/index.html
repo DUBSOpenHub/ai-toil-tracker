@@ -1385,9 +1385,13 @@ function renderToilTable(issues) {
     const idea = issue.automation_idea || '';
     const agentPrompt = [
       `You are an automation agent. A team identified this toil: "${rawTitle}".`,
+      `Repository: ${CONFIG.fullRepo} (https://github.com/${CONFIG.fullRepo}).`,
+      `Issue: #${issue.number} — ${issue.url || 'https://github.com/' + CONFIG.fullRepo + '/issues/' + issue.number}.`,
+      `Submitter: ${issue.submitter || 'unknown'}. Team: ${issue.team || 'unknown'}. Category: ${issue.category || 'unknown'}.`,
       `It happens ${freq}, takes ${time} each time, and affects ${issue.people_affected || 'the team'}.`,
+      `Toil score: ${issue.toil_score || 0}. Priority: ${issue.priority || 'unknown'}. Potential savings: ${issue.monthly_saved_minutes || 0} min/month.`,
       idea ? `Suggested approach: ${idea}.` : '',
-      `Step 1: Analyze this repo and identify the best automation strategy.`,
+      `Step 1: Read the issue at the URL above for full context, then analyze this repo to identify the best automation strategy.`,
       `Step 2: Propose a concrete implementation plan with file paths.`,
       `Step 3: Scaffold the solution (GitHub Actions workflow, script, or code).`,
       `Step 4: Ask the user if they want to refine, test, or commit the changes.`,
