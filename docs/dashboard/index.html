@@ -528,6 +528,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
       <select id="filterSort">
         <option value="monthly_saved_minutes">⏱️ Potential Time Saved / Month</option>
         <option value="toil_score">🎯 Impact Score</option>
+        <option value="submitter">🧑‍💻 Person</option>
       </select>
       <button class="show-cols-toggle" id="toggleCols" onclick="toggleColumns()">+ Show all details</button>
     </div>
@@ -1531,7 +1532,7 @@ document.querySelector('#toilTable thead').addEventListener('click', function(e)
 });
 document.getElementById('filterSort').addEventListener('change', function() {
   sortCol = this.value;
-  sortDir = -1;
+  sortDir = this.value === 'submitter' ? 1 : -1;
   render();
 });
 
