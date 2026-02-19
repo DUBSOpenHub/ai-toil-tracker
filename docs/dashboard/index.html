@@ -1383,15 +1383,22 @@ function renderToilTable(issues) {
     const freq = issue.frequency || 'unknown frequency';
     const time = issue.time_per_occurrence || 'unknown duration';
     const idea = issue.automation_idea || '';
+    const issueUrl = issue.url || `https://github.com/${CONFIG.fullRepo}/issues/${issue.number}`;
+    const repoUrl = `https://github.com/${CONFIG.fullRepo}`;
+    const contextUrls = [issueUrl, repoUrl].filter(u => u && u.startsWith('https://'));
     const agentPrompt = [
       `You are an automation agent. A team identified this toil: "${rawTitle}".`,
-      `Repository: ${CONFIG.fullRepo} (https://github.com/${CONFIG.fullRepo}).`,
-      `Issue: #${issue.number} — ${issue.url || 'https://github.com/' + CONFIG.fullRepo + '/issues/' + issue.number}.`,
-      `Submitter: ${issue.submitter || 'unknown'}. Team: ${issue.team || 'unknown'}. Category: ${issue.category || 'unknown'}.`,
+      `IMPORTANT — Start by reading these URLs for context:`,
+      ...contextUrls.map((u, i) => `  ${i + 1}. ${u}`),
+      CONFIG.fullRepo ? `Repository: ${CONFIG.fullRepo} (${repoUrl}).` : '',
+      issue.number ? `Issue: #${issue.number} — ${issueUrl}.` : '',
+      issue.submitter ? `Submitter: ${issue.submitter}.` : '',
+      issue.team ? `Team: ${issue.team}.` : '',
+      issue.category ? `Category: ${issue.category}.` : '',
       `It happens ${freq}, takes ${time} each time, and affects ${issue.people_affected || 'the team'}.`,
-      `Toil score: ${issue.toil_score || 0}. Priority: ${issue.priority || 'unknown'}. Potential savings: ${issue.monthly_saved_minutes || 0} min/month.`,
+      issue.toil_score ? `Toil score: ${issue.toil_score}. Priority: ${issue.priority || 'unknown'}. Potential savings: ${issue.monthly_saved_minutes || 0} min/month.` : '',
       idea ? `Suggested approach: ${idea}.` : '',
-      `Step 1: Read the issue at the URL above for full context, then analyze this repo to identify the best automation strategy.`,
+      `Step 1: Read the URLs above for full context, then analyze this repo to identify the best automation strategy.`,
       `Step 2: Propose a concrete implementation plan with file paths.`,
       `Step 3: Scaffold the solution (GitHub Actions workflow, script, or code).`,
       `Step 4: Ask the user if they want to refine, test, or commit the changes.`,
