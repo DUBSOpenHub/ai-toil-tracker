@@ -93,7 +93,7 @@ body:
     attributes:
       label: How many people benefit?
       options:
-        - 1 person
+        - Just me
         - 2–3 people
         - 4–6 people
         - Entire team
