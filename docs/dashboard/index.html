@@ -37,7 +37,7 @@
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
 body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: radial-gradient(1400px 750px at 20% -10%, rgba(130,80,223,0.15), transparent 65%), radial-gradient(1200px 600px at 120% 0%, rgba(9,105,218,0.12), transparent 60%), var(--bg-surface); color: #1f2328; line-height: 1.5; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; min-height: 100vh; position: relative; }
-body::before { content: ""; position: fixed; inset: 0; background-image: radial-gradient(circle at 25% 25%, rgba(130,80,223,0.08), transparent 45%), radial-gradient(circle at 75% 0%, rgba(9,105,218,0.08), transparent 50%), linear-gradient(120deg, rgba(255,255,255,0.15) 0.5px, transparent 0.5px); background-size: 600px 600px, 600px 600px, 60px 60px; opacity: 0.45; pointer-events: none; z-index: -1; filter: blur(0.3px); }
+body::before { content: ""; position: fixed; inset: 0; background-image: radial-gradient(circle at 25% 25%, rgba(130,80,223,0.08), transparent 45%), radial-gradient(circle at 75% 0%, rgba(9,105,218,0.08), transparent 50%), linear-gradient(120deg, rgba(255,255,255,0.15) 0.5px, transparent 0.5px); background-size: 600px 600px, 600px 600px, 60px 60px; opacity: 0.25; pointer-events: none; z-index: -1; filter: blur(0.3px); }
 button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid #0969da; outline-offset: 2px; border-radius: 4px; }
 
 /* ── Header ── */
@@ -49,7 +49,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .header h1 { font-size: clamp(1.6rem, 2.3vw, 2.2rem); font-weight: 750; letter-spacing: -0.02em; display: flex; align-items: center; gap: 0.75rem; color: #fff; }
 .hero-subtitle { font-size: 0.95rem; color: rgba(255,255,255,0.78); max-width: 520px; line-height: 1.6; }
 .hero-pulse { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.35rem; }
-.pulse-pill { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; padding: 0.35rem 0.75rem; border-radius: 999px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08); text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.8); animation: pulseGlow 6s ease-in-out infinite; }
+.pulse-pill { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; padding: 0.35rem 0.75rem; border-radius: 999px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08); text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.8); }
 .pulse-pill.success { border-color: rgba(34,197,94,0.45); background: rgba(34,197,94,0.15); color: #bbf7d0; }
 .pulse-pill.warning { border-color: rgba(245,158,11,0.45); background: rgba(245,158,11,0.15); color: #fcd34d; }
 .pulse-pill.neutral { border-color: rgba(255,255,255,0.25); }
@@ -64,7 +64,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem; }
 .card { background: var(--bg-card); border: 1px solid var(--border-card); border-radius: 18px; padding: 1.75rem; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 20px 45px rgba(15,23,42,0.08); text-align: left; position: relative; overflow: hidden; }
 .card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; border: 1px solid rgba(255,255,255,0.5); opacity: 0; pointer-events: none; }
-.card:hover { transform: translateY(-6px) scale(1.01); box-shadow: 0 35px 65px rgba(15,23,42,0.15); }
+.card:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(15,23,42,0.12); }
 .card:hover::after { opacity: 0.35; }
 .card .label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-soft); margin-bottom: 0.35rem; font-weight: 600; }
 .card .value { font-size: 2.65rem; font-weight: 700; color: #0f172a; letter-spacing: -0.03em; line-height: 1.1; font-variant-numeric: tabular-nums; margin-bottom: 0.4rem; display: flex; align-items: baseline; gap: 0.3rem; }
@@ -87,7 +87,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .insights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
 .insight-card { background: var(--bg-card); border: 1px solid rgba(15,23,42,0.08); border-radius: 18px; padding: 1.5rem; box-shadow: 0 18px 45px rgba(15,23,42,0.09); position: relative; overflow: hidden; transition: transform .3s ease, box-shadow .3s ease; }
 .insight-card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: radial-gradient(circle at top right, rgba(130,80,223,0.18), transparent 60%); opacity: 0; transition: opacity .3s ease; }
-.insight-card:hover { transform: translateY(-5px); box-shadow: 0 25px 55px rgba(15,23,42,0.18); }
+.insight-card:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(15,23,42,0.14); }
 .insight-card:hover::after { opacity: 1; }
 .insight-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
 .insight-header .eyebrow { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-soft); font-weight: 600; }
@@ -96,10 +96,10 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .mini-link { font-size: 0.8rem; border: none; background: none; color: #2563eb; font-weight: 600; cursor: pointer; padding: 0; }
 .mini-link:hover { text-decoration: underline; }
 .insight-body { display: flex; gap: 1.25rem; flex-wrap: wrap; align-items: center; }
-.radial-progress { --size: 120px; --progress: 0deg; width: var(--size); height: var(--size); border-radius: 50%; background: conic-gradient(var(--accent) var(--progress), rgba(15,23,42,0.08) 0); display: grid; place-items: center; position: relative; }
-.radial-progress::after { content: ""; position: absolute; inset: 12px; background: var(--bg-card); border-radius: 50%; box-shadow: inset 0 0 15px rgba(15,23,42,0.12); }
-.radial-progress strong { position: relative; font-size: 1.8rem; font-weight: 700; color: #0f172a; }
-.radial-progress span { position: relative; font-size: 0.75rem; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.15em; }
+.radial-progress { --size: 120px; --progress: 0deg; width: var(--size); height: var(--size); border-radius: 50%; background: conic-gradient(var(--accent) var(--progress), rgba(15,23,42,0.08) 0); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; position: relative; }
+.radial-progress::after { content: ""; position: absolute; inset: 10px; background: var(--bg-card); border-radius: 50%; box-shadow: inset 0 0 15px rgba(15,23,42,0.12); }
+.radial-progress strong { position: relative; z-index: 1; font-size: 1.5rem; font-weight: 700; color: #0f172a; line-height: 1.2; }
+.radial-progress span { position: relative; z-index: 1; font-size: 0.55rem; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.12em; line-height: 1; }
 .stat-list { flex: 1; display: flex; flex-direction: column; gap: 0.65rem; }
 .stat-row { display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem; color: #475569; }
 .stat-row strong { font-size: 1.25rem; color: #0f172a; font-variant-numeric: tabular-nums; }
@@ -127,7 +127,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 
 /* ── Filters ── */
 .filters { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; align-items: center; }
-.filters label { font-size: 0.75rem; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.05em; }
+.filters label { font-size: 0.75rem; font-weight: 600; color: #4b5563; text-transform: uppercase; letter-spacing: 0.05em; }
 .filters select { padding: 0.5rem 2rem 0.5rem 0.75rem; border: 1px solid #e1e4e8; border-radius: 6px; font-size: 0.9rem; background: #fff url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") no-repeat right 0.5rem center/1em; appearance: none; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: border-color .15s, box-shadow .15s; }
 .filters select:focus { outline: none; border-color: #0969da; box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.15); }
 
@@ -193,7 +193,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 
 /* ── Toil Name Cell ── */
 .toil-name { font-weight: 600; font-size: 0.95rem; color: #1f2328; line-height: 1.4; letter-spacing: -0.01em; }
-.toil-desc { font-size: 0.8rem; color: #656d76; margin-top: 0.25rem; line-height: 1.5; font-weight: 400; }
+.toil-desc { font-size: 0.8rem; color: #4b5563; margin-top: 0.25rem; line-height: 1.5; font-weight: 400; }
 .toil-cell { min-width: 320px; padding-top: 1.25rem; padding-bottom: 1.25rem; }
 .toil-action-cell { white-space: nowrap; }
 
@@ -218,11 +218,34 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 }
 
 /* ── Responsive ── */
+/* ── Responsive: Tablet ── */
 @media (max-width: 900px) {
   .container { padding: 1rem; }
   .cards { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
-  .header { padding: 1.5rem; }
+  .header { padding: 1.5rem; flex-direction: column; }
+  .header .meta { justify-content: flex-start; text-align: left; }
   .insight-body { flex-direction: column; }
+  .insights-grid { grid-template-columns: 1fr; }
+  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .toil-cell { min-width: 200px; }
+}
+
+/* ── Responsive: Mobile ── */
+@media (max-width: 480px) {
+  .container { padding: 0.75rem; }
+  .header { padding: 1rem; border-radius: 0 0 12px 12px; }
+  .header h1 { font-size: 1.3rem; }
+  .hero-subtitle { font-size: 0.85rem; }
+  .cards { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .card { padding: 1rem; border-radius: 12px; }
+  .card .value { font-size: 1.8rem; }
+  .section { padding: 1rem; border-radius: 10px; }
+  .filters { flex-direction: column; gap: 0.5rem; }
+  .filters select { width: 100%; }
+  .btn-launch { font-size: 0.75rem; padding: 0.4rem 0.75rem; }
+  th, td { padding: 0.6rem 0.5rem; font-size: 0.78rem; }
+  .toil-cell { min-width: 160px; }
+  .toil-action-cell .btn-launch { white-space: normal; }
 }
 
 /* ── Dark Mode Toggle ── */
@@ -343,6 +366,20 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 .show-cols-toggle { font-size: 0.78rem; color: #0969da; cursor: pointer; background: none; border: none; font-weight: 600; margin-left: 0.5rem; }
 .show-cols-toggle:hover { text-decoration: underline; }
 
+/* ── Trend Chart ── */
+.trend-chart-wrap { width: 100%; overflow-x: auto; }
+.trend-chart-wrap svg { display: block; width: 100%; height: auto; }
+.trend-bar { transition: opacity 0.2s; }
+.trend-bar:hover { opacity: 0.8; }
+.trend-label { font-size: 11px; fill: #4b5563; font-family: 'Inter', system-ui, sans-serif; }
+.trend-value { font-size: 11px; fill: #1f2328; font-weight: 600; font-family: 'Inter', system-ui, sans-serif; }
+.trend-axis { stroke: #e5e7eb; stroke-width: 1; }
+.trend-grid { stroke: #f3f4f6; stroke-width: 1; stroke-dasharray: 4 4; }
+.dark .trend-label { fill: #8b949e; }
+.dark .trend-value { fill: #e6edf3; }
+.dark .trend-axis { stroke: #30363d; }
+.dark .trend-grid { stroke: #1c2128; }
+
 /* ── Print ── */
 @media print {
   .header { background: #fff !important; color: #000 !important; border-bottom: 2px solid #000; }
@@ -363,7 +400,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 <div class="header">
   <div class="hero-left">
     <p class="hero-eyebrow">Powered by GitHub Copilot CLI</p>
-    <h1>⚡ AI-First Toil Tracker</h1>
+    <h1>⚡ AI Toil Tracker</h1>
     <p class="hero-subtitle">Reduce Toil, Gain Leverage</p>
     <div class="hero-pulse" id="heroPulse">
       <span class="pulse-pill neutral">⚡ Scanning for toil…</span>
@@ -389,7 +426,36 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
     <article class="insight-card" id="teamFocusCard"></article>
   </div>
 
-  <!-- Main Toil Ideas Table (MOVED UP) -->
+  <!-- Trend Chart -->
+  <div class="section" id="trendSection">
+    <h2>📈 Time Reclaimed Over Time</h2>
+    <div id="trendChart" role="img" aria-label="Bar chart showing monthly hours saved from automation over time"></div>
+  </div>
+
+  <!-- Team & Individual Breakdown -->
+  <div class="section" id="breakdownSection">
+    <h2>🏆 Team &amp; Individual Leaderboard</h2>
+    <details class="team-manager">
+      <summary>✨ Customize Team Names</summary>
+      <div class="team-manager-list" id="teamManagerList">
+        <!-- Populated by JS -->
+      </div>
+    </details>
+    <div class="filters">
+      <label>Team:</label>
+      <select id="breakdownTeamFilter"><option value="">All Teams</option></select>
+    </div>
+    <div id="teamTables"></div>
+    <h3 style="margin:1.25rem 0 0.5rem;font-size:0.95rem;">🧑‍💻 Individual Scoreboard</h3>
+    <div class="table-wrap">
+      <table id="personTable">
+        <thead><tr><th>🧑‍💻 Name</th><th>💡 Ideas Submitted</th><th>🤖 Automated</th><th>⏱️ Weekly Hours Spent</th><th>⏱️ Time Given Back / Month</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Main Toil Ideas Table -->
   <div class="section">
     <h2>🗂️ What Should We Automate?</h2>
     <div class="filters">
@@ -428,35 +494,6 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
       </table>
     </div>
   </div>
-
-
-  <!-- Collapsible Details -->
-  <details class="section-details">
-    <summary class="details-toggle">📊 Team Breakdown, Time Impact &amp; Leaderboard</summary>
-
-    <!-- Team & Individual Breakdown -->
-    <div class="section" id="breakdownSection">
-      <h2>🏆 Team &amp; Individual Leaderboard</h2>
-      <details class="team-manager">
-        <summary>✨ Customize Team Names</summary>
-        <div class="team-manager-list" id="teamManagerList">
-          <!-- Populated by JS -->
-        </div>
-      </details>
-      <div class="filters">
-        <label>Team:</label>
-        <select id="breakdownTeamFilter"><option value="">All Teams</option></select>
-      </div>
-      <div id="teamTables"></div>
-      <h3 style="margin:1.25rem 0 0.5rem;font-size:0.95rem;">🧑‍💻 Individual Scoreboard</h3>
-      <div class="table-wrap">
-        <table id="personTable">
-          <thead><tr><th>🧑‍💻 Name</th><th>💡 Ideas Submitted</th><th>🤖 Automated</th><th>⏱️ Weekly Hours Spent</th><th>⏱️ Time Given Back / Month</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-  </details>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -742,10 +779,12 @@ async function loadData() {
     const res = await fetch(apiUrl);
     if (res.ok) {
       const apiIssues = await res.json();
-      dashboardData = convertApiIssues(apiIssues);
-      applyLocalEdits();
-      render();
-      return;
+      if (apiIssues.length > 0) {
+        dashboardData = convertApiIssues(apiIssues);
+        applyLocalEdits();
+        render();
+        return;
+      }
     }
   } catch (_) { /* fall through */ }
 
@@ -907,6 +946,9 @@ function render() {
   // Hero + insight telemetry
   renderHeroPulse(issues);
   renderInsightPanels(issues);
+
+  // Trend chart
+  renderTrendChart(issues);
 
   // Team manager + breakdown
   renderTeamManager(issues);
@@ -1090,33 +1132,40 @@ function renderPipelineCard(issues) {
 function renderRiskCard(issues) {
   const card = document.getElementById('riskCard');
   if (!card) return;
-  const openIssues = issues.filter(i => getStatus(i) !== 'automated');
-  const ranked = openIssues.sort((a, b) => (b.monthly_saved_minutes || 0) - (a.monthly_saved_minutes || 0)).slice(0, 3);
-  const maxMinutes = ranked[0]?.monthly_saved_minutes || 0;
-  const annualCost = ranked.reduce((sum, issue) => sum + ((issue.monthly_saved_minutes || 0) / 60) * 12 * 85, 0);
+  const launches = getCopilotLaunches();
+  const totalLaunches = launches.total || 0;
+  const uniqueIssues = Object.keys(launches.issues || {}).length;
+  const recentList = (launches.recent || []).slice(0, 5);
+
   card.innerHTML = `
     <div class="insight-header">
-      <span class="eyebrow">Risk Watchlist</span>
-      <span class="mini-pill">Top 3</span>
+      <span class="eyebrow">Copilot CLI Activity</span>
+      <span class="mini-pill live">Tracked</span>
     </div>
-    <div class="risk-list">
-      ${ranked.map((issue, idx) => {
-        const title = (issue.title || '').replace(/^\[TOIL\]\s*/i, '').split(' — ')[0] || `#${issue.number}`;
-        const minutes = issue.monthly_saved_minutes || 0;
-        const percent = maxMinutes ? Math.min(100, (minutes / maxMinutes) * 100) : 0;
-        return `<div>
-          <div class="risk-row">
-            <div>
-              <p>${idx + 1}. ${esc(title)}</p>
-              <small>${esc(issue.team || 'Unknown team')} • ${issue.priority || '—'} • ${formatMinutes(minutes)} / mo</small>
-            </div>
-            <span class="risk-value">${issue.toil_score}</span>
-          </div>
-          <div class="micro-progress" data-color="danger"><span style="width:${percent}%"></span></div>
-        </div>`;
-      }).join('')}
+    <div class="insight-body" style="flex-direction:column;gap:1rem;">
+      <div style="display:flex;gap:2rem;align-items:baseline;">
+        <div>
+          <div style="font-size:2.2rem;font-weight:700;color:var(--accent);line-height:1;">${totalLaunches}</div>
+          <div style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.1em;margin-top:0.2rem;">Launches</div>
+        </div>
+        <div>
+          <div style="font-size:2.2rem;font-weight:700;color:var(--text-primary);line-height:1;">${uniqueIssues}</div>
+          <div style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.1em;margin-top:0.2rem;">Toils Targeted</div>
+        </div>
+      </div>
+      ${recentList.length ? `
+        <div style="display:flex;flex-direction:column;gap:0.35rem;">
+          ${recentList.map(r => {
+            const issue = issues.find(i => i.number === r.issue);
+            const title = issue ? (issue.title || '').replace(/^\[TOIL\]\s*/i, '').split(' — ')[0] : `#${r.issue}`;
+            return `<div style="display:flex;justify-content:space-between;font-size:0.82rem;">
+              <span style="color:var(--text-primary);">#${r.issue} ${esc(title)}</span>
+              <span style="color:var(--text-soft);white-space:nowrap;">${timeAgo(r.time)}</span>
+            </div>`;
+          }).join('')}
+        </div>
+      ` : `<p class="insight-note">Click 🚀 on any toil to launch Copilot CLI — launches are tracked here.</p>`}
     </div>
-    <p class="insight-note">Inaction tax: ${formatCurrencyShort(annualCost)} annually if these stay unfixed.</p>
   `;
 }
 
@@ -1195,6 +1244,82 @@ function renameTeam(btn) {
   applyTeamRenames(dashboardData.issues);
   render();
   showToast(`🏷️ Team glow-up complete: ${original} → ${newName} ✨`);
+}
+
+// ── Trend Chart — Monthly hours reclaimed ──
+function renderTrendChart(issues) {
+  const container = document.getElementById('trendChart');
+  if (!container) return;
+
+  // Build monthly buckets from issue created_at dates — only months with data
+  const monthMap = {};
+  issues.forEach(issue => {
+    const created = issue.created_at ? issue.created_at.slice(0, 7) : null;
+    if (!created) return;
+    if (!monthMap[created]) monthMap[created] = { total: 0, automated: 0 };
+    const hrs = (issue.monthly_saved_minutes || 0) / 60;
+    monthMap[created].total += hrs;
+    if (getStatus(issue) === 'automated') monthMap[created].automated += hrs;
+  });
+
+  const months = Object.keys(monthMap).sort();
+  const data = months.map(k => ({ month: k, total: monthMap[k].total, automated: monthMap[k].automated }));
+
+  if (data.length === 0 || data.every(d => d.total === 0)) {
+    container.innerHTML = '<p style="color:var(--text-soft);font-size:0.9rem;">No data yet — submit your first toil idea to see trends.</p>';
+    return;
+  }
+
+  const maxVal = Math.max(...data.map(d => d.total));
+  // Round up to a clean number for the Y-axis
+  const yMax = maxVal <= 10 ? Math.ceil(maxVal) : Math.ceil(maxVal / 10) * 10;
+
+  const barCount = data.length;
+  const barW = barCount === 1 ? 80 : barCount <= 3 ? 60 : 40;
+  const barGap = 24;
+  const svgW = 700;
+  const svgH = 220;
+  const pad = { top: 28, right: 20, bottom: 48, left: 50 };
+  const chartW = svgW - pad.left - pad.right;
+  const chartH = svgH - pad.top - pad.bottom;
+
+  // Y-axis grid lines — use clean intervals
+  const gridCount = Math.min(4, yMax);
+  let gridLines = '';
+  for (let i = 0; i <= gridCount; i++) {
+    const y = pad.top + chartH - (chartH * i / gridCount);
+    const val = Math.round(yMax * i / gridCount);
+    gridLines += `<line x1="${pad.left}" y1="${y}" x2="${svgW - pad.right}" y2="${y}" class="trend-grid"/>`;
+    gridLines += `<text x="${pad.left - 8}" y="${y + 4}" text-anchor="end" class="trend-label">${val}h</text>`;
+  }
+
+  // Bars — centered in available space
+  const totalBarsWidth = barCount * barW + (barCount - 1) * barGap;
+  const startX = pad.left + (chartW - totalBarsWidth) / 2;
+  let bars = '';
+  data.forEach((d, i) => {
+    const x = startX + i * (barW + barGap);
+    const totalH = Math.max(d.total > 0 ? 2 : 0, (d.total / yMax) * chartH);
+    const autoH = Math.max(d.automated > 0 ? 2 : 0, (d.automated / yMax) * chartH);
+    const totalY = pad.top + chartH - totalH;
+    const autoY = pad.top + chartH - autoH;
+    bars += `<rect class="trend-bar" x="${x}" y="${totalY}" width="${barW}" height="${totalH}" rx="4" fill="#ddd6fe" opacity="0.6"><title>${d.month}: ${d.total.toFixed(1)} hrs potential</title></rect>`;
+    bars += `<rect class="trend-bar" x="${x}" y="${autoY}" width="${barW}" height="${autoH}" rx="4" fill="#8250df"><title>${d.month}: ${d.automated.toFixed(1)} hrs automated</title></rect>`;
+    if (d.total > 0) bars += `<text x="${x + barW / 2}" y="${totalY - 6}" text-anchor="middle" class="trend-value">${d.total.toFixed(0)}h</text>`;
+    const label = new Date(d.month + '-15').toLocaleDateString('en-US', { month: 'short' });
+    bars += `<text x="${x + barW / 2}" y="${svgH - 10}" text-anchor="middle" class="trend-label">${label}</text>`;
+  });
+
+  const axisLine = `<line x1="${pad.left}" y1="${pad.top + chartH}" x2="${svgW - pad.right}" y2="${pad.top + chartH}" class="trend-axis"/>`;
+  const legend = `
+    <g transform="translate(${pad.left}, ${svgH - 2})">
+      <rect width="10" height="10" rx="2" fill="#ddd6fe" opacity="0.6"/>
+      <text x="14" y="9" class="trend-label">Potential</text>
+      <rect x="72" width="10" height="10" rx="2" fill="#8250df"/>
+      <text x="86" y="9" class="trend-label">Automated</text>
+    </g>`;
+
+  container.innerHTML = `<div class="trend-chart-wrap"><svg viewBox="0 0 ${svgW} ${svgH + 16}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Monthly hours saved trend">${gridLines}${axisLine}${bars}${legend}</svg></div>`;
 }
 
 // ── Team & Individual Breakdown ──
@@ -1391,19 +1516,46 @@ document.getElementById('filterSort').addEventListener('change', function() {
 });
 
 // ═══════════════════════════════════════════════════
+// COPILOT CLI LAUNCH TRACKING
+// ═══════════════════════════════════════════════════
+function getCopilotLaunches() {
+  return JSON.parse(localStorage.getItem('toilCopilotLaunches') || '{"total":0,"issues":{},"recent":[]}');
+}
+function trackCopilotLaunch(issueNum) {
+  const data = getCopilotLaunches();
+  data.total = (data.total || 0) + 1;
+  if (!data.issues) data.issues = {};
+  data.issues[issueNum] = (data.issues[issueNum] || 0) + 1;
+  if (!data.recent) data.recent = [];
+  data.recent.unshift({ issue: issueNum, time: Date.now() });
+  data.recent = data.recent.slice(0, 20);
+  localStorage.setItem('toilCopilotLaunches', JSON.stringify(data));
+}
+function timeAgo(ts) {
+  const secs = Math.floor((Date.now() - ts) / 1000);
+  if (secs < 60) return 'just now';
+  if (secs < 3600) return `${Math.floor(secs / 60)}m ago`;
+  if (secs < 86400) return `${Math.floor(secs / 3600)}h ago`;
+  return `${Math.floor(secs / 86400)}d ago`;
+}
+
+// ═══════════════════════════════════════════════════
 // CLIPBOARD & TOAST
 // ═══════════════════════════════════════════════════
 function copyLaunchCmd(btn, issueNum) {
   const cmd = btn.getAttribute('data-cmd');
+  // Track the launch
+  trackCopilotLaunch(issueNum);
   navigator.clipboard.writeText(cmd).then(() => {
     showToast('✅ Copied! Paste into your command line — Copilot will suggest how to automate it.');
+    render();
   }).catch(() => {
-    // Fallback
     const ta = document.createElement('textarea');
     ta.value = cmd; document.body.appendChild(ta);
     ta.select(); document.execCommand('copy');
     document.body.removeChild(ta);
     showToast('✅ Copied! Paste into your command line — Copilot will suggest how to automate it.');
+    render();
   });
 }
 
