@@ -168,6 +168,7 @@ td.editable { cursor: pointer; position: relative; }
 td.editable:hover { background: #ddf4ff; border-radius: 4px; }
 td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35rem; border: 1px solid #0969da; border-radius: 4px; width: 100%; background: #fff; }
 .edited-marker { color: #8250df; font-weight: 700; margin-left: 2px; font-size: 0.65rem; }
+.bonus-badge { font-size: 0.7rem; background: var(--accent-soft); color: #fff; padding: 0.1rem 0.35rem; border-radius: 8px; margin-left: 0.3rem; vertical-align: middle; font-weight: 600; }
 
 /* ── Team Manager Panel ── */
 .team-manager { margin-bottom: 1.25rem; padding: 1rem; background: #f6f8fa; border: 1px solid #d0d7de; border-radius: 8px; }
@@ -533,10 +534,8 @@ const PEOPLE_SCORES = {
 };
 const BONUS_MAP = {
   '❌ Error-prone': 2,
-  '🔗 Blocking': 3,
   '😤 Morale killer': 1,
-  '📈 Growing worse': 2,
-  '🆕 New team friction': 1
+  '🔗 Blocking': 3
 };
 
 const PRIORITY_BANDS = [
@@ -575,6 +574,7 @@ const SAMPLE_DATA = {
       time_per_occurrence: "30–60 minutes",
       people_affected: "Entire team",
       bonus_factors: ["❌ Error-prone", "🔗 Blocking"],
+      bonusScore: 5,
       automation_idea: "Create a CI/CD pipeline with GitHub Actions to automate staging deployments",
       toil_score: 205,
       priority: "🔴 Critical",
@@ -594,7 +594,8 @@ const SAMPLE_DATA = {
       frequency: "🔵 Weekly",
       time_per_occurrence: "15–30 minutes",
       people_affected: "2\u20133 people",
-      bonus_factors: ["❌ Error-prone"],
+      bonus_factors: [],
+      bonusScore: 0,
       automation_idea: "Use AWS Secrets Manager automatic rotation",
       toil_score: 14,
       priority: "🟢 Medium",
@@ -614,7 +615,8 @@ const SAMPLE_DATA = {
       frequency: "🟠 Daily",
       time_per_occurrence: "5–15 minutes",
       people_affected: "Just me",
-      bonus_factors: ["😤 Morale killer"],
+      bonus_factors: [],
+      bonusScore: 0,
       automation_idea: "Slack bot that posts CI results automatically",
       toil_score: 11,
       priority: "🟢 Medium",
@@ -634,7 +636,8 @@ const SAMPLE_DATA = {
       frequency: "🟡 Multiple times per week",
       time_per_occurrence: "> 1 hour",
       people_affected: "4\u20136 people",
-      bonus_factors: ["❌ Error-prone", "📈 Growing worse"],
+      bonus_factors: ["😤 Morale killer"],
+      bonusScore: 1,
       automation_idea: "Dependabot with auto-merge for patch versions",
       toil_score: 76,
       priority: "🔴 Critical",
@@ -654,7 +657,8 @@ const SAMPLE_DATA = {
       frequency: "⚪ Monthly or less",
       time_per_occurrence: "> 1 hour",
       people_affected: "2\u20133 people",
-      bonus_factors: ["🆕 New team friction", "😤 Morale killer"],
+      bonus_factors: [],
+      bonusScore: 0,
       automation_idea: "Dev container or Codespaces setup with scripted provisioning",
       toil_score: 18,
       priority: "🟢 Medium",
@@ -674,7 +678,8 @@ const SAMPLE_DATA = {
       frequency: "🟠 Daily",
       time_per_occurrence: "30–60 minutes",
       people_affected: "Entire team",
-      bonus_factors: ["🔗 Blocking", "📈 Growing worse"],
+      bonus_factors: [],
+      bonusScore: 0,
       automation_idea: "Use an AI classifier to auto-route tickets by category",
       toil_score: 130,
       priority: "🔴 Critical",
@@ -725,6 +730,7 @@ function normalizeDashboardJson(raw) {
         time_per_occurrence: item.time?.label || '',
         people_affected: item.people?.label || '',
         bonus_factors: item.bonusFactors || [],
+        bonusScore: item.bonusScore || 0,
         automation_idea: item.automationIdea || '',
         toil_score: item.toilScore || 0,
         priority: item.priority || '',
@@ -796,6 +802,7 @@ function convertApiIssues(apiIssues) {
         time_per_occurrence: time,
         people_affected: people,
         bonus_factors: bonus,
+        bonusScore: bonus.reduce((s, b) => s + (BONUS_MAP[b] || 0), 0),
         automation_idea: extractField(body, 'Automation idea (if any)') || '',
         toil_score: score,
         priority: getPriorityLabel(score),
@@ -1329,7 +1336,7 @@ function renderToilTable(issues) {
       <td class="editable" data-issue="${issue.number}" data-field="frequency">${escapeHtml(issue.frequency)}${edited}</td>
       <td class="editable" data-issue="${issue.number}" data-field="time_per_occurrence">${escapeHtml(issue.time_per_occurrence)}</td>
       <td class="editable" data-issue="${issue.number}" data-field="people_affected">${escapeHtml(issue.people_affected)}</td>
-      <td style="font-weight:700">${issue.toil_score}</td>
+      <td style="font-weight:700">${issue.toil_score}${(() => { const bf = issue.bonus_factors || []; const bs = bf.reduce((s, b) => s + (BONUS_MAP[b] || 0), 0); return bs > 0 ? `<span class="bonus-badge" title="Bonus: +${bs} (${bf.join(', ')})">+${bs}</span>` : ''; })()}</td>
       <td>${statusBadge(status)}</td>
       <td>${formatMinutes(issue.monthly_saved_minutes)}</td>
     </tr>`;
