@@ -1441,7 +1441,7 @@ function renderToilTable(issues) {
     const toilDesc = dashIdx > -1 ? rawTitle.substring(dashIdx + 3) : (dashIdx === -1 && rawTitle.length > toilName.length ? rawTitle : '');
 
     const safeUrl = issue.url && issue.url.startsWith('https://github.com/') ? issue.url : '#';
-    const actionBtn = `<button class="btn btn-launch" onclick="copyLaunchCmd(this, ${issue.number})" data-cmd="${esc(ghCmd, true)}" title="Launch Copilot CLI to solve this">🚀 Automate This</button>`;
+    const actionBtn = `<button class="btn btn-launch" onclick="copyLaunchCmd(this, ${issue.number})" data-cmd="${esc(ghCmd, true)}" title="Launch Copilot CLI to solve this">🚀 Launch GH Copilot CLI To Automate</button>`;
 
     return `<tr class="${priorityClass(issue.toil_score)}">
       <td><a href="${safeUrl}" target="_blank" rel="noopener noreferrer" style="color:#0969da;font-weight:600;">#${issue.number}</a></td>
