@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com; img-src 'self' data:;">
-<title>Toil Tracker — Reduce Toil, Gain Leverage</title>
+<title>AI Toil Tracker — Reduce Toil, Gain Leverage</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -84,7 +84,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .dark .card .card-subtext { color: #cbd5f5; }
 
 /* ── Insight Panels ── */
-.insights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
+.insights-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; align-items: start; }
 .insight-card { background: var(--bg-card); border: 1px solid rgba(15,23,42,0.08); border-radius: 18px; padding: 1.5rem; box-shadow: 0 18px 45px rgba(15,23,42,0.09); position: relative; overflow: hidden; transition: transform .3s ease, box-shadow .3s ease; }
 .insight-card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: radial-gradient(circle at top right, rgba(130,80,223,0.18), transparent 60%); opacity: 0; transition: opacity .3s ease; }
 .insight-card:hover { transform: translateY(-3px); box-shadow: 0 18px 40px rgba(15,23,42,0.14); }
@@ -368,7 +368,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 
 /* ── Trend Chart ── */
 .trend-chart-wrap { width: 100%; overflow-x: auto; }
-.trend-chart-wrap svg { display: block; width: 100%; height: auto; }
+.trend-chart-wrap svg { display: block; width: 100%; max-height: 160px; height: auto; }
 .trend-bar { transition: opacity 0.2s; }
 .trend-bar:hover { opacity: 0.8; }
 .trend-label { font-size: 11px; fill: #4b5563; font-family: 'Inter', system-ui, sans-serif; }
@@ -422,14 +422,14 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
   <!-- Insights Grid -->
   <div class="insights-grid" id="insightsGrid">
     <article class="insight-card" id="pipelineCard"></article>
-    <article class="insight-card" id="riskCard"></article>
+    <article class="insight-card" id="trendChartCard">
+      <div class="insight-header">
+        <span class="eyebrow">Time Reclaimed</span>
+        <span class="mini-pill live">Live</span>
+      </div>
+      <div id="trendChart" role="img" aria-label="Bar chart showing monthly hours saved from automation over time"></div>
+    </article>
     <article class="insight-card" id="teamFocusCard"></article>
-  </div>
-
-  <!-- Trend Chart -->
-  <div class="section" id="trendSection">
-    <h2>📈 Time Reclaimed Over Time</h2>
-    <div id="trendChart" role="img" aria-label="Bar chart showing monthly hours saved from automation over time"></div>
   </div>
 
   <!-- Team & Individual Breakdown -->
@@ -1091,7 +1091,6 @@ function renderHeroPulse(issues) {
 
 function renderInsightPanels(issues) {
   renderPipelineCard(issues);
-  renderRiskCard(issues);
   renderTeamFocusCard(issues);
 }
 
@@ -1129,45 +1128,7 @@ function renderPipelineCard(issues) {
   }
 }
 
-function renderRiskCard(issues) {
-  const card = document.getElementById('riskCard');
-  if (!card) return;
-  const launches = getCopilotLaunches();
-  const totalLaunches = launches.total || 0;
-  const uniqueIssues = Object.keys(launches.issues || {}).length;
-  const recentList = (launches.recent || []).slice(0, 5);
 
-  card.innerHTML = `
-    <div class="insight-header">
-      <span class="eyebrow">Copilot CLI Activity</span>
-      <span class="mini-pill live">Tracked</span>
-    </div>
-    <div class="insight-body" style="flex-direction:column;gap:1rem;">
-      <div style="display:flex;gap:2rem;align-items:baseline;">
-        <div>
-          <div style="font-size:2.2rem;font-weight:700;color:var(--accent);line-height:1;">${totalLaunches}</div>
-          <div style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.1em;margin-top:0.2rem;">Launches</div>
-        </div>
-        <div>
-          <div style="font-size:2.2rem;font-weight:700;color:var(--text-primary);line-height:1;">${uniqueIssues}</div>
-          <div style="font-size:0.75rem;color:var(--text-soft);text-transform:uppercase;letter-spacing:0.1em;margin-top:0.2rem;">Toils Targeted</div>
-        </div>
-      </div>
-      ${recentList.length ? `
-        <div style="display:flex;flex-direction:column;gap:0.35rem;">
-          ${recentList.map(r => {
-            const issue = issues.find(i => i.number === r.issue);
-            const title = issue ? (issue.title || '').replace(/^\[TOIL\]\s*/i, '').split(' — ')[0] : `#${r.issue}`;
-            return `<div style="display:flex;justify-content:space-between;font-size:0.82rem;">
-              <span style="color:var(--text-primary);">#${r.issue} ${esc(title)}</span>
-              <span style="color:var(--text-soft);white-space:nowrap;">${timeAgo(r.time)}</span>
-            </div>`;
-          }).join('')}
-        </div>
-      ` : `<p class="insight-note">Click 🚀 on any toil to launch Copilot CLI — launches are tracked here.</p>`}
-    </div>
-  `;
-}
 
 function renderTeamFocusCard(issues) {
   const card = document.getElementById('teamFocusCard');
@@ -1196,7 +1157,7 @@ function renderTeamFocusCard(issues) {
         </div>
       `).join('')}
     </div>
-    <p class="insight-note">${focusTeam ? `${esc(focusTeam[0])} is burning ${formatWeeklyTime(focusTeam[1].weekly)} each week — prime target for Codex automation.` : 'Log a few toils to see team focus insights.'}</p>
+    <p class="insight-note">${focusTeam ? `${esc(focusTeam[0])} is spending ${formatWeeklyTime(focusTeam[1].weekly)} on toil each week. Imagine what they'd build with that time back. 🚀` : 'Log a few toils to see team focus insights.'}</p>
   `;
 }
 
@@ -1275,11 +1236,12 @@ function renderTrendChart(issues) {
   const yMax = maxVal <= 10 ? Math.ceil(maxVal) : Math.ceil(maxVal / 10) * 10;
 
   const barCount = data.length;
-  const barW = barCount === 1 ? 80 : barCount <= 3 ? 60 : 40;
+  const barW = barCount === 1 ? 64 : barCount <= 3 ? 56 : 40;
   const barGap = 24;
-  const svgW = 700;
-  const svgH = 220;
   const pad = { top: 28, right: 20, bottom: 48, left: 50 };
+  const totalBarsWidth = barCount * barW + Math.max(0, barCount - 1) * barGap;
+  const svgW = pad.left + Math.max(totalBarsWidth + 40, 120) + pad.right;
+  const svgH = 180;
   const chartW = svgW - pad.left - pad.right;
   const chartH = svgH - pad.top - pad.bottom;
 
@@ -1294,7 +1256,6 @@ function renderTrendChart(issues) {
   }
 
   // Bars — centered in available space
-  const totalBarsWidth = barCount * barW + (barCount - 1) * barGap;
   const startX = pad.left + (chartW - totalBarsWidth) / 2;
   let bars = '';
   data.forEach((d, i) => {

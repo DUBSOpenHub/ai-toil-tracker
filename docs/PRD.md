@@ -1,4 +1,4 @@
-# Product Requirements Document — AI-First Toil Tracker
+# Product Requirements Document — AI Toil Tracker
 
 ## Problem
 

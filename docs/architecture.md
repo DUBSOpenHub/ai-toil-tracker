@@ -1,4 +1,4 @@
-# Architecture — AI-First Toil Tracker
+# Architecture — AI Toil Tracker
 
 ## Overview
 

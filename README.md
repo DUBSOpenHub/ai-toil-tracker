@@ -1,4 +1,4 @@
-# 🤖 AI First - Toil Tracker
+# 🤖 AI Toil Tracker
 
 **Stop doing repetitive work. Start automating it.**
 
@@ -21,7 +21,7 @@ This isn't just a tracker - AI is built into the workflow:
 
 ## Why Use This
 
-For anyone doing repetitive work who wants to apply AI-first thinking, AI First - Toil Tracker makes it easy to:
+For anyone doing repetitive work who wants to apply AI-first thinking, AI Toil Tracker makes it easy to:
 
 - 🎯 **Capture** - Quickly log toil ideas from a single Slack link in under 2 minutes
 - 🤖 **Identify** - AI auto-scores every idea and surfaces the highest-leverage opportunities

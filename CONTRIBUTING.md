@@ -1,4 +1,4 @@
-# Contributing to AI First - Toil Tracker
+# Contributing to AI Toil Tracker
 
 Thanks for helping us surface and eliminate toil! Here's how to contribute.
 
