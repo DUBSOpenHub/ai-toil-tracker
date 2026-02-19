@@ -214,7 +214,9 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 .toil-name { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); line-height: 1.4; letter-spacing: -0.01em; }
 .toil-desc { font-size: 0.8rem; color: var(--text-soft); margin-top: 0.25rem; line-height: 1.5; font-weight: 400; }
 .toil-cell { min-width: 320px; padding-top: 1.25rem; padding-bottom: 1.25rem; }
-.toil-action-cell { white-space: nowrap; }
+.toil-action-cell { white-space: nowrap; display: flex; flex-direction: column; gap: 0.4rem; align-items: flex-start; }
+.status-toggle { cursor: pointer; transition: all 150ms ease; }
+.status-toggle:hover { filter: brightness(1.15); transform: scale(1.05); }
 
 /* ── Copilot Tool Toggle ── */
 
@@ -1396,7 +1398,7 @@ function renderToilTable(issues) {
     return `<tr class="${priorityClass(issue.toil_score)}">
       <td><a href="${safeUrl}" target="_blank" rel="noopener noreferrer" style="color:#0969da;font-weight:600;">#${issue.number}</a></td>
       <td class="toil-cell"><div class="toil-name">${esc(toilName)}</div>${toilDesc ? `<div class="toil-desc">${esc(toilDesc)}</div>` : ''}</td>
-      <td class="toil-action-cell">${actionBtn}</td>
+      <td class="toil-action-cell">${actionBtn} ${statusBadge(status, issue.number)}</td>
       <td>${esc(issue.submitter)}</td>
       <td>${esc(issue.team)}</td>
       <td class="col-hidden">${esc(issue.category)}</td>
