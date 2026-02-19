@@ -123,7 +123,6 @@ A visual dashboard lets your team and manager see all ideas, filter by team, and
 
 - **Click any score cell** (Frequency, Time, People) to edit it inline — the toil score recalculates in real time
 - **Edits persist** in your browser via localStorage
-- **"Save to GitHub"** link opens the issue on GitHub so you can update the actual issue
 - **Sort** by clicking any column header
 - **Filter** using the dropdowns above the table
 - **Print** the dashboard for leadership presentations (print-friendly styling included)

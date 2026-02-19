@@ -197,10 +197,6 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 .toil-cell { min-width: 320px; padding-top: 1.25rem; padding-bottom: 1.25rem; }
 .toil-action-cell { white-space: nowrap; }
 
-/* ── Copilot Tool Toggle ── */
-
-
-
 
 /* ── Toast ── */
 .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: #24292f; color: #fff; padding: 0.75rem 1.25rem; border-radius: 8px; font-size: 0.85rem; font-weight: 500; z-index: 9999; opacity: 0; transform: translateY(10px); transition: all .3s; pointer-events: none; }
@@ -583,10 +579,6 @@ const SAMPLE_DATA = {
       toil_score: 205,
       priority: "🔴 Critical",
       monthly_saved_minutes: 13500,
-      weekly_time_spent: 300,
-      team_weekly_time_spent: 1500,
-      weekly_time_spent_display: "5 hrs/week",
-      team_weekly_time_spent_display: "25 hrs/week",
       created_at: "2026-02-10T10:00:00Z",
       ai_suggestion: "Use reusable GitHub Actions workflow with environment gates"
     },
@@ -607,10 +599,6 @@ const SAMPLE_DATA = {
       toil_score: 14,
       priority: "🟢 Medium",
       monthly_saved_minutes: 176,
-      weekly_time_spent: 30,
-      team_weekly_time_spent: 60,
-      weekly_time_spent_display: "30 min/week",
-      team_weekly_time_spent_display: "1 hr/week",
       created_at: "2026-02-11T14:30:00Z",
       ai_suggestion: "Configure AWS Secrets Manager with Lambda rotation function"
     },
@@ -631,10 +619,6 @@ const SAMPLE_DATA = {
       toil_score: 11,
       priority: "🟢 Medium",
       monthly_saved_minutes: 200,
-      weekly_time_spent: 50,
-      team_weekly_time_spent: 50,
-      weekly_time_spent_display: "50 min/week",
-      team_weekly_time_spent_display: "50 min/week",
       created_at: "2026-02-08T09:00:00Z",
       ai_suggestion: "GitHub Actions workflow with Slack notification step"
     },
@@ -655,10 +639,6 @@ const SAMPLE_DATA = {
       toil_score: 76,
       priority: "🔴 Critical",
       monthly_saved_minutes: 2250,
-      weekly_time_spent: 120,
-      team_weekly_time_spent: 480,
-      weekly_time_spent_display: "2 hrs/week",
-      team_weekly_time_spent_display: "8 hrs/week",
       created_at: "2026-02-12T11:00:00Z",
       ai_suggestion: "Set up Dependabot with grouped updates and auto-merge workflow"
     },
@@ -679,10 +659,6 @@ const SAMPLE_DATA = {
       toil_score: 18,
       priority: "🟢 Medium",
       monthly_saved_minutes: 150,
-      weekly_time_spent: 90,
-      team_weekly_time_spent: 180,
-      weekly_time_spent_display: "1.5 hrs/week",
-      team_weekly_time_spent_display: "3 hrs/week",
       created_at: "2026-02-14T16:00:00Z",
       ai_suggestion: "Create devcontainer.json with all tools and extensions pre-configured"
     },
@@ -703,10 +679,6 @@ const SAMPLE_DATA = {
       toil_score: 130,
       priority: "🔴 Critical",
       monthly_saved_minutes: 4500,
-      weekly_time_spent: 150,
-      team_weekly_time_spent: 750,
-      weekly_time_spent_display: "2.5 hrs/week",
-      team_weekly_time_spent_display: "12.5 hrs/week",
       created_at: "2026-02-15T08:00:00Z",
       ai_suggestion: "Train a classifier on historical ticket data to auto-label and route"
     }
@@ -931,6 +903,14 @@ function render() {
   // Apply team renames
   applyTeamRenames(data.issues);
 
+  // Normalize team names: trim whitespace, deduplicate by case
+  const teamCanonical = {};
+  data.issues.forEach(i => {
+    const key = (i.team || '').trim().toLowerCase();
+    if (!teamCanonical[key]) teamCanonical[key] = (i.team || '').trim() || 'Unknown';
+    i.team = teamCanonical[key];
+  });
+
   // Header
   document.getElementById('headerRepo').textContent = data.repo;
   document.getElementById('headerDate').textContent = new Date(data.generated_at).toLocaleDateString();
@@ -998,7 +978,7 @@ function renderSummaryCards(issues) {
   const riskMins = riskIssues.reduce((s, i) => s + (i.monthly_saved_minutes || 0), 0);
   const riskHours = riskMins / 60;
   const avgHoursPerIdea = total ? (hoursSaved / total) : 0;
-  const weeklyBurn = issues.reduce((s, i) => s + (i.team_weekly_time_spent || 0), 0) / 60;
+  const weeklyBurn = issues.reduce((s, i) => s + (i.monthly_saved_minutes || 0), 0) / 60 / 4.3;
   const fteRecovered = hoursSaved / 160;
   const targetRate = 55;
   const rateDelta = automationRate - targetRate;
@@ -1147,8 +1127,8 @@ function renderRiskCard(issues) {
         return `<div>
           <div class="risk-row">
             <div>
-              <p>${idx + 1}. ${esc(title)}</p>
-              <small>${esc(issue.team || 'Unknown team')} • ${issue.priority || '—'} • ${formatMinutes(minutes)} / mo</small>
+              <p>${idx + 1}. ${escapeHtml(title)}</p>
+              <small>${escapeHtml(issue.team || 'Unknown team')} • ${issue.priority || '—'} • ${formatMinutes(minutes)} / mo</small>
             </div>
             <span class="risk-value">${issue.toil_score}</span>
           </div>
@@ -1167,7 +1147,7 @@ function renderTeamFocusCard(issues) {
   issues.forEach(issue => {
     const team = issue.team || 'Unknown';
     if (!teamMap[team]) teamMap[team] = { weekly: 0, saved: 0, active: 0 };
-    teamMap[team].weekly += (issue.team_weekly_time_spent || 0);
+    teamMap[team].weekly += (issue.monthly_saved_minutes || 0) / 4.3;
     teamMap[team].saved += (issue.monthly_saved_minutes || 0);
     if (getStatus(issue) !== 'automated') teamMap[team].active++;
   });
@@ -1181,13 +1161,13 @@ function renderTeamFocusCard(issues) {
     <div class="team-pills">
       ${teams.map(([team, data]) => `
         <div class="team-pill">
-          <span>${esc(team)}</span>
+          <span>${escapeHtml(team)}</span>
           <strong>${formatWeeklyTime(data.weekly)}</strong>
           <small>${data.active} active toils • ${formatMinutes(data.saved)}</small>
         </div>
       `).join('')}
     </div>
-    <p class="insight-note">${focusTeam ? `${esc(focusTeam[0])} is burning ${formatWeeklyTime(focusTeam[1].weekly)} each week — prime target for Codex automation.` : 'Log a few toils to see team focus insights.'}</p>
+    <p class="insight-note">${focusTeam ? `${escapeHtml(focusTeam[0])} is burning ${formatWeeklyTime(focusTeam[1].weekly)} each week — prime target for Codex automation.` : 'Log a few toils to see team focus insights.'}</p>
   `;
 }
 
@@ -1215,9 +1195,9 @@ function renderTeamManager(issues) {
   container.innerHTML = originalTeams.map(t => {
     const current = renames[t] || t;
     return `<div class="team-rename-row">
-      <span class="team-current">${esc(t)}</span>
+      <span class="team-current">${escapeHtml(t)}</span>
       <span class="arrow">→</span>
-      <input type="text" value="${esc(current)}" data-original="${esc(t)}" placeholder="New team name" />
+      <input type="text" value="${escapeHtml(current)}" data-original="${escapeHtml(t)}" placeholder="New team name" />
       <button class="btn btn-rename" onclick="renameTeam(this)">Rename</button>
     </div>`;
   }).join('');
@@ -1250,7 +1230,7 @@ function renderBreakdown(issues) {
     personMap[name].submitted++;
     if (getStatus(i) === 'automated') personMap[name].automated++;
     personMap[name].minsSaved += (i.monthly_saved_minutes || 0);
-    personMap[name].weeklyMins += (i.weekly_time_spent || 0);
+    personMap[name].weeklyMins += (i.monthly_saved_minutes || 0) / 4.3;
   });
 
   const tbody = document.querySelector('#personTable tbody');
@@ -1259,7 +1239,7 @@ function renderBreakdown(issues) {
 
   tbody.innerHTML = people.map(([name, d]) => {
     totalSub += d.submitted; totalAuto += d.automated; totalMins += d.minsSaved; totalWeekly += d.weeklyMins;
-    return `<tr><td>${esc(name)}</td><td>${d.submitted}</td><td>${d.automated}</td><td>${formatWeeklyTime(d.weeklyMins)}</td><td>${formatMinutes(d.minsSaved)}</td></tr>`;
+    return `<tr><td>${escapeHtml(name)}</td><td>${d.submitted}</td><td>${d.automated}</td><td>${formatWeeklyTime(d.weeklyMins)}</td><td>${formatMinutes(d.minsSaved)}</td></tr>`;
   }).join('') + `<tr class="total-row"><td>Total</td><td>${totalSub}</td><td>${totalAuto}</td><td>${formatWeeklyTime(totalWeekly)}</td><td>${formatMinutes(totalMins)}</td></tr>`;
 
   // Per-team table
@@ -1281,7 +1261,7 @@ function renderBreakdown(issues) {
       <thead><tr><th>🏢 Team</th><th>💡 Ideas</th><th>🤖 Automated</th><th>⏱️ Time Given Back / Month</th></tr></thead>
       <tbody>${teams.map(([t, d]) => {
         gt.submitted += d.submitted; gt.automated += d.automated; gt.minsSaved += d.minsSaved;
-        return `<tr><td>${esc(t)}</td><td>${d.submitted}</td><td>${d.automated}</td><td>${formatMinutes(d.minsSaved)}</td></tr>`;
+        return `<tr><td>${escapeHtml(t)}</td><td>${d.submitted}</td><td>${d.automated}</td><td>${formatMinutes(d.minsSaved)}</td></tr>`;
       }).join('')}
       <tr class="total-row"><td>Grand Total</td><td>${gt.submitted}</td><td>${gt.automated}</td><td>${formatMinutes(gt.minsSaved)}</td></tr>
       </tbody></table></div>`;
@@ -1337,18 +1317,18 @@ function renderToilTable(issues) {
     const toilDesc = dashIdx > -1 ? rawTitle.substring(dashIdx + 3) : (dashIdx === -1 && rawTitle.length > toilName.length ? rawTitle : '');
 
     const safeUrl = issue.url && issue.url.startsWith('https://github.com/') ? issue.url : '#';
-    const actionBtn = `<button class="btn btn-launch" onclick="copyLaunchCmd(this, ${issue.number})" data-cmd="${esc(ghCmd, true)}" title="Launch Copilot CLI to solve this">🚀 Launch Copilot CLI to Solve</button>`;
+    const actionBtn = `<button class="btn btn-launch" onclick="copyLaunchCmd(this, ${issue.number})" data-cmd="${escapeHtml(ghCmd, true)}" title="Launch Copilot CLI to solve this">🚀 Launch Copilot CLI to Solve</button>`;
 
     return `<tr class="${priorityClass(issue.toil_score)}">
       <td><a href="${safeUrl}" target="_blank" rel="noopener noreferrer" style="color:#0969da;font-weight:600;">#${issue.number}</a></td>
-      <td class="toil-cell"><div class="toil-name">${esc(toilName)}</div>${toilDesc ? `<div class="toil-desc">${esc(toilDesc)}</div>` : ''}</td>
+      <td class="toil-cell"><div class="toil-name">${escapeHtml(toilName)}</div>${toilDesc ? `<div class="toil-desc">${escapeHtml(toilDesc)}</div>` : ''}</td>
       <td class="toil-action-cell">${actionBtn}</td>
-      <td>${esc(issue.submitter)}</td>
-      <td>${esc(issue.team)}</td>
-      <td class="col-hidden">${esc(issue.category)}</td>
-      <td class="editable" data-issue="${issue.number}" data-field="frequency">${esc(issue.frequency)}${edited}</td>
-      <td class="editable" data-issue="${issue.number}" data-field="time_per_occurrence">${esc(issue.time_per_occurrence)}</td>
-      <td class="editable" data-issue="${issue.number}" data-field="people_affected">${esc(issue.people_affected)}</td>
+      <td>${escapeHtml(issue.submitter)}</td>
+      <td>${escapeHtml(issue.team)}</td>
+      <td class="col-hidden">${escapeHtml(issue.category)}</td>
+      <td class="editable" data-issue="${issue.number}" data-field="frequency">${escapeHtml(issue.frequency)}${edited}</td>
+      <td class="editable" data-issue="${issue.number}" data-field="time_per_occurrence">${escapeHtml(issue.time_per_occurrence)}</td>
+      <td class="editable" data-issue="${issue.number}" data-field="people_affected">${escapeHtml(issue.people_affected)}</td>
       <td style="font-weight:700">${issue.toil_score}</td>
       <td>${statusBadge(status)}</td>
       <td>${formatMinutes(issue.monthly_saved_minutes)}</td>
@@ -1469,8 +1449,7 @@ function escapeHtml(str, attr) {
   d.textContent = str;
   return attr ? d.innerHTML.replace(/"/g, '&quot;') : d.innerHTML;
 }
-// Compatibility alias (to be removed in future refactor)
-const esc = escapeHtml;
+
 
 // ═══════════════════════════════════════════════════
 // COLUMN TOGGLE
