@@ -1122,13 +1122,19 @@ function renderHeroPulse(issues) {
   if (!heroPulse) return;
   const total = issues.length || 0;
   const automated = issues.filter(i => getStatus(i) === 'automated').length;
+  const inProgress = issues.filter(i => getStatus(i) === 'in-progress').length;
+  const triage = issues.filter(i => getStatus(i) === 'triage').length;
+  const backlog = issues.filter(i => getStatus(i) === 'toil').length;
   const automationRate = total ? Math.round((automated / total) * 100) : 0;
   const highImpact = issues.filter(i => isCritical(i.toil_score) && getStatus(i) !== 'automated').length;
-  const backlog = issues.filter(i => getStatus(i) === 'toil').length;
   heroPulse.innerHTML = `
     <span class="pulse-pill success">⚡ ${automationRate}% automated</span>
     <span class="pulse-pill warning">🔥 ${highImpact} critical</span>
     <span class="pulse-pill neutral">📦 ${total} signals (${backlog} backlog)</span>
+    <span class="pulse-pill success">✅ ${automated} shipped</span>
+    <span class="pulse-pill" style="border-color:rgba(130,80,223,0.45);background:rgba(130,80,223,0.15);color:#c4b5fd;">🔨 ${inProgress} building</span>
+    <span class="pulse-pill neutral">🔍 ${triage} triaging</span>
+    <span class="pulse-pill neutral">💡 ${backlog} ready to fix</span>
   `;
 }
 
