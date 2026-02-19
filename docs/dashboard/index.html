@@ -204,7 +204,8 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border: 1px solid var(--border-card); border-radius: calc(var(--radius) - 0.25rem); background: var(--bg-card); font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: all 150ms ease; box-shadow: var(--shadow-sm); color: var(--text-primary); }
 .btn:hover { background: #f4f4f5; box-shadow: var(--shadow-md); }
 .btn:active { transform: scale(0.98); }
-.btn-launch { background: var(--accent); color: #fff; border: 1px solid var(--accent-strong); padding: 0.5rem 1rem; font-size: 0.875rem; }
+.btn-launch { background: var(--accent); color: #fff; border: 1px solid var(--accent-strong); padding: 0.5rem 1rem; font-size: 0.8rem; line-height: 1.3; text-align: center; flex-direction: column; gap: 0.1rem; }
+.btn-launch small { font-size: 0.7rem; opacity: 0.85; font-weight: 400; }
 .btn-launch:hover { background: var(--accent-strong); box-shadow: 0 0 0 2px rgba(130,80,223,0.2); }
 .btn-save { background: #2563eb; color: #fff; border: 1px solid #1d4ed8; }
 .btn-save:hover { background: #1d4ed8; box-shadow: 0 0 0 2px rgba(37,99,235,0.2); }
@@ -489,28 +490,6 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
       <div id="trendChart" role="img" aria-label="Bar chart showing monthly hours saved from automation over time"></div>
     </article>
     <article class="insight-card" id="teamFocusCard"></article>
-  </div>
-
-  <!-- Team & Individual Breakdown -->
-  <div class="section" id="breakdownSection">
-    <h2>🏆 Team &amp; Individual Leaderboard</h2>
-    <details class="team-manager">
-      <summary>✨ Customize Team Names</summary>
-      <div class="team-manager-list" id="teamManagerList">
-        <!-- Populated by JS -->
-      </div>
-    </details>
-    <div class="filters">
-      <label>Team:</label>
-      <select id="breakdownTeamFilter"><option value="">All Teams</option></select>
-    </div>
-    <h3 style="margin:0 0 0.5rem;font-size:0.95rem;">🧑‍💻 Individual Scoreboard</h3>
-    <div class="table-wrap">
-      <table id="personTable">
-        <thead><tr><th>🧑‍💻 Name</th><th>💡 Ideas Submitted</th><th>🤖 Automated</th><th>⏱️ Weekly Hours Spent</th><th>⏱️ Time Given Back / Month</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </div>
   </div>
 
   <!-- Main Toil Ideas Table -->
@@ -1010,8 +989,7 @@ function render() {
   renderTrendChart(issues);
 
   // Team manager + breakdown
-  renderTeamManager(issues);
-  renderBreakdown(issues);
+  renderTeamFocusCard(issues);
 
   // Main table
   renderToilTable(issues);
@@ -1025,7 +1003,6 @@ function populateFilters(issues) {
   fillSelect('filterTeam', teams);
   fillSelect('filterCategory', categories);
   fillSelect('filterStatus', statuses);
-  fillSelect('breakdownTeamFilter', teams);
 }
 
 function fillSelect(id, options) {
@@ -1196,28 +1173,33 @@ function renderTeamFocusCard(issues) {
   issues.forEach(issue => {
     const person = issue.submitter || 'Unknown';
     const name = person.replace(/\s*\(@\w+\)/, '');
-    if (!personMap[name]) personMap[name] = { weekly: 0, saved: 0, count: 0, team: issue.team || '' };
+    if (!personMap[name]) personMap[name] = { weekly: 0, saved: 0, count: 0, automated: 0, team: issue.team || '' };
     personMap[name].weekly += (issue.weekly_time_spent || 0);
     personMap[name].saved += (issue.monthly_saved_minutes || 0);
     personMap[name].count++;
+    if (getStatus(issue) === 'automated') personMap[name].automated++;
   });
   const people = Object.entries(personMap).sort((a, b) => (b[1].weekly || 0) - (a[1].weekly || 0)).slice(0, 6);
   const topPerson = people[0];
+  const totalWeekly = people.reduce((s, [, d]) => s + d.weekly, 0);
+  const totalSaved = people.reduce((s, [, d]) => s + d.saved, 0);
   card.innerHTML = `
     <div class="insight-header">
       <span class="eyebrow">People on Team</span>
-      <button class="mini-link" type="button" onclick="document.getElementById('breakdownSection').scrollIntoView({ behavior: 'smooth' });">Jump to leaderboard →</button>
+      <span class="mini-pill">${people.length} contributors</span>
     </div>
     <div class="team-pills">
-      ${people.map(([name, data]) => `
+      ${people.map(([name, data]) => {
+        const pct = data.count > 0 ? Math.round((data.automated / data.count) * 100) : 0;
+        return `
         <div class="team-pill">
           <span>${esc(name)}</span>
           <strong>${formatWeeklyTime(data.weekly)}</strong>
-          <small>${data.count} toil${data.count !== 1 ? 's' : ''} • ${esc(data.team)}</small>
-        </div>
-      `).join('')}
+          <small>${data.count} toil${data.count !== 1 ? 's' : ''} • ${pct}% automated • ${esc(data.team)}</small>
+        </div>`;
+      }).join('')}
     </div>
-    <p class="insight-note">${topPerson ? `${esc(topPerson[0])} is carrying ${formatWeeklyTime(topPerson[1].weekly)} of toil each week. Let's automate their pain away. 🚀` : 'Submit toil ideas to see who benefits most.'}</p>
+    <p class="insight-note" style="margin-top:auto;">${topPerson ? `${people.length} people spend a combined ${formatWeeklyTime(totalWeekly)} on toil weekly — ${formatMinutes(totalSaved)} could be saved monthly through automation. 🚀` : 'Submit toil ideas to see who benefits most.'}</p>
   `;
 }
 
@@ -1344,31 +1326,6 @@ function renderTrendChart(issues) {
 }
 
 // ── Team & Individual Breakdown ──
-function renderBreakdown(issues) {
-  const teamFilter = document.getElementById('breakdownTeamFilter').value;
-  const filtered = teamFilter ? issues.filter(i => i.team === teamFilter) : issues;
-
-  // Per-person
-  const personMap = {};
-  filtered.forEach(i => {
-    const name = i.submitter || 'Unknown';
-    if (!personMap[name]) personMap[name] = { submitted: 0, automated: 0, minsSaved: 0, weeklyMins: 0 };
-    personMap[name].submitted++;
-    if (getStatus(i) === 'automated') personMap[name].automated++;
-    personMap[name].minsSaved += (i.monthly_saved_minutes || 0);
-    personMap[name].weeklyMins += (i.weekly_time_spent || 0);
-  });
-
-  const tbody = document.querySelector('#personTable tbody');
-  const people = Object.entries(personMap).sort((a, b) => b[1].minsSaved - a[1].minsSaved);
-  let totalSub = 0, totalAuto = 0, totalMins = 0, totalWeekly = 0;
-
-  tbody.innerHTML = people.map(([name, d]) => {
-    totalSub += d.submitted; totalAuto += d.automated; totalMins += d.minsSaved; totalWeekly += d.weeklyMins;
-    return `<tr><td>${esc(name)}</td><td>${d.submitted}</td><td>${d.automated}</td><td>${formatWeeklyTime(d.weeklyMins)}</td><td>${formatMinutes(d.minsSaved)}</td></tr>`;
-  }).join('') + `<tr class="total-row"><td>Total</td><td>${totalSub}</td><td>${totalAuto}</td><td>${formatWeeklyTime(totalWeekly)}</td><td>${formatMinutes(totalMins)}</td></tr>`;
-}
-
 // ── Main Toil Table ──
 function renderToilTable(issues) {
   const teamF = document.getElementById('filterTeam').value;
@@ -1416,7 +1373,7 @@ function renderToilTable(issues) {
     const toilDesc = dashIdx > -1 ? rawTitle.substring(dashIdx + 3) : (dashIdx === -1 && rawTitle.length > toilName.length ? rawTitle : '');
 
     const safeUrl = issue.url && issue.url.startsWith('https://github.com/') ? issue.url : '#';
-    const actionBtn = `<button class="btn btn-launch" onclick="copyLaunchCmd(this, ${issue.number})" data-cmd="${esc(ghCmd, true)}" title="Launch Copilot CLI to solve this">🚀 Launch GH Copilot CLI To Automate</button>`;
+    const actionBtn = `<button class="btn btn-launch" onclick="copyLaunchCmd(this, ${issue.number})" data-cmd="${esc(ghCmd, true)}" title="Launch Copilot CLI to solve this">🚀 Launch GH Copilot CLI<br><small>To Automate</small></button>`;
 
     return `<tr class="${priorityClass(issue.toil_score)}">
       <td><a href="${safeUrl}" target="_blank" rel="noopener noreferrer" style="color:#0969da;font-weight:600;">#${issue.number}</a></td>
@@ -1500,7 +1457,7 @@ document.querySelector('#toilTable thead').addEventListener('click', function(e)
 // ═══════════════════════════════════════════════════
 // FILTERS
 // ═══════════════════════════════════════════════════
-['filterTeam', 'filterCategory', 'filterStatus', 'breakdownTeamFilter'].forEach(id => {
+['filterTeam', 'filterCategory', 'filterStatus'].forEach(id => {
   document.getElementById(id).addEventListener('change', () => render());
 });
 document.getElementById('filterSort').addEventListener('change', function() {
