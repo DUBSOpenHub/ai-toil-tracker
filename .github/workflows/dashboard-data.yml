@@ -35,28 +35,28 @@ jobs:
           # ── Score helpers (identical to ai-triage.yml) ──
           freq_score() {
             local val="$1"
-            if echo "$val" | grep -q "Multiple times per day"; then echo 8
-            elif echo "$val" | grep -q "Daily"; then echo 5
-            elif echo "$val" | grep -q "Multiple times per week"; then echo 3
-            elif echo "$val" | grep -q "Weekly"; then echo 2
+            if echo "$val" | grep -qi "multiple times per day"; then echo 8
+            elif echo "$val" | grep -qi "daily"; then echo 5
+            elif echo "$val" | grep -qi "multiple times per week"; then echo 3
+            elif echo "$val" | grep -qi "weekly"; then echo 2
             else echo 1; fi
           }
 
           time_score() {
             local val="$1"
-            if echo "$val" | grep -q "> 1 hour"; then echo 8
-            elif echo "$val" | grep -q "30.*60 minutes"; then echo 5
-            elif echo "$val" | grep -q "15.*30 minutes"; then echo 3
-            elif echo "$val" | grep -q "5.*15 minutes"; then echo 2
+            if echo "$val" | grep -qi "> 1 hour"; then echo 8
+            elif echo "$val" | grep -qi "30.*60 minutes"; then echo 5
+            elif echo "$val" | grep -qi "15.*30 minutes"; then echo 3
+            elif echo "$val" | grep -qi "5.*15 minutes"; then echo 2
             else echo 1; fi
           }
 
           people_score() {
             local val="$1"
-            if echo "$val" | grep -q "Multiple teams"; then echo 8
-            elif echo "$val" | grep -q "Entire team"; then echo 5
-            elif echo "$val" | grep -q "4.*6 people"; then echo 3
-            elif echo "$val" | grep -q "2.*3 people"; then echo 2
+            if echo "$val" | grep -qi "multiple teams"; then echo 8
+            elif echo "$val" | grep -qi "entire team"; then echo 5
+            elif echo "$val" | grep -qi "4.*6 people"; then echo 3
+            elif echo "$val" | grep -qi "2.*3 people"; then echo 2
             else echo 1; fi
           }
 
