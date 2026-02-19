@@ -105,7 +105,7 @@ body:
     id: estimated-monthly-savings
     attributes:
       label: Estimated time saved per month
-      description: "Optional — we'll estimate this from your other answers"
+      description: "Optional — your best estimate of monthly savings"
       placeholder: e.g. "10 hours/month"
     validations:
       required: false

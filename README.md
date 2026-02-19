@@ -13,7 +13,7 @@ This isn't just a tracker - AI is built into the workflow:
 | What happens | How AI does it |
 |-------------|---------------|
 | Someone submits an idea | A **workflow** runs automatically |
-| The idea needs a score | AI **reads the form** and calculates the impact (frequency × time × people) plus optional bonus factors (+1 to +3 each for morale, error-prone, or blocking) |
+| The idea needs a score | AI **reads the form** and calculates the impact (frequency × time × people) plus optional bonus factors (+2 for error-prone, +1 for morale killer, +3 for blocking) |
 | The idea needs labels | AI **adds a label** (🔴🟠🟡🔵⚪) based on how often it happens |
 | The team needs a plan | AI **estimates time saved** and suggests how to automate it |
 
@@ -109,7 +109,8 @@ A visual dashboard lets your team and manager see all ideas, filter by team, and
 - **Summary Cards** — Total ideas, wins, hours saved/month, automation rate, in-progress, and high-impact counts
 - **Team & Individual Breakdown** — Per-person and per-team stats: ideas submitted, automated, and estimated monthly hours saved
 - **Toil Ideas Table** — Every toil idea with sortable columns, inline-editable scores, color-coded priority rows, and status badges
-- **🚀 Automate Button** — Choose your tool: **GitHub Copilot CLI** (copies a command). Toggle in the dashboard header
+- **🚀 Automate Button** — Per-row **GitHub Copilot CLI** button copies a `gh copilot` command to start automating
+- **Team rename** — Customize team display names in the dashboard without editing issues
 - **Filters** — Filter by team, category, or status to focus on what matters
 
 ### Setting Up the Dashboard
@@ -229,6 +230,7 @@ When a toil idea is submitted, an AI agent automatically:
 - **Customize contact links** — replace the placeholder Slack URLs in `.github/ISSUE_TEMPLATE/config.yml` and the reminder snippets below so contributors know where to coordinate.
 - **Review the forms annually** — ensure the dropdown options in `.github/ISSUE_TEMPLATE/*.yml` still match how you categorize toil; update the scoring constants if you add new values.
 - **Keep Actions pinned SHAs current** — accept Dependabot PRs or manually bump the pinned versions so security patches continue to flow.
+- **Verify bonus values** — confirm bonus factor values are consistent across `toil-idea.yml`, `ai-triage.yml`, `dashboard-data.yml`, and `scoring-guide.md`
 
 ## AI & Data Privacy
 

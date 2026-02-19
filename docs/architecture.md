@@ -180,7 +180,7 @@ flowchart TB
 | `dashboard-data.yml` | Daily cron, issue events, manual | — | `dashboard-data.json` | `contents: write`, `issues: read` |
 | `win-celebration.yml` | Issue labeled `automated` | — | Comment on original toil issue | `issues: write` |
 | `monthly-roi-summary.yml` | 1st of month or manual | — | New summary issue | `issues: write` |
-| `stale.yml` | Daily schedule | — | Comments + closes stale issues | `issues: write` |
+| `stale.yml` | Monthly schedule (1st of month) | — | Comments + closes stale issues | `issues: write` |
 
 ## Security Model
 

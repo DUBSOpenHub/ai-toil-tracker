@@ -1,29 +1,30 @@
 # Triage Workflow
 
-How we review and prioritize toil ideas as a team.
+How toil ideas are scored and prioritized.
 
-## Weekly Triage (Fridays)
+> **Note:** The `ai-triage.yml` workflow handles scoring and labeling automatically when an issue is opened. This document explains the methodology for reference and manual overrides.
+
+## Weekly Cadence (Fridays)
 
 1. **Slack prompt fires** at 10:00 AM PST - team members reply with toil they've encountered
 2. Team members **file issues** using the [Toil Automation Idea](../../issues/new?template=toil-idea.yml) template
-3. A designated triager reviews new issues labeled `triage`
+3. AI triage scores and labels the issue automatically — no manual triage needed
 
-## Triage Steps
+## Scoring Methodology
 
-For each new issue:
+The AI triage workflow applies the following for each new issue:
 
 ### 1. Validate
 - Is this actually toil (repetitive, automatable) or a one-off task?
 - Is it a duplicate of an existing issue?
 
 ### 2. Score
-- Apply the [scoring formula](scoring-guide.md) in a comment
-- Format: `**Toil Score:** (Frequency (X) × Time (X) × People (X)) + Bonus (X) = **XX**`
+- Formula: `**Toil Score:** (Frequency (X) × Time (X) × People (X)) + Bonus (X) = **XX**`
 - Bonus factors: ❌ Error-prone (+2), 😤 Morale killer (+1), 🔗 Blocking (+3)
 
 ### 3. Label
-- Remove `triage` label
-- Add appropriate priority label:
+- The `triage` label is removed automatically
+- Priority labels are applied based on score:
   - Score 40+ → `high-impact`
   - Quick to automate → `quick-win`
   - Both → add both labels

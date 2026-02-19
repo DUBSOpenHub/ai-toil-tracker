@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.1] - 2026-02-19
+
+### Fixed
+- Bonus factor scoring wired end-to-end (form → workflow → dashboard)
+- Case-insensitive parsing in all workflow scoring
+- Dead references removed (weekly_time_spent, Save to GitHub, esc() alias)
+- Team name normalization in dashboard
+- Documentation consistency across PRD, scoring guide, and README
+
 ## [1.3.0] - 2026-02-18
 
 ### Added

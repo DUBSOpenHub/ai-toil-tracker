@@ -376,6 +376,9 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 
 <div class="container">
 
+  <!-- Loading State -->
+  <div id="loading-state" style="text-align:center;padding:3rem 1rem;color:var(--text-soft);font-size:0.95rem;">⏳ Loading toil data…</div>
+
   <!-- Summary Cards -->
   <div class="cards" id="summaryCards"></div>
 
@@ -489,6 +492,7 @@ initTheme();
 
 // ═══════════════════════════════════════════════════
 // CONFIG — Set your owner/repo here
+// If not using GitHub Pages, set your owner/repo manually here
 // ═══════════════════════════════════════════════════
 const CONFIG = {
   owner: '',
@@ -611,7 +615,7 @@ const SAMPLE_DATA = {
       labels: ["toil", "automated"],
       submitter: "Alice Chen (@alicechen)",
       team: "Platform",
-      category: "📊 Reporting & Communication",
+      category: "💬 Communication & Reporting",
       frequency: "🟠 Daily",
       time_per_occurrence: "5–15 minutes",
       people_affected: "Just me",
@@ -674,7 +678,7 @@ const SAMPLE_DATA = {
       labels: ["toil", "high-impact"],
       submitter: "Bob Lee (@boblee)",
       team: "Security",
-      category: "📊 Reporting & Communication",
+      category: "💬 Communication & Reporting",
       frequency: "🟠 Daily",
       time_per_occurrence: "30–60 minutes",
       people_affected: "Entire team",
@@ -743,12 +747,14 @@ function normalizeDashboardJson(raw) {
 }
 
 async function loadData() {
+  const loadingEl = document.getElementById('loading-state');
   // Try local JSON first
   try {
     const res = await fetch('dashboard-data.json');
     if (res.ok) {
       dashboardData = normalizeDashboardJson(await res.json());
       applyLocalEdits();
+      if (loadingEl) loadingEl.style.display = 'none';
       render();
       return;
     }
@@ -762,6 +768,7 @@ async function loadData() {
       const apiIssues = await res.json();
       dashboardData = convertApiIssues(apiIssues);
       applyLocalEdits();
+      if (loadingEl) loadingEl.style.display = 'none';
       render();
       return;
     }
@@ -770,6 +777,7 @@ async function loadData() {
   // Fallback: sample data
   dashboardData = SAMPLE_DATA;
   applyLocalEdits();
+  if (loadingEl) loadingEl.style.display = 'none';
   render();
 }
 
@@ -1204,7 +1212,7 @@ function renderTeamManager(issues) {
     return `<div class="team-rename-row">
       <span class="team-current">${escapeHtml(t)}</span>
       <span class="arrow">→</span>
-      <input type="text" value="${escapeHtml(current)}" data-original="${escapeHtml(t)}" placeholder="New team name" />
+      <input type="text" value="${escapeHtml(current, true)}" data-original="${escapeHtml(t, true)}" placeholder="New team name" />
       <button class="btn btn-rename" onclick="renameTeam(this)">Rename</button>
     </div>`;
   }).join('');
@@ -1320,8 +1328,8 @@ function renderToilTable(issues) {
     
     // Split "Name — Description" into two parts
     const dashIdx = rawTitle.indexOf(' — ');
-    const toilName = dashIdx > -1 ? rawTitle.substring(0, dashIdx) : rawTitle.split(/\s+/).slice(0, 4).join(' ');
-    const toilDesc = dashIdx > -1 ? rawTitle.substring(dashIdx + 3) : (dashIdx === -1 && rawTitle.length > toilName.length ? rawTitle : '');
+    const toilName = dashIdx > -1 ? rawTitle.substring(0, dashIdx) : rawTitle;
+    const toilDesc = dashIdx > -1 ? rawTitle.substring(dashIdx + 3) : '';
 
     const safeUrl = issue.url && issue.url.startsWith('https://github.com/') ? issue.url : '#';
     const actionBtn = `<button class="btn btn-launch" onclick="copyLaunchCmd(this, ${issue.number})" data-cmd="${escapeHtml(ghCmd, true)}" title="Launch Copilot CLI to solve this">🚀 Launch Copilot CLI to Solve</button>`;
