@@ -504,8 +504,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
       <label>Team:</label>
       <select id="breakdownTeamFilter"><option value="">All Teams</option></select>
     </div>
-    <div id="teamTables"></div>
-    <h3 style="margin:1.25rem 0 0.5rem;font-size:0.95rem;">🧑‍💻 Individual Scoreboard</h3>
+    <h3 style="margin:0 0 0.5rem;font-size:0.95rem;">🧑‍💻 Individual Scoreboard</h3>
     <div class="table-wrap">
       <table id="personTable">
         <thead><tr><th>🧑‍💻 Name</th><th>💡 Ideas Submitted</th><th>🤖 Automated</th><th>⏱️ Weekly Hours Spent</th><th>⏱️ Time Given Back / Month</th></tr></thead>
@@ -1368,33 +1367,6 @@ function renderBreakdown(issues) {
     totalSub += d.submitted; totalAuto += d.automated; totalMins += d.minsSaved; totalWeekly += d.weeklyMins;
     return `<tr><td>${esc(name)}</td><td>${d.submitted}</td><td>${d.automated}</td><td>${formatWeeklyTime(d.weeklyMins)}</td><td>${formatMinutes(d.minsSaved)}</td></tr>`;
   }).join('') + `<tr class="total-row"><td>Total</td><td>${totalSub}</td><td>${totalAuto}</td><td>${formatWeeklyTime(totalWeekly)}</td><td>${formatMinutes(totalMins)}</td></tr>`;
-
-  // Per-team table
-  const teamMap = {};
-  issues.forEach(i => {
-    const t = i.team || 'Unknown';
-    if (!teamMap[t]) teamMap[t] = { submitted: 0, automated: 0, minsSaved: 0 };
-    teamMap[t].submitted++;
-    if (getStatus(i) === 'automated') teamMap[t].automated++;
-    teamMap[t].minsSaved += (i.monthly_saved_minutes || 0);
-  });
-
-  const teams = Object.entries(teamMap).sort((a, b) => b[1].minsSaved - a[1].minsSaved);
-  const container = document.getElementById('teamTables');
-  if (teams.length > 1) {
-    let gt = { submitted: 0, automated: 0, minsSaved: 0 };
-    container.innerHTML = `<h3 style="font-size:0.95rem;margin-bottom:0.5rem;">🏢 Team Scoreboard</h3>
-    <div class="table-wrap"><table>
-      <thead><tr><th>🏢 Team</th><th>💡 Ideas</th><th>🤖 Automated</th><th>⏱️ Time Given Back / Month</th></tr></thead>
-      <tbody>${teams.map(([t, d]) => {
-        gt.submitted += d.submitted; gt.automated += d.automated; gt.minsSaved += d.minsSaved;
-        return `<tr><td>${esc(t)}</td><td>${d.submitted}</td><td>${d.automated}</td><td>${formatMinutes(d.minsSaved)}</td></tr>`;
-      }).join('')}
-      <tr class="total-row"><td>Grand Total</td><td>${gt.submitted}</td><td>${gt.automated}</td><td>${formatMinutes(gt.minsSaved)}</td></tr>
-      </tbody></table></div>`;
-  } else {
-    container.innerHTML = '';
-  }
 }
 
 // ── Main Toil Table ──
