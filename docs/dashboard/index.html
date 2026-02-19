@@ -1365,7 +1365,20 @@ function renderToilTable(issues) {
     const edited = localEdits[issue.number] ? '<span class="edited-marker">✎</span>' : '';
     const bonusStr = (issue.bonus_factors || []).join(' ');
     const rawTitle = (issue.title || '').replace(/^\[TOIL\]\s*/i, '');
-    const ghCmd = `gh copilot "Automate: ${rawTitle.replace(/"/g, '\\"')}"`;
+    const freq = issue.frequency || 'unknown frequency';
+    const time = issue.time_per_occurrence || 'unknown duration';
+    const idea = issue.automation_idea || '';
+    const agentPrompt = [
+      `You are an automation agent. A team identified this toil: "${rawTitle}".`,
+      `It happens ${freq}, takes ${time} each time, and affects ${issue.people_affected || 'the team'}.`,
+      idea ? `Suggested approach: ${idea}.` : '',
+      `Step 1: Analyze this repo and identify the best automation strategy.`,
+      `Step 2: Propose a concrete implementation plan with file paths.`,
+      `Step 3: Scaffold the solution (GitHub Actions workflow, script, or code).`,
+      `Step 4: Ask the user if they want to refine, test, or commit the changes.`,
+      `Start by exploring the repo structure, then present your plan.`
+    ].filter(Boolean).join(' ');
+    const ghCmd = `gh copilot "${agentPrompt.replace(/"/g, '\\"')}"`;
     
     // Split "Name — Description" into two parts
     const dashIdx = rawTitle.indexOf(' — ');
