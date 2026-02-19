@@ -103,9 +103,9 @@ body:
       label: Does this toil have any of these extra impacts? (optional)
       description: Check any that apply — these boost the priority score
       options:
-        - label: "❌ Error-prone — frequently causes mistakes or rework"
-        - label: "😤 Morale killer — drains energy or causes frustration"
-        - label: "🔗 Blocking — blocks other work until completed"
+        - label: "❌ Error-prone (+2) — frequently causes mistakes or rework"
+        - label: "😤 Morale killer (+1) — drains energy or causes frustration"
+        - label: "🔗 Blocking (+3) — blocks other work until completed"
 
   - type: textarea
     id: automation-idea

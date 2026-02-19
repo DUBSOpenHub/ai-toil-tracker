@@ -1,6 +1,6 @@
 blank_issues_enabled: false
 contact_links:
-  - name: 💬 Discuss in Slack
-    url: https://slack.com  # ⚠️ Replace with your team's actual Slack channel URL
+  - name: 💬 Discuss in Slack (replace with your channel URL)
+    url: https://your-workspace.slack.com/channels/your-channel
     about: Chat about toil ideas in our team Slack channel before filing an issue
 
