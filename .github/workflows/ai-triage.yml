@@ -92,8 +92,25 @@ jobs:
             PEOPLE_SCORE=1
           fi
 
+          # ── Parse bonus factors ──
+          BONUS=0
+          BONUS_LIST=""
+          if echo "$BODY" | grep -qi "Error-prone"; then
+            BONUS=$((BONUS + 2))
+            BONUS_LIST="${BONUS_LIST}❌ Error-prone, "
+          fi
+          if echo "$BODY" | grep -qi "Morale killer"; then
+            BONUS=$((BONUS + 1))
+            BONUS_LIST="${BONUS_LIST}😤 Morale killer, "
+          fi
+          if echo "$BODY" | grep -qi "Blocking"; then
+            BONUS=$((BONUS + 3))
+            BONUS_LIST="${BONUS_LIST}🔗 Blocking, "
+          fi
+          BONUS_LIST=$(echo "$BONUS_LIST" | sed 's/, $//')
+
           # Calculate toil score
-          TOIL_SCORE=$((FREQ_SCORE * TIME_SCORE * PEOPLE_SCORE))
+          TOIL_SCORE=$((FREQ_SCORE * TIME_SCORE * PEOPLE_SCORE + BONUS))
 
           # Determine priority
           if [ "$TOIL_SCORE" -ge 40 ]; then
@@ -142,6 +159,8 @@ jobs:
           echo "priority_label=$PRIORITY_LABEL" >> "$GITHUB_OUTPUT"
           echo "freq_label=$FREQ_LABEL" >> "$GITHUB_OUTPUT"
           echo "monthly_saved=$MONTHLY_SAVED" >> "$GITHUB_OUTPUT"
+          echo "bonus=$BONUS" >> "$GITHUB_OUTPUT"
+          echo "bonus_list=$BONUS_LIST" >> "$GITHUB_OUTPUT"
 
       - name: Check for similar issues
         id: dedup
@@ -247,6 +266,8 @@ jobs:
           PRIORITY: ${{ steps.score.outputs.priority }}
           MONTHLY_SAVED: ${{ steps.score.outputs.monthly_saved }}
           AI_SUGGESTION: ${{ steps.ai.outputs.suggestion }}
+          BONUS: ${{ steps.score.outputs.bonus }}
+          BONUS_LIST: ${{ steps.score.outputs.bonus_list }}
         run: |
           RELATED_SECTION=""
           if [ "$DEDUP_FOUND" = "true" ]; then
@@ -259,8 +280,16 @@ jobs:
 
           COMMENT="## 🤖 AI Triage Report
 
-          **Toil Score:** Frequency ($FREQ_SCORE) x Time ($TIME_SCORE) x People ($PEOPLE_SCORE) = **$TOIL_SCORE**
+          **Toil Score:** Frequency ($FREQ_SCORE) x Time ($TIME_SCORE) x People ($PEOPLE_SCORE) + Bonus ($BONUS) = **$TOIL_SCORE**
+          "
 
+          if [ "$BONUS" -gt 0 ]; then
+            COMMENT="${COMMENT}
+          **Bonus:** +$BONUS ($BONUS_LIST)
+          "
+          fi
+
+          COMMENT="${COMMENT}
           **Priority:** $PRIORITY
 
           **Estimated team time saved if automated:** $MONTHLY_SAVED
