@@ -29,7 +29,7 @@ jobs:
           # that appears between that heading and the next "###" heading.
           parse_field() {
             local body="$1" heading="$2"
-            echo "$body" | sed -n "/^### ${heading}/,/^### /{ /^### /d; p; }" | sed '/^$/d' | head -20
+            echo "$body" | sed -n "/^### ${heading}/,/^### /{ /^### /d; p; }" | sed '/^$/d' | head -50
           }
 
           # ── Score helpers (identical to ai-triage.yml) ──
@@ -96,12 +96,6 @@ jobs:
             elif [ "$score" -ge 20 ]; then echo "🟡 High"
             elif [ "$score" -ge 10 ]; then echo "🟢 Medium"
             else echo "⚪ Low"; fi
-          }
-
-          # ── Count bonus factors ──
-          count_bonuses() {
-            local body="$1" count=0
-            echo "$body" | grep -c '\[X\]' || true
           }
 
           bonus_list() {

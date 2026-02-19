@@ -305,6 +305,7 @@ jobs:
           ---
 
           _This issue was auto-triaged by AI. Labels and score have been applied. Review the [scoring guide](https://github.com/$REPO/blob/main/docs/scoring-guide.md) for details._"
+          # Update if your default branch is not 'main'
 
           gh issue comment "$ISSUE_NUM" --repo "$REPO" --body "$COMMENT"
 

@@ -2,7 +2,7 @@
 name: Automation Proposal
 about: Propose a specific automation solution for an existing toil idea
 title: "[AUTOMATION] "
-labels: in-progress
+labels: proposal
 ---
 
 <!-- 📍 WHERE THIS GETS TRACKED
