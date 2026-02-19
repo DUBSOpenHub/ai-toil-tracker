@@ -160,7 +160,11 @@ Each loop is independent—disable or extend one without touching the others—a
 
 | Doc | Description |
 |-----|-------------|
+| [PRD](docs/PRD.md) | Product requirements, scoring details, and success metrics |
+| [Architecture](docs/architecture.md) | System design with Mermaid diagrams |
+| [Security](SECURITY.md) | Threat model, secret management, and AI data handling |
 | [Examples](docs/examples.md) | Common toil patterns to inspire your team |
+| [Scoring Guide](docs/scoring-guide.md) | How the toil score is calculated |
 | [Contributing](CONTRIBUTING.md) | How to submit ideas and build automations |
 | [Dashboard](docs/dashboard/index.html) | Interactive team dashboard with time savings |
 
