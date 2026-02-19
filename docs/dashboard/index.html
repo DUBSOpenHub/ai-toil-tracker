@@ -1193,31 +1193,32 @@ function renderPipelineCard(issues) {
 function renderTeamFocusCard(issues) {
   const card = document.getElementById('teamFocusCard');
   if (!card) return;
-  const teamMap = {};
+  const personMap = {};
   issues.forEach(issue => {
-    const team = issue.team || 'Unknown';
-    if (!teamMap[team]) teamMap[team] = { weekly: 0, saved: 0, active: 0 };
-    teamMap[team].weekly += (issue.team_weekly_time_spent || 0);
-    teamMap[team].saved += (issue.monthly_saved_minutes || 0);
-    if (getStatus(issue) !== 'automated') teamMap[team].active++;
+    const person = issue.submitter || 'Unknown';
+    const name = person.replace(/\s*\(@\w+\)/, '');
+    if (!personMap[name]) personMap[name] = { weekly: 0, saved: 0, count: 0, team: issue.team || '' };
+    personMap[name].weekly += (issue.weekly_time_spent || 0);
+    personMap[name].saved += (issue.monthly_saved_minutes || 0);
+    personMap[name].count++;
   });
-  const teams = Object.entries(teamMap).sort((a, b) => (b[1].weekly || 0) - (a[1].weekly || 0)).slice(0, 3);
-  const focusTeam = teams[0];
+  const people = Object.entries(personMap).sort((a, b) => (b[1].weekly || 0) - (a[1].weekly || 0)).slice(0, 6);
+  const topPerson = people[0];
   card.innerHTML = `
     <div class="insight-header">
-      <span class="eyebrow">Focus Radar</span>
+      <span class="eyebrow">People on Team</span>
       <button class="mini-link" type="button" onclick="document.getElementById('breakdownSection').scrollIntoView({ behavior: 'smooth' });">Jump to leaderboard →</button>
     </div>
     <div class="team-pills">
-      ${teams.map(([team, data]) => `
+      ${people.map(([name, data]) => `
         <div class="team-pill">
-          <span>${esc(team)}</span>
+          <span>${esc(name)}</span>
           <strong>${formatWeeklyTime(data.weekly)}</strong>
-          <small>${data.active} active toils • ${formatMinutes(data.saved)}</small>
+          <small>${data.count} toil${data.count !== 1 ? 's' : ''} • ${esc(data.team)}</small>
         </div>
       `).join('')}
     </div>
-    <p class="insight-note">${focusTeam ? `${esc(focusTeam[0])} is spending ${formatWeeklyTime(focusTeam[1].weekly)} on toil each week. Imagine what they'd build with that time back. 🚀` : 'Submit toil ideas to see which teams benefit most.'}</p>
+    <p class="insight-note">${topPerson ? `${esc(topPerson[0])} is carrying ${formatWeeklyTime(topPerson[1].weekly)} of toil each week. Let's automate their pain away. 🚀` : 'Submit toil ideas to see who benefits most.'}</p>
   `;
 }
 
