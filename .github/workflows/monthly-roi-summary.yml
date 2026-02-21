@@ -20,7 +20,8 @@ jobs:
 
           # Count totals
           TOTAL_TOIL=$(gh issue list --repo "$REPO" --label "toil" --state all --limit 1000 --json number --jq 'length')
-          AUTOMATED=$(gh issue list --repo "$REPO" --label "automated" --state all --limit 1000 --json number --jq 'length')
+          AUTOMATED_TOIL=$(gh issue list --repo "$REPO" --label "toil" --label "automated" \
+            --state all --limit 1000 --json number --jq 'length')
           IN_PROGRESS=$(gh issue list --repo "$REPO" --label "in-progress" --state open --limit 1000 --json number --jq 'length')
           OPEN_TRIAGE=$(gh issue list --repo "$REPO" --label "triage" --state open --limit 1000 --json number --jq 'length')
           HIGH_IMPACT=$(gh issue list --repo "$REPO" --label "high-impact" --state open --limit 1000 --json number --jq 'length')
@@ -32,15 +33,15 @@ jobs:
           # Count unique submitters from WIN issues
           WIN_COUNT=$(gh issue list --repo "$REPO" --label "automated" --state all --limit 1000 --json number --jq 'length')
 
-          # Calculate automation rate
+          # Calculate automation rate (only toil issues that are also automated)
           if [ "$TOTAL_TOIL" -gt 0 ]; then
-            AUTOMATION_RATE=$((AUTOMATED * 100 / TOTAL_TOIL))
+            AUTOMATION_RATE=$((AUTOMATED_TOIL * 100 / TOTAL_TOIL))
           else
             AUTOMATION_RATE=0
           fi
 
           echo "total_toil=$TOTAL_TOIL" >> "$GITHUB_OUTPUT"
-          echo "automated=$AUTOMATED" >> "$GITHUB_OUTPUT"
+          echo "automated=$AUTOMATED_TOIL" >> "$GITHUB_OUTPUT"
           echo "in_progress=$IN_PROGRESS" >> "$GITHUB_OUTPUT"
           echo "open_triage=$OPEN_TRIAGE" >> "$GITHUB_OUTPUT"
           echo "high_impact=$HIGH_IMPACT" >> "$GITHUB_OUTPUT"

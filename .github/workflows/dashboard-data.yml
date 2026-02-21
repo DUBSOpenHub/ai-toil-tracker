@@ -7,6 +7,10 @@ on:
   issues:
     types: [opened, edited, labeled, closed]
 
+concurrency:
+  group: dashboard-data
+  cancel-in-progress: true
+
 permissions:
   contents: write
   issues: read
@@ -273,7 +277,7 @@ jobs:
             SUBMITTER=$(parse_field "$BODY" "Your name and GitHub handle")
             TEAM=$(parse_field "$BODY" "What team or group are you on")
             RELATED_ISSUE=$(parse_field "$BODY" "Related toil issue")
-            RELATED_NUM=$(echo "$RELATED_ISSUE" | grep -oP '#\d+' | head -1 | tr -d '#')
+            RELATED_NUM=$(echo "$RELATED_ISSUE" | grep -oE '#[0-9]+' | head -1 | tr -d '#')
             WHAT_AUTOMATED=$(parse_field "$BODY" "What was automated")
             FREQUENCY_RAW=$(parse_field "$BODY" "How often did this toil happen")
             TIME_SAVED_RAW=$(parse_field "$BODY" "Time saved per occurrence")
@@ -406,5 +410,6 @@ jobs:
             echo "No changes to commit."
           else
             git commit -m "chore: update dashboard data [skip ci]"
+            git pull --rebase origin "${GITHUB_REF_NAME:-main}" || { echo "Warning: rebase failed, attempting plain push"; }
             git push
           fi

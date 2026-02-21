@@ -585,7 +585,7 @@ const CONFIG = {
   } else {
     // Fallback — edit these if not on GitHub Pages
     CONFIG.owner = 'DUBSOpenHub';
-    CONFIG.repo = 'ai-first-toil-tracker';
+    CONFIG.repo = 'ai-toil-tracker';
   }
 })();
 
@@ -802,12 +802,44 @@ const localEdits = JSON.parse(localStorage.getItem('toilEdits') || '{}');
 // ═══════════════════════════════════════════════════
 // DATA LOADING
 // ═══════════════════════════════════════════════════
+function normalizeData(raw) {
+  if (raw.toilItems) {
+    return {
+      repo: raw.repository,
+      generated_at: raw.generatedAt,
+      issues: raw.toilItems.map(item => ({
+        number: item.number,
+        title: item.title,
+        url: item.url,
+        state: item.state?.toLowerCase() || 'unknown',
+        labels: (item.labels || '').split(',').filter(Boolean),
+        submitter: item.submitter,
+        team: item.team,
+        category: item.category,
+        frequency: item.frequency?.label || 'unknown',
+        time_per_occurrence: item.time?.label || 'unknown',
+        people_affected: item.people?.label || 'unknown',
+        bonus_factors: item.bonusFactors || [],
+        automation_idea: item.automationIdea || '',
+        toil_score: item.toilScore,
+        priority: item.priority,
+        monthly_saved_minutes: item.monthlyMinutes,
+        created_at: item.createdAt,
+        ai_suggestion: ''
+      })),
+      wins: raw.wins || [],
+      summary: raw.summary
+    };
+  }
+  return raw; // Legacy format pass-through
+}
+
 async function loadData() {
   // Try local JSON first
   try {
     const res = await fetch('dashboard-data.json');
     if (res.ok) {
-      dashboardData = await res.json();
+      dashboardData = normalizeData(await res.json());
       applyLocalEdits();
       render();
       return;

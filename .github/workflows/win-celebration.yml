@@ -19,10 +19,11 @@ jobs:
           REPO: ${{ github.repository }}
         run: |
           WIN_TITLE=$(gh issue view "$WIN_NUM" --repo "$REPO" --json title --jq '.title')
+          echo "$WIN_TITLE" | grep -q '^\[WIN\]' || { echo "Not a WIN issue — skipping."; exit 0; }
           BODY=$(gh issue view "$WIN_NUM" --repo "$REPO" --json body --jq '.body')
           
           # Extract issue reference (e.g. #12) from "Related toil issue" field
-          RELATED=$(echo "$BODY" | grep -oP '#\d+' | head -1)
+          RELATED=$(echo "$BODY" | grep -oE '#[0-9]+' | head -1)
           
           if [ -z "$RELATED" ]; then
             echo "No related issue found"
