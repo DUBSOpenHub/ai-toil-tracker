@@ -513,6 +513,8 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
         <option value="submitter">🧑‍💻 Person</option>
       </select>
       <button class="show-cols-toggle" id="toggleCols" onclick="toggleColumns()">+ Show all details</button>
+      <button class="show-cols-toggle" onclick="exportCSV()" title="Download as CSV">📥 CSV</button>
+      <button class="show-cols-toggle" onclick="exportJSON()" title="Download as JSON">📥 JSON</button>
     </div>
     <div class="table-wrap">
       <table id="toilTable">
@@ -1648,6 +1650,49 @@ function toggleColumns() {
   showAllCols = !showAllCols;
   document.querySelectorAll('.col-hidden').forEach(el => el.style.display = showAllCols ? '' : 'none');
   document.getElementById('toggleCols').textContent = showAllCols ? '− Fewer columns' : '+ Show all columns';
+}
+
+// ═══════════════════════════════════════════════════
+// EXPORT — CSV & JSON downloads
+// ═══════════════════════════════════════════════════
+function getVisibleData() {
+  const rows = document.querySelectorAll('#toilTable tbody tr:not(.total-row)');
+  return Array.from(rows).map(tr => {
+    const cells = tr.querySelectorAll('td');
+    return {
+      number: cells[0]?.textContent?.trim() || '',
+      title: cells[1]?.textContent?.trim() || '',
+      submitter: cells[3]?.textContent?.trim() || '',
+      frequency: cells[5]?.textContent?.trim() || '',
+      time: cells[6]?.textContent?.trim() || '',
+      people: cells[7]?.textContent?.trim() || '',
+      score: cells[8]?.textContent?.trim() || '',
+      status: cells[9]?.textContent?.trim() || '',
+      saved_per_month: cells[10]?.textContent?.trim() || '',
+    };
+  });
+}
+function downloadFile(content, filename, mime) {
+  const blob = new Blob([content], { type: mime });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function exportCSV() {
+  const data = getVisibleData();
+  if (!data.length) return;
+  const headers = Object.keys(data[0]);
+  const csv = [headers.join(','), ...data.map(r => headers.map(h => `"${(r[h]||'').replace(/"/g,'""')}"`).join(','))].join('\n');
+  downloadFile(csv, 'toil-tracker-export.csv', 'text/csv');
+  showToast('📥 CSV downloaded');
+}
+function exportJSON() {
+  const data = getVisibleData();
+  if (!data.length) return;
+  downloadFile(JSON.stringify(data, null, 2), 'toil-tracker-export.json', 'application/json');
+  showToast('📥 JSON downloaded');
 }
 
 // ═══════════════════════════════════════════════════

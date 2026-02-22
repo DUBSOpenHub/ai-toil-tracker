@@ -1,0 +1,43 @@
+name: Notify on workflow failure
+
+on:
+  workflow_run:
+    workflows:
+      - "CI — Tests & Validation"
+      - "AI Triage"
+      - "Dashboard Data"
+    types:
+      - completed
+
+permissions:
+  issues: write
+
+jobs:
+  notify:
+    name: Open issue on failure
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - name: Create failure issue
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea  # v7.0.1
+        with:
+          script: |
+            const run = context.payload.workflow_run;
+            const title = `🔴 Workflow failure: ${run.name} (#${run.run_number})`;
+            const body = [
+              `**Workflow:** ${run.name}`,
+              `**Branch:** ${run.head_branch}`,
+              `**Commit:** ${run.head_sha.substring(0, 7)}`,
+              `**Run:** ${run.html_url}`,
+              `**Triggered by:** ${run.actor.login}`,
+              '',
+              'Please investigate and resolve the failure.',
+            ].join('\n');
+
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['bug', 'ci-failure'],
+            });

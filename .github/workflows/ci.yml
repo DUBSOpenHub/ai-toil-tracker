@@ -62,6 +62,21 @@ jobs:
           done
           [ "$FAIL" -eq 0 ] || exit 1
 
+      - name: ShellCheck lint
+        run: |
+          echo "── ShellCheck ───────────────────────────────"
+          sudo apt-get -qq install -y shellcheck > /dev/null 2>&1
+          FAIL=0
+          for f in scripts/*.sh; do
+            if shellcheck --severity=warning "$f"; then
+              echo "  ✅ $f"
+            else
+              echo "  ❌ $f — ShellCheck warnings"
+              FAIL=1
+            fi
+          done
+          [ "$FAIL" -eq 0 ] || exit 1
+
       - name: Run scoring.sh self-test
         run: bash scripts/scoring.sh --selftest
 

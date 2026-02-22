@@ -52,7 +52,7 @@ scoring:
     under-5-min:    3
 
 ai:
-  model:       openai/gpt-4o-mini   # GitHub Models API model ID
+  model:       openai/gpt-4o-mini   # GitHub Models API model ID  —  upgrade to gpt-4.1-mini when available
   max_tokens:  600                  # Increase for more detailed suggestions
   temperature: 0.5                  # 0.0 = deterministic, 1.0 = creative
 
