@@ -18,10 +18,28 @@ jobs:
     if: github.run_number == 1
 
     steps:
+      - name: Check if already initialized
+        id: check
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea  # v7.0.1
+        with:
+          script: |
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'all',
+              creator: 'github-actions[bot]',
+              per_page: 100,
+            });
+            const alreadySetUp = issues.data.some(i => i.title.includes('Welcome to AI Toil Tracker'));
+            core.setOutput('skip', alreadySetUp ? 'true' : 'false');
+            if (alreadySetUp) core.info('Welcome issue already exists — skipping setup.');
+
       - name: Checkout repository
+        if: steps.check.outputs.skip == 'false'
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
 
       - name: Reset dashboard data
+        if: steps.check.outputs.skip == 'false'
         run: |
           cat > docs/dashboard/dashboard-data.json << 'EOF'
           {
@@ -44,6 +62,7 @@ jobs:
           EOF
 
       - name: Update repo references in config
+        if: steps.check.outputs.skip == 'false'
         run: |
           # Update any hardcoded repo references to the new repo
           if grep -q "DUBSOpenHub/ai-toil-tracker" docs/dashboard/dashboard-data.json 2>/dev/null; then
@@ -51,6 +70,7 @@ jobs:
           fi
 
       - name: Commit changes
+        if: steps.check.outputs.skip == 'false'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -65,6 +85,7 @@ jobs:
           fi
 
       - name: Create welcome issue
+        if: steps.check.outputs.skip == 'false'
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea  # v7.0.1
         with:
           script: |
