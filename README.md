@@ -6,26 +6,6 @@ Every team has busywork - the manual, repetitive tasks that eat up time and coul
 
 > 💡 **This is for any team.** Use this template, set up a weekly Slack reminder, and start collecting ideas in under 10 minutes. No code required.
 
-## See It in Action
-
-<!-- Replace this placeholder with your own screen recording (30 seconds recommended) -->
-<!-- Record: submit issue → AI triage comment appears → dashboard updates -->
-
-<p align="center">
-  <img src="docs/assets/demo.gif" alt="AI Toil Tracker demo — submit a toil idea, AI scores it, dashboard updates" width="720">
-</p>
-
-<details>
-<summary>📸 What the demo shows (click to expand)</summary>
-
-1. **Submit** — A team member clicks the Slack link and fills out the toil idea form (~30 seconds)
-2. **AI Triage** — Within moments, the AI agent scores the idea, applies a priority label, estimates time saved, and suggests an automation approach
-3. **Dashboard** — The live dashboard updates with the new item, sorted by impact score
-
-</details>
-
-> **To create your own demo GIF:** Use a screen recorder ([Kap](https://getkap.co) on Mac, [ShareX](https://getsharex.com) on Windows) to capture the flow above. Save it as `docs/assets/demo.gif` and it will appear here automatically.
-
 ## How AI Is Used
 
 This isn't just a tracker - AI is built into the workflow:
