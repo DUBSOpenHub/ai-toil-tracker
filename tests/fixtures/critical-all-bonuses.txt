@@ -1,0 +1,29 @@
+### Your name
+
+Álvaro García-Müller
+
+### What's the toil?
+
+Every morning I manually review and approve Dependabot PRs across our org's repos. 95% are safe patch bumps that could be auto-merged.
+
+### How often does it happen?
+
+🔴 Multiple times per day
+
+### How long does it take each time?
+
+> 1 hour
+
+### Who is affected?
+
+Multiple teams / org-wide
+
+### Bonus factors (optional)
+
+- [x] ❌ Error-prone — this toil frequently causes mistakes or data errors
+- [x] 😤 Morale killer — this toil is particularly frustrating or demoralizing
+- [x] 🔗 Blocking — this toil blocks other people or downstream processes
+
+### Automation idea (if any)
+
+Auto-merge Dependabot PRs that only bump patch versions and pass all CI checks.

@@ -1,0 +1,29 @@
+### Your name
+
+Jane Smith
+
+### What's the toil?
+
+I manually copy deploy logs from our CI system into a shared spreadsheet after every release. Takes ~45 minutes per release and I have to verify links manually.
+
+### How often does it happen?
+
+🟠 Daily
+
+### How long does it take each time?
+
+30–60 minutes
+
+### Who is affected?
+
+Entire team
+
+### Bonus factors (optional)
+
+- [x] ❌ Error-prone — this toil frequently causes mistakes or data errors
+- [ ] 😤 Morale killer — this toil is particularly frustrating or demoralizing
+- [x] 🔗 Blocking — this toil blocks other people or downstream processes
+
+### Automation idea (if any)
+
+A GitHub Action triggered on release events could auto-format and post deploy logs.

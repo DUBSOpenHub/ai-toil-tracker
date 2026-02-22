@@ -1,0 +1,29 @@
+### Your name
+
+Bob Jones
+
+### What's the toil?
+
+I update the team wiki page for quarterly all-hands meetings.
+
+### How often does it happen?
+
+⚪ Monthly or less
+
+### How long does it take each time?
+
+< 5 minutes
+
+### Who is affected?
+
+Just me
+
+### Bonus factors (optional)
+
+- [ ] ❌ Error-prone — this toil frequently causes mistakes or data errors
+- [ ] 😤 Morale killer — this toil is particularly frustrating or demoralizing
+- [ ] 🔗 Blocking — this toil blocks other people or downstream processes
+
+### Automation idea (if any)
+
+_No response_

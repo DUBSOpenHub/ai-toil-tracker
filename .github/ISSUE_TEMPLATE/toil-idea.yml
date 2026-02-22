@@ -14,6 +14,8 @@ body:
       value: |
         ⚠️ **Security reminder:** keep descriptions high-level—don't paste secrets, customer data, or internal-only URLs. See `SECURITY.md` for details.
 
+        🤖 **What happens next:** An AI agent will automatically score this idea, apply labels, and suggest an automation approach — usually within 60 seconds of submission.
+
   - type: input
     id: submitter
     attributes:
@@ -97,11 +99,21 @@ body:
     validations:
       required: false
 
+  - type: checkboxes
+    id: bonus-factors
+    attributes:
+      label: Bonus factors (optional)
+      description: Check any that apply — each adds +10 to your toil score
+      options:
+        - label: "❌ Error-prone — this toil frequently causes mistakes or data errors"
+        - label: "😤 Morale killer — this toil is particularly frustrating or demoralizing"
+        - label: "🔗 Blocking — this toil blocks other people or downstream processes"
+
   - type: textarea
     id: automation-idea
     attributes:
       label: Automation idea (optional)
-      description: How might an agent, script, or workflow handle this?
-      placeholder: Optional — leave blank if you're not sure
+      description: How might an agent, script, or workflow handle this? Leave blank if unsure — the AI will suggest one.
+      placeholder: Optional — e.g. "A GitHub Action that triggers on release and posts the changelog to Slack"
     validations:
       required: false

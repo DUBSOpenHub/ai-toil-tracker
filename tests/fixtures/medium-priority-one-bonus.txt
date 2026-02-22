@@ -1,0 +1,29 @@
+### Your name
+
+Sam Lee
+
+### What's the toil?
+
+We rotate the on-call schedule in a spreadsheet every week.
+
+### How often does it happen?
+
+🔵 Weekly
+
+### How long does it take each time?
+
+15–30 minutes
+
+### Who is affected?
+
+4–6 people
+
+### Bonus factors (optional)
+
+- [ ] ❌ Error-prone — this toil frequently causes mistakes or data errors
+- [x] 😤 Morale killer — this toil is particularly frustrating or demoralizing
+- [ ] 🔗 Blocking — this toil blocks other people or downstream processes
+
+### Automation idea (if any)
+
+_No response_

@@ -1,0 +1,24 @@
+[
+  {
+    "number": 1,
+    "title": "[TOIL] Manual security scan review",
+    "state": "OPEN",
+    "labels": [{"name": "toil"}, {"name": "high-impact"}],
+    "createdAt": "2025-01-15T10:00:00Z",
+    "updatedAt": "2025-01-15T10:30:00Z",
+    "author": {"login": "testalpha"},
+    "body": "### Your name\n\nTest User Alpha\n\n### What's the toil?\n\nManually reviewing security scan results across 20 repos every morning.\n\n### How often does it happen?\n\n\ud83d\udd34 Multiple times per day\n\n### How long does it take each time?\n\n> 1 hour\n\n### Who is affected?\n\n4\u20136 people\n\n### Bonus factors (optional)\n\n- [x] \u274c Error-prone \u2014 this toil frequently causes mistakes or data errors\n- [x] \ud83d\ude24 Morale killer \u2014 this toil is particularly frustrating or demoralizing\n- [ ] \ud83d\udd17 Blocking \u2014 this toil blocks other people or downstream processes\n\n### Automation idea (if any)\n\n_No response_",
+    "url": "https://github.com/test/repo/issues/1"
+  },
+  {
+    "number": 2,
+    "title": "[TOIL] Update changelog",
+    "state": "CLOSED",
+    "labels": [{"name": "toil"}, {"name": "automated"}],
+    "createdAt": "2025-01-10T08:00:00Z",
+    "updatedAt": "2025-01-20T14:00:00Z",
+    "author": {"login": "testbeta"},
+    "body": "### Your name\n\nTest User Beta\n\n### What's the toil?\n\nUpdating changelog after each release.\n\n### How often does it happen?\n\n\ud83d\udd35 Weekly\n\n### How long does it take each time?\n\n5\u201315 minutes\n\n### Who is affected?\n\nJust me\n\n### Bonus factors (optional)\n\n- [ ] \u274c Error-prone\n- [ ] \ud83d\ude24 Morale killer\n- [ ] \ud83d\udd17 Blocking\n\n### Automation idea (if any)\n\nAlready automated with a GitHub Action.",
+    "url": "https://github.com/test/repo/issues/2"
+  }
+]

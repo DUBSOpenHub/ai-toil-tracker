@@ -1,0 +1,18 @@
+### Your name
+Test User
+### What's the toil?
+Test toil compact format.
+### How often does it happen?
+🟡 Multiple times per week
+### How long does it take each time?
+5–15 minutes
+### Who is affected?
+2–3 people
+### Bonus factors (optional)
+
+- [ ] ❌ Error-prone — this toil frequently causes mistakes or data errors
+- [ ] 😤 Morale killer — this toil is particularly frustrating or demoralizing
+- [ ] 🔗 Blocking — this toil blocks other people or downstream processes
+
+### Automation idea (if any)
+_No response_

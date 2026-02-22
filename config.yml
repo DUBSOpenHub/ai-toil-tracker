@@ -1,0 +1,65 @@
+# =============================================================================
+# AI Toil Tracker — Central Configuration
+# =============================================================================
+# Edit this file to customize behavior for your fork.
+# Scripts and workflows read from here — change once, applies everywhere.
+
+scoring:
+  frequency:
+    multiple-times-daily:  8   # 🔴 Multiple times per day
+    daily:                 5   # 🟠 Daily
+    multiple-times-weekly: 3   # 🟡 Multiple times per week
+    weekly:                2   # 🔵 Weekly
+    monthly:               1   # ⚪ Monthly or less
+
+  time:
+    over-1-hour:   8           # > 1 hour
+    30-60-min:     5           # 30–60 minutes
+    15-30-min:     3           # 15–30 minutes
+    5-15-min:      2           # 5–15 minutes
+    under-5-min:   1           # < 5 minutes
+
+  people:
+    org-wide:      8           # Multiple teams / org-wide
+    entire-team:   5           # Entire team
+    4-6-people:    3           # 4–6 people
+    2-3-people:    2           # 2–3 people
+    just-me:       1           # Just me
+
+  priority_tiers:
+    critical:  40              # 🔴 Automate immediately
+    high:      20              # 🟡 Automate this sprint
+    medium:    10              # 🟢 Add to backlog
+                               # < medium → ⚪ Low, track but don't prioritize
+
+  # Points added per checked bonus factor (error-prone, morale-killer, blocking)
+  bonus_per_factor: 10
+
+  # Monthly occurrence multipliers per frequency tier
+  monthly_multipliers:
+    multiple-times-daily:  60
+    daily:                 20
+    multiple-times-weekly: 10
+    weekly:                 4
+    monthly:                1
+
+  # Representative minutes per time tier (midpoint of range)
+  time_minutes:
+    over-1-hour:   75
+    30-60-min:     45
+    15-30-min:     22
+    5-15-min:      10
+    under-5-min:    3
+
+ai:
+  model:       openai/gpt-4o-mini   # GitHub Models API model ID
+  max_tokens:  600                  # Increase for more detailed suggestions
+  temperature: 0.5                  # 0.0 = deterministic, 1.0 = creative
+
+stale:
+  days_until_stale: 30              # Days before stale label is applied
+  days_until_close: 60              # Days after stale before auto-close
+  exempt_labels:
+    - in-progress
+    - automated
+    - high-impact

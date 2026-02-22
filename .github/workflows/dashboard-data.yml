@@ -1,415 +1,50 @@
-name: Generate Dashboard Data
+name: Dashboard Data - Generate JSON for GitHub Pages
 
 on:
   schedule:
-    - cron: '0 6 * * *'  # Daily at 6am UTC
-  workflow_dispatch:
+    - cron: '17 2 * * *' # daily
   issues:
-    types: [opened, edited, labeled, closed]
-
-concurrency:
-  group: dashboard-data
-  cancel-in-progress: true
+    types: [opened, edited, labeled, unlabeled, closed, reopened]
+  workflow_dispatch:
 
 permissions:
   contents: write
   issues: read
 
+concurrency:
+  group: dashboard-data
+  cancel-in-progress: true
+
 jobs:
-  generate-dashboard-data:
+  generate:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      REPO: ${{ github.repository }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+        with:
+          fetch-depth: 0
 
-      - name: Fetch issues and generate dashboard JSON
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate dashboard JSON
         run: |
-          REPO="${{ github.repository }}"
+          set -euo pipefail
+          bash ./scripts/generate-dashboard-data.sh
 
-          # ── Helper: parse a markdown form field value ──
-          # Given the full issue body and a field heading, extract the value
-          # that appears between that heading and the next "###" heading.
-          parse_field() {
-            local body="$1" heading="$2"
-            echo "$body" | sed -n "/^### ${heading}/,/^### /{ /^### /d; p; }" | sed '/^$/d' | head -20
-          }
-
-          # ── Score helpers (identical to ai-triage.yml) ──
-          freq_score() {
-            local val="$1"
-            if echo "$val" | grep -q "Multiple times per day"; then echo 8
-            elif echo "$val" | grep -q "Daily"; then echo 5
-            elif echo "$val" | grep -q "Multiple times per week"; then echo 3
-            elif echo "$val" | grep -q "Weekly"; then echo 2
-            else echo 1; fi
-          }
-
-          time_score() {
-            local val="$1"
-            if echo "$val" | grep -q "> 1 hour"; then echo 8
-            elif echo "$val" | grep -q "30.*60 minutes"; then echo 5
-            elif echo "$val" | grep -q "15.*30 minutes"; then echo 3
-            elif echo "$val" | grep -q "5.*15 minutes"; then echo 2
-            else echo 1; fi
-          }
-
-          people_score() {
-            local val="$1"
-            if echo "$val" | grep -q "Multiple teams"; then echo 8
-            elif echo "$val" | grep -q "Entire team"; then echo 5
-            elif echo "$val" | grep -q "4.*6 people"; then echo 3
-            elif echo "$val" | grep -q "2.*3 people"; then echo 2
-            else echo 1; fi
-          }
-
-          monthly_mult() {
-            case $1 in
-              8) echo 60 ;; 5) echo 20 ;; 3) echo 10 ;; 2) echo 4 ;; *) echo 1 ;;
-            esac
-          }
-
-          time_mins() {
-            case $1 in
-              8) echo 75 ;; 5) echo 45 ;; 3) echo 22 ;; 2) echo 10 ;; *) echo 3 ;;
-            esac
-          }
-
-          freq_label() {
-            case $1 in
-              8) echo "Multiple times per day" ;; 5) echo "Daily" ;; 3) echo "Multiple times per week" ;; 2) echo "Weekly" ;; *) echo "Monthly or less" ;;
-            esac
-          }
-
-          time_label() {
-            case $1 in
-              8) echo "> 1 hour" ;; 5) echo "30–60 minutes" ;; 3) echo "15–30 minutes" ;; 2) echo "5–15 minutes" ;; *) echo "< 5 minutes" ;;
-            esac
-          }
-
-          people_label() {
-            case $1 in
-              8) echo "Multiple teams / org-wide" ;; 5) echo "Entire team" ;; 3) echo "4–6 people" ;; 2) echo "2–3 people" ;; *) echo "Just me" ;;
-            esac
-          }
-
-          priority_label() {
-            local score=$1
-            if [ "$score" -ge 40 ]; then echo "🔴 Critical"
-            elif [ "$score" -ge 20 ]; then echo "🟡 High"
-            elif [ "$score" -ge 10 ]; then echo "🟢 Medium"
-            else echo "⚪ Low"; fi
-          }
-
-          # ── Count bonus factors ──
-          count_bonuses() {
-            local body="$1" count=0
-            echo "$body" | grep -c '\[X\]' || true
-          }
-
-          bonus_list() {
-            local body="$1"
-            local items="[]"
-            if echo "$body" | grep -q '\[X\].*Error-prone'; then
-              items=$(echo "$items" | jq '. + ["error-prone"]')
-            fi
-            if echo "$body" | grep -q '\[X\].*Morale killer'; then
-              items=$(echo "$items" | jq '. + ["morale-killer"]')
-            fi
-            if echo "$body" | grep -q '\[X\].*Blocking'; then
-              items=$(echo "$items" | jq '. + ["blocking"]')
-            fi
-            echo "$items"
-          }
-
-          # ══════════════════════════════════════════════
-          #  PROCESS TOIL ISSUES (label: toil)
-          # ══════════════════════════════════════════════
-          echo "Fetching toil issues..."
-          TOIL_JSON=$(gh issue list --repo "$REPO" --label "toil" --state all --limit 500 \
-            --json number,title,body,state,labels,createdAt,closedAt,assignees,url)
-
-          TOIL_ITEMS="[]"
-          TOTAL_MONTHLY_MINS=0
-          TOTAL_TOIL=0
-          OPEN_TOIL=0
-
-          for row in $(echo "$TOIL_JSON" | jq -r '.[] | @base64'); do
-            _jq() { echo "$row" | base64 --decode | jq -r "$1"; }
-
-            NUM=$(_jq '.number')
-            TITLE=$(_jq '.title')
-            STATE=$(_jq '.state')
-            CREATED=$(_jq '.createdAt')
-            CLOSED=$(_jq '.closedAt')
-            URL=$(_jq '.url')
-            BODY=$(_jq '.body')
-            LABELS=$(_jq '[.labels[].name] | join(",")')
-            ASSIGNEES=$(_jq '[.assignees[].login] | join(",")')
-
-            # Parse fields from issue body
-            SUBMITTER=$(parse_field "$BODY" "Your name and GitHub handle")
-            TEAM=$(parse_field "$BODY" "What team or group are you on")
-            TOIL_DESC=$(parse_field "$BODY" "What's the toil")
-            FREQUENCY_RAW=$(parse_field "$BODY" "How often does it happen")
-            TIME_RAW=$(parse_field "$BODY" "How long does it take each time")
-            PEOPLE_RAW=$(parse_field "$BODY" "Who is affected")
-            CATEGORY=$(parse_field "$BODY" "What area does this toil fall under")
-            AUTOMATION_IDEA=$(parse_field "$BODY" "Automation idea")
-
-            # Calculate scores
-            FS=$(freq_score "$FREQUENCY_RAW")
-            TS=$(time_score "$TIME_RAW")
-            PS=$(people_score "$PEOPLE_RAW")
-            TOIL_SCORE=$((FS * TS * PS))
-
-            MM=$(monthly_mult "$FS")
-            TM=$(time_mins "$TS")
-            MONTHLY_MINS=$((MM * TM * PS))
-
-            if [ "$MONTHLY_MINS" -ge 60 ]; then
-              MONTHLY_SAVED="~$((MONTHLY_MINS / 60)) hours/month"
-            else
-              MONTHLY_SAVED="~${MONTHLY_MINS} minutes/month"
-            fi
-
-            PRIORITY=$(priority_label "$TOIL_SCORE")
-            BONUSES=$(bonus_list "$BODY")
-            BONUS_COUNT=$(echo "$BONUSES" | jq 'length')
-
-            # Check if automated
-            IS_AUTOMATED="false"
-            if echo "$LABELS" | grep -q "automated"; then
-              IS_AUTOMATED="true"
-            fi
-
-            # Build JSON item
-            ITEM=$(jq -n \
-              --argjson number "$NUM" \
-              --arg title "$TITLE" \
-              --arg state "$STATE" \
-              --arg createdAt "$CREATED" \
-              --arg closedAt "$CLOSED" \
-              --arg url "$URL" \
-              --arg submitter "$SUBMITTER" \
-              --arg team "$TEAM" \
-              --arg description "$TOIL_DESC" \
-              --arg category "$CATEGORY" \
-              --arg frequencyLabel "$(freq_label "$FS")" \
-              --argjson frequencyScore "$FS" \
-              --arg timeLabel "$(time_label "$TS")" \
-              --argjson timeScore "$TS" \
-              --arg peopleLabel "$(people_label "$PS")" \
-              --argjson peopleScore "$PS" \
-              --argjson toilScore "$TOIL_SCORE" \
-              --arg priority "$PRIORITY" \
-              --argjson monthlyMinutes "$MONTHLY_MINS" \
-              --arg monthlySaved "$MONTHLY_SAVED" \
-              --argjson bonusFactors "$BONUSES" \
-              --argjson bonusCount "$BONUS_COUNT" \
-              --argjson isAutomated "$IS_AUTOMATED" \
-              --arg automationIdea "$AUTOMATION_IDEA" \
-              --arg labels "$LABELS" \
-              --arg assignees "$ASSIGNEES" \
-              '{
-                number: $number,
-                title: $title,
-                state: $state,
-                createdAt: $createdAt,
-                closedAt: $closedAt,
-                url: $url,
-                submitter: $submitter,
-                team: $team,
-                description: $description,
-                category: $category,
-                frequency: { label: $frequencyLabel, score: $frequencyScore },
-                time: { label: $timeLabel, score: $timeScore },
-                people: { label: $peopleLabel, score: $peopleScore },
-                toilScore: $toilScore,
-                priority: $priority,
-                monthlyMinutes: $monthlyMinutes,
-                monthlySaved: $monthlySaved,
-                bonusFactors: $bonusFactors,
-                bonusCount: $bonusCount,
-                isAutomated: $isAutomated,
-                automationIdea: $automationIdea,
-                labels: $labels,
-                assignees: $assignees
-              }')
-
-            TOIL_ITEMS=$(echo "$TOIL_ITEMS" | jq --argjson item "$ITEM" '. + [$item]')
-            TOTAL_MONTHLY_MINS=$((TOTAL_MONTHLY_MINS + MONTHLY_MINS))
-            TOTAL_TOIL=$((TOTAL_TOIL + 1))
-
-            if [ "$STATE" = "OPEN" ]; then
-              OPEN_TOIL=$((OPEN_TOIL + 1))
-            fi
-          done
-
-          # ══════════════════════════════════════════════
-          #  PROCESS WIN ISSUES (label: automated)
-          # ══════════════════════════════════════════════
-          echo "Fetching win issues..."
-          WIN_JSON=$(gh issue list --repo "$REPO" --label "automated" --state all --limit 500 \
-            --json number,title,body,state,createdAt,closedAt,url)
-
-          WIN_ITEMS="[]"
-          TOTAL_WINS=0
-
-          for row in $(echo "$WIN_JSON" | jq -r '.[] | @base64'); do
-            _jq() { echo "$row" | base64 --decode | jq -r "$1"; }
-
-            NUM=$(_jq '.number')
-            TITLE=$(_jq '.title')
-            STATE=$(_jq '.state')
-            CREATED=$(_jq '.createdAt')
-            CLOSED=$(_jq '.closedAt')
-            URL=$(_jq '.url')
-            BODY=$(_jq '.body')
-
-            # Skip issues that are also toil issues (they appear in both queries)
-            # Win issues have [WIN] in the title
-            if ! echo "$TITLE" | grep -q '\[WIN\]'; then
-              continue
-            fi
-
-            SUBMITTER=$(parse_field "$BODY" "Your name and GitHub handle")
-            TEAM=$(parse_field "$BODY" "What team or group are you on")
-            RELATED_ISSUE=$(parse_field "$BODY" "Related toil issue")
-            RELATED_NUM=$(echo "$RELATED_ISSUE" | grep -oE '#[0-9]+' | head -1 | tr -d '#')
-            WHAT_AUTOMATED=$(parse_field "$BODY" "What was automated")
-            FREQUENCY_RAW=$(parse_field "$BODY" "How often did this toil happen")
-            TIME_SAVED_RAW=$(parse_field "$BODY" "Time saved per occurrence")
-            PEOPLE_RAW=$(parse_field "$BODY" "How many people benefit")
-            MONTHLY_SAVINGS=$(parse_field "$BODY" "Estimated time saved per month")
-            EFFORT=$(parse_field "$BODY" "How long did it take to build")
-            LINK=$(parse_field "$BODY" "Link to the automation")
-
-            ITEM=$(jq -n \
-              --argjson number "$NUM" \
-              --arg title "$TITLE" \
-              --arg state "$STATE" \
-              --arg createdAt "$CREATED" \
-              --arg closedAt "$CLOSED" \
-              --arg url "$URL" \
-              --arg submitter "$SUBMITTER" \
-              --arg team "$TEAM" \
-              --arg relatedIssue "${RELATED_NUM:-}" \
-              --arg whatAutomated "$WHAT_AUTOMATED" \
-              --arg frequency "$FREQUENCY_RAW" \
-              --arg timeSaved "$TIME_SAVED_RAW" \
-              --arg peopleBenefited "$PEOPLE_RAW" \
-              --arg monthlySavings "$MONTHLY_SAVINGS" \
-              --arg effortToBuild "$EFFORT" \
-              --arg automationLink "$LINK" \
-              '{
-                number: $number,
-                title: $title,
-                state: $state,
-                createdAt: $createdAt,
-                closedAt: $closedAt,
-                url: $url,
-                submitter: $submitter,
-                team: $team,
-                relatedIssue: (if $relatedIssue != "" then ($relatedIssue | tonumber) else null end),
-                whatAutomated: $whatAutomated,
-                frequency: $frequency,
-                timeSaved: $timeSaved,
-                peopleBenefited: $peopleBenefited,
-                monthlySavings: $monthlySavings,
-                effortToBuild: $effortToBuild,
-                automationLink: $automationLink
-              }')
-
-            WIN_ITEMS=$(echo "$WIN_ITEMS" | jq --argjson item "$ITEM" '. + [$item]')
-            TOTAL_WINS=$((TOTAL_WINS + 1))
-          done
-
-          # ══════════════════════════════════════════════
-          #  COMPUTE SUMMARY STATS
-          # ══════════════════════════════════════════════
-          AUTOMATED_COUNT=$(echo "$TOIL_ITEMS" | jq '[.[] | select(.isAutomated == true)] | length')
-
-          # Total monthly hours saveable
-          if [ "$TOTAL_MONTHLY_MINS" -ge 60 ]; then
-            TOTAL_MONTHLY_SAVED="~$((TOTAL_MONTHLY_MINS / 60)) hours/month"
-          else
-            TOTAL_MONTHLY_SAVED="~${TOTAL_MONTHLY_MINS} minutes/month"
+      - name: Commit updated dashboard data
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- docs/dashboard/dashboard-data.json docs/dashboard/history.json; then
+            echo "No dashboard changes." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
           fi
 
-          # Category breakdown
-          CATEGORIES=$(echo "$TOIL_ITEMS" | jq '
-            group_by(.category) | map({
-              category: .[0].category,
-              count: length,
-              totalScore: (map(.toilScore) | add),
-              totalMonthlyMinutes: (map(.monthlyMinutes) | add)
-            }) | sort_by(-.totalScore)')
-
-          # Team breakdown
-          TEAMS=$(echo "$TOIL_ITEMS" | jq '
-            group_by(.team) | map({
-              team: .[0].team,
-              count: length,
-              totalScore: (map(.toilScore) | add),
-              totalMonthlyMinutes: (map(.monthlyMinutes) | add),
-              automated: ([.[] | select(.isAutomated == true)] | length)
-            }) | sort_by(-.count)')
-
-          # Top items by score
-          TOP_ITEMS=$(echo "$TOIL_ITEMS" | jq '[sort_by(-.toilScore) | .[:10] | .[] | {number, title, toilScore, priority, monthlySaved, team, category}]')
-
-          # ══════════════════════════════════════════════
-          #  ASSEMBLE FINAL JSON
-          # ══════════════════════════════════════════════
-          GENERATED_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-
-          DASHBOARD=$(jq -n \
-            --arg generatedAt "$GENERATED_AT" \
-            --arg repo "$REPO" \
-            --argjson totalToil "$TOTAL_TOIL" \
-            --argjson openToil "$OPEN_TOIL" \
-            --argjson automatedCount "$AUTOMATED_COUNT" \
-            --argjson totalWins "$TOTAL_WINS" \
-            --argjson totalMonthlyMinutes "$TOTAL_MONTHLY_MINS" \
-            --arg totalMonthlySaved "$TOTAL_MONTHLY_SAVED" \
-            --argjson categories "$CATEGORIES" \
-            --argjson teams "$TEAMS" \
-            --argjson topItems "$TOP_ITEMS" \
-            --argjson toilItems "$TOIL_ITEMS" \
-            --argjson winItems "$WIN_ITEMS" \
-            '{
-              generatedAt: $generatedAt,
-              repository: $repo,
-              summary: {
-                totalToilItems: $totalToil,
-                openToilItems: $openToil,
-                automatedItems: $automatedCount,
-                totalWins: $totalWins,
-                totalMonthlyMinutes: $totalMonthlyMinutes,
-                totalMonthlySaved: $totalMonthlySaved
-              },
-              byCategory: $categories,
-              byTeam: $teams,
-              topItems: $topItems,
-              toilItems: $toilItems,
-              wins: $winItems
-            }')
-
-          mkdir -p docs/dashboard
-          echo "$DASHBOARD" > docs/dashboard/dashboard-data.json
-          echo "Dashboard data generated with $TOTAL_TOIL toil items and $TOTAL_WINS wins."
-
-      - name: Commit dashboard data
-        run: |
           git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/dashboard/dashboard-data.json
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-          else
-            git commit -m "chore: update dashboard data [skip ci]"
-            git pull --rebase origin "${GITHUB_REF_NAME:-main}" || { echo "Warning: rebase failed, attempting plain push"; }
-            git push
-          fi
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add docs/dashboard/dashboard-data.json docs/dashboard/history.json
+          git commit -m "chore(dashboard): update dashboard data"
+          git push
+
+          echo "Updated dashboard JSON." >> "$GITHUB_STEP_SUMMARY"
