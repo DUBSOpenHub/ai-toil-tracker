@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2034  # Variables are set here for callers to use
 # =============================================================================
 # scripts/scoring.sh — Shared scoring logic for AI Toil Tracker
 # =============================================================================
