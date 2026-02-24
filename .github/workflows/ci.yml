@@ -47,21 +47,6 @@ jobs:
           done
           [ "$FAIL" -eq 0 ] || exit 1
 
-      - name: Check shell script syntax
-        run: |
-          echo "── Shell syntax check ───────────────────────"
-          FAIL=0
-          for f in scripts/*.sh tests/*.sh; do
-            if bash -n "$f" 2>/dev/null; then
-              echo "  ✅ $f"
-            else
-              echo "  ❌ $f — syntax error:"
-              bash -n "$f"
-              FAIL=1
-            fi
-          done
-          [ "$FAIL" -eq 0 ] || exit 1
-
       - name: ShellCheck lint
         run: |
           echo "── ShellCheck ───────────────────────────────"

@@ -187,6 +187,8 @@ Each loop is independent—disable or extend one without touching the others—a
 | [Scoring Guide](docs/scoring-guide.md) | How the toil score is calculated |
 | [Contributing](CONTRIBUTING.md) | How to submit ideas and build automations |
 | [Dashboard](docs/dashboard/index.html) | Interactive team dashboard with time savings |
+| [Quickstart](docs/quickstart.md) | Get your team running in 10 minutes |
+| [Troubleshooting](docs/troubleshooting.md) | Common issues and how to fix them |
 
 ## Slack Setup
 

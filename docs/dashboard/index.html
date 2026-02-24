@@ -53,8 +53,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .header > * { position: relative; }
 .hero-left { display: flex; flex-direction: column; gap: 0.55rem; max-width: 640px; }
 .hero-eyebrow { font-size: 0.8rem; letter-spacing: 0.05em; text-transform: none; color: rgba(255,255,255,0.65); font-weight: 600; }
-.header h1 { font-size: clamp(1.6rem, 2.3vw, 2.2rem); font-weight: 750; letter-spacing: -0.02em; display: flex; align-items: center; gap: 0.75rem; color: #fff; position: relative; overflow: hidden; }
-.header h1::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent); background-size: 200% 100%; background-repeat: no-repeat; animation: heroShimmer 3s ease-out 1 forwards; pointer-events: none; mix-blend-mode: overlay; }
+.header h1 { font-size: clamp(1.6rem, 2.3vw, 2.2rem); font-weight: 750; letter-spacing: -0.02em; display: flex; align-items: center; gap: 0.75rem; color: #fff; }
 .hero-subtitle { font-size: 0.95rem; color: rgba(255,255,255,0.78); max-width: 520px; line-height: 1.6; }
 .hero-pulse { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.35rem; }
 .pulse-pill { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.78rem; padding: 0.35rem 0.75rem; border-radius: 999px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08); text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.8); }
@@ -112,8 +111,6 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .insight-header .eyebrow { font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-soft); font-weight: 600; }
 .mini-pill { font-size: 0.72rem; padding: 0.2rem 0.6rem; border-radius: 999px; border: 1px solid var(--border-card); text-transform: uppercase; letter-spacing: 0.1em; }
 .mini-pill.live { border-color: rgba(34,197,94,0.4); color: #15803d; background: rgba(34,197,94,0.08); animation: pulseGlow 3s ease-in-out infinite; }
-.mini-link { font-size: 0.8rem; border: none; background: none; color: #2563eb; font-weight: 600; cursor: pointer; padding: 0; }
-.mini-link:hover { text-decoration: underline; }
 .insight-body { display: flex; gap: 1.25rem; flex-wrap: wrap; align-items: center; flex: 1; }
 .radial-progress { --size: 120px; --progress: 0deg; width: var(--size); height: var(--size); border-radius: 50%; background: conic-gradient(var(--accent) var(--progress), rgba(15,23,42,0.08) 0); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; position: relative; }
 .radial-progress::after { content: ""; position: absolute; inset: 10px; background: var(--bg-card); border-radius: 50%; box-shadow: inset 0 0 15px rgba(15,23,42,0.12); }
@@ -220,11 +217,6 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 .status-toggle { cursor: pointer; transition: all 150ms ease; }
 .status-toggle:hover { filter: brightness(1.15); transform: scale(1.05); }
 
-/* ── Copilot Tool Toggle ── */
-
-
-
-
 /* ── Toast ── */
 .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: #111117; color: #f5f7ff; padding: 0.75rem 1.25rem; border-radius: var(--radius); font-size: 0.875rem; font-weight: 500; z-index: 9999; opacity: 0; transform: translateY(10px); transition: all 150ms ease; pointer-events: none; border: 1px solid #27272a; box-shadow: var(--shadow-md); }
 .toast.show { opacity: 1; transform: translateY(0); }
@@ -235,17 +227,9 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
   60% { box-shadow: 0 0 0 12px rgba(165,107,255,0); }
   100% { box-shadow: 0 0 0 0 rgba(165,107,255,0); }
 }
-@keyframes floaty {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
-}
-@keyframes heroShimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
 }
 
 /* ── Responsive ── */
@@ -413,12 +397,6 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 .dark a,
 @media (prefers-color-scheme: dark) { :root:not(.light) a { color: #c58eff; } }
 
-.dark .details-toggle,
-@media (prefers-color-scheme: dark) { :root:not(.light) .details-toggle { background: #111117; border-color: #23242f; color: #f5f7ff; } }
-
-.dark .details-toggle:hover,
-@media (prefers-color-scheme: dark) { :root:not(.light) .details-toggle:hover { background: #23242f; } }
-
 .dark .theme-toggle { border-color: #3b3c49; }
 
 /* ── Trend Chart ── */
@@ -446,16 +424,8 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 
 /* ── Print ── */
 @media print {
-  .header { background: #fff !important; color: #000 !important; border-bottom: 2px solid #000; }
-  .header .meta a { color: #000 !important; }
-  .btn-launch, .btn-save, .filters, .theme-toggle { display: none !important; }
-  .card { border: 1px solid #ccc !important; break-inside: avoid; background: #fff !important; color: #000 !important; }
-  .card .value { color: #000 !important; }
-  .section { break-inside: avoid; background: #fff !important; border-color: #ccc !important; }
-  body { background: #fff !important; color: #000 !important; }
-  th { background: #f6f8fa !important; color: #000 !important; }
-  td { color: #000 !important; border-color: #d8dee4 !important; }
-  .toast { display: none; }
+  .btn-launch, .btn-save, .filters, .theme-toggle, .toast, .hero-pulse { display: none !important; }
+  .card, .section { break-inside: avoid; }
 }
 </style>
 </head>
@@ -474,14 +444,14 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
     <span id="headerRepo"></span>
     <span>Generated: <span id="headerDate">—</span></span>
     <a href="#" id="headerRepoLink" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a>
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle dark/light mode">🌙 Dark</button>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark or light mode" title="Toggle dark/light mode">🌙 Dark</button>
   </div>
 </div>
 
 <div class="container">
 
   <!-- Summary Cards -->
-  <div class="cards" id="summaryCards"></div>
+  <div class="cards" id="summaryCards" aria-live="polite" aria-label="Summary statistics"></div>
 
   <!-- Insights Grid -->
   <div class="insights-grid" id="insightsGrid">
@@ -499,14 +469,16 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
   <!-- Main Toil Ideas Table -->
   <div class="section">
     <h2>🗂️ Toil Backlog</h2>
-    <div class="filters">
-      <label>Team:</label>
+    <div class="filters" role="search" aria-label="Filter toil ideas">
+      <label for="searchToil" class="sr-only">Search:</label>
+      <input type="search" id="searchToil" placeholder="🔍 Search toil ideas..." aria-label="Search toil ideas" style="padding:0.5rem 0.75rem;border:1px solid var(--border-card);border-radius:calc(var(--radius) - 0.25rem);font-size:0.875rem;background:var(--bg-card);box-shadow:var(--shadow-sm);color:var(--text-primary);min-width:200px;flex:1;max-width:320px;">
+      <label for="filterTeam">Team:</label>
       <select id="filterTeam"><option value="">All</option></select>
-      <label>Category:</label>
+      <label for="filterCategory">Category:</label>
       <select id="filterCategory"><option value="">All</option></select>
-      <label>Status:</label>
+      <label for="filterStatus">Status:</label>
       <select id="filterStatus"><option value="">All</option></select>
-      <label>📊 Sort by:</label>
+      <label for="filterSort">📊 Sort by:</label>
       <select id="filterSort">
         <option value="monthly_saved_minutes">⏱️ Potential Time Saved / Month</option>
         <option value="toil_score">🎯 Impact Score</option>
@@ -520,17 +492,17 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
       <table id="toilTable">
         <thead>
           <tr>
-            <th data-col="number">#️⃣</th>
-            <th data-col="title">💡 Toil</th>
-            <th data-col="actions"></th>
-            <th data-col="submitter">🧑‍💻 Submitter</th>
-            <th data-col="category" class="col-hidden">🏷️ Category</th>
-            <th data-col="frequency">🔄 Frequency</th>
-            <th data-col="time_per_occurrence">⏱️ Time</th>
-            <th data-col="people_affected">👥 People</th>
-            <th data-col="toil_score">🎯 Impact Score</th>
-            <th data-col="status">📍 Status</th>
-            <th data-col="monthly_saved_minutes">⏱️ Time Saved / Month</th>
+            <th scope="col" data-col="number" tabindex="0" role="button" aria-label="Sort by number">#️⃣</th>
+            <th scope="col" data-col="title" tabindex="0" role="button" aria-label="Sort by toil name">💡 Toil</th>
+            <th scope="col" data-col="actions"></th>
+            <th scope="col" data-col="submitter" tabindex="0" role="button" aria-label="Sort by submitter">🧑‍💻 Submitter</th>
+            <th scope="col" data-col="category" class="col-hidden" tabindex="0" role="button" aria-label="Sort by category">🏷️ Category</th>
+            <th scope="col" data-col="frequency" tabindex="0" role="button" aria-label="Sort by frequency">🔄 Frequency</th>
+            <th scope="col" data-col="time_per_occurrence" tabindex="0" role="button" aria-label="Sort by time">⏱️ Time</th>
+            <th scope="col" data-col="people_affected" tabindex="0" role="button" aria-label="Sort by people affected">👥 People</th>
+            <th scope="col" data-col="toil_score" tabindex="0" role="button" aria-label="Sort by impact score">🎯 Impact Score</th>
+            <th scope="col" data-col="status" tabindex="0" role="button" aria-label="Sort by status">📍 Status</th>
+            <th scope="col" data-col="monthly_saved_minutes" tabindex="0" role="button" aria-label="Sort by time saved">⏱️ Time Saved / Month</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -1165,11 +1137,11 @@ function renderHeroPulse(issues) {
   heroPulse.innerHTML = `
     <span class="pulse-pill success">⚡ ${automationRate}% automated</span>
     <span class="pulse-pill warning">🔥 ${highImpact} critical</span>
-    <span class="pulse-pill" data-filter-status="" style="cursor:pointer;border-color:rgba(67,198,255,0.45);background:rgba(67,198,255,0.12);color:#7dd8ff;" title="Show all">📦 ${total} signals (${backlog} backlog)</span>
-    <span class="pulse-pill" data-filter-status="automated" style="cursor:pointer;border-color:rgba(61,214,140,0.5);background:rgba(61,214,140,0.18);color:#6eeeb0;" title="Filter to shipped">✅ ${automated} shipped</span>
-    <span class="pulse-pill" data-filter-status="in-progress" style="cursor:pointer;border-color:rgba(165,107,255,0.5);background:rgba(165,107,255,0.18);color:#dec0ff;" title="Filter to building">🔨 ${inProgress} building</span>
-    <span class="pulse-pill" data-filter-status="triage" style="cursor:pointer;border-color:rgba(246,192,92,0.5);background:rgba(246,192,92,0.15);color:#fcd77a;" title="Filter to triaging">🔍 ${triage} triaging</span>
-    <span class="pulse-pill" data-filter-status="toil" style="cursor:pointer;border-color:rgba(255,102,122,0.45);background:rgba(255,102,122,0.12);color:#ff99aa;" title="Filter to ready">💡 ${backlog} ready to fix</span>
+    <span class="pulse-pill" data-filter-status="" tabindex="0" role="button" style="cursor:pointer;border-color:rgba(67,198,255,0.45);background:rgba(67,198,255,0.12);color:#7dd8ff;" title="Show all">📦 ${total} signals (${backlog} backlog)</span>
+    <span class="pulse-pill" data-filter-status="automated" tabindex="0" role="button" style="cursor:pointer;border-color:rgba(61,214,140,0.5);background:rgba(61,214,140,0.18);color:#6eeeb0;" title="Filter to shipped">✅ ${automated} shipped</span>
+    <span class="pulse-pill" data-filter-status="in-progress" tabindex="0" role="button" style="cursor:pointer;border-color:rgba(165,107,255,0.5);background:rgba(165,107,255,0.18);color:#dec0ff;" title="Filter to building">🔨 ${inProgress} building</span>
+    <span class="pulse-pill" data-filter-status="triage" tabindex="0" role="button" style="cursor:pointer;border-color:rgba(246,192,92,0.5);background:rgba(246,192,92,0.15);color:#fcd77a;" title="Filter to triaging">🔍 ${triage} triaging</span>
+    <span class="pulse-pill" data-filter-status="toil" tabindex="0" role="button" style="cursor:pointer;border-color:rgba(255,102,122,0.45);background:rgba(255,102,122,0.12);color:#ff99aa;" title="Filter to ready">💡 ${backlog} ready to fix</span>
   `;
 }
 
@@ -1379,11 +1351,19 @@ function renderToilTable(issues) {
   const teamF = document.getElementById('filterTeam').value;
   const catF = document.getElementById('filterCategory').value;
   const statF = document.getElementById('filterStatus').value;
+  const searchQ = (document.getElementById('searchToil').value || '').toLowerCase().trim();
 
   let filtered = issues.slice();
   if (teamF) filtered = filtered.filter(i => i.team === teamF);
   if (catF) filtered = filtered.filter(i => i.category === catF);
   if (statF) filtered = filtered.filter(i => getStatus(i) === statF);
+  if (searchQ) filtered = filtered.filter(i =>
+    (i.title || '').toLowerCase().includes(searchQ) ||
+    (i.submitter || '').toLowerCase().includes(searchQ) ||
+    (i.team || '').toLowerCase().includes(searchQ) ||
+    (i.category || '').toLowerCase().includes(searchQ) ||
+    (i.automation_idea || '').toLowerCase().includes(searchQ)
+  );
 
   // Sort
   filtered.sort((a, b) => {
@@ -1548,6 +1528,14 @@ document.getElementById('heroPulse').addEventListener('click', function(e) {
   document.getElementById('toilTable').scrollIntoView({ behavior: 'smooth', block: 'start' });
   showToast(status ? `Filtered to: ${status}` : 'Showing all statuses');
 });
+// Keyboard support for pulse pill filters (Enter/Space)
+document.getElementById('heroPulse').addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const pill = e.target.closest('[data-filter-status]');
+  if (!pill) return;
+  e.preventDefault();
+  pill.click();
+});
 
 // ═══════════════════════════════════════════════════
 // SORT
@@ -1560,6 +1548,14 @@ document.querySelector('#toilTable thead').addEventListener('click', function(e)
   else { sortCol = col; sortDir = -1; }
   render();
 });
+// Keyboard support for sortable headers (Enter/Space)
+document.querySelector('#toilTable thead').addEventListener('keydown', function(e) {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const th = e.target.closest('th');
+  if (!th || !th.dataset.col || th.dataset.col === 'actions') return;
+  e.preventDefault();
+  th.click();
+});
 
 // ═══════════════════════════════════════════════════
 // FILTERS
@@ -1567,6 +1563,7 @@ document.querySelector('#toilTable thead').addEventListener('click', function(e)
 ['filterTeam', 'filterCategory', 'filterStatus'].forEach(id => {
   document.getElementById(id).addEventListener('change', () => render());
 });
+document.getElementById('searchToil').addEventListener('input', () => render());
 document.getElementById('filterSort').addEventListener('change', function() {
   sortCol = this.value;
   sortDir = this.value === 'submitter' ? 1 : -1;

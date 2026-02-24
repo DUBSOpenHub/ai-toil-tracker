@@ -6,6 +6,10 @@ on:
       - "CI — Tests & Validation"
       - "AI Triage"
       - "Dashboard Data"
+      - "Celebrate Automation Wins"
+      - "Stale Toil Reminder"
+      - "Template Setup — Welcome new teams"
+      - "Monthly ROI Summary"
     types:
       - completed
 

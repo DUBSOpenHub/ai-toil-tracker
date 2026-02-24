@@ -78,6 +78,41 @@ assert_eq "first issue priority" "$first_priority" "critical"
 second_adjusted=$(jq '.issues[1].scoring.adjusted' "$DATA")
 assert_eq "second issue adjusted score" "$second_adjusted" "4"
 
+# -- Valid JSON output --
+jq_valid=$(jq . "$DATA" > /dev/null 2>&1 && echo "yes" || echo "no")
+assert_eq "output is valid JSON" "$jq_valid" "yes"
+
+# -- Required top-level keys exist --
+has_meta=$(jq 'has("meta")' "$DATA")
+assert_eq "has meta key" "$has_meta" "true"
+has_issues=$(jq 'has("issues")' "$DATA")
+assert_eq "has issues key" "$has_issues" "true"
+
+# -- Meta summary fields present --
+has_total=$(jq '.meta.summary | has("totalToil")' "$DATA")
+assert_eq "meta has totalToil" "$has_total" "true"
+has_open=$(jq '.meta.summary | has("openToil")' "$DATA")
+assert_eq "meta has openToil" "$has_open" "true"
+has_auto=$(jq '.meta.summary | has("automated")' "$DATA")
+assert_eq "meta has automated" "$has_auto" "true"
+
+# -- Issue scoring fields present --
+all_have_scoring=$(jq '[.issues[] | has("scoring")] | all' "$DATA")
+assert_eq "all issues have scoring" "$all_have_scoring" "true"
+all_have_adjusted=$(jq '[.issues[].scoring | has("adjusted")] | all' "$DATA")
+assert_eq "all issues have adjusted score" "$all_have_adjusted" "true"
+all_have_priority=$(jq '[.issues[].scoring | has("priority")] | all' "$DATA")
+assert_eq "all issues have priority" "$all_have_priority" "true"
+
+# -- Repo field matches --
+repo_val=$(jq -r '.meta.repo' "$DATA")
+assert_eq "repo field matches" "$repo_val" "test/repo"
+
+# -- Generated timestamp present --
+gen_at=$(jq -r '.meta.generatedAt' "$DATA")
+gen_nonempty=$([ -n "$gen_at" ] && [ "$gen_at" != "null" ] && echo "yes" || echo "no")
+assert_eq "generated_at is present" "$gen_nonempty" "yes"
+
 echo ""
 echo "════════════════════════════════════════════"
 echo "  Tests: $TOTAL  |  ✅ Passed: $PASS  |  ❌ Failed: $FAIL"
