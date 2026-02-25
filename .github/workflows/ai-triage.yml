@@ -224,7 +224,13 @@ jobs:
 
             [ "$HTTP_CODE" = "200" ] && break
 
-            if [ "$attempt" = "1" ]; then
+            if [ "$HTTP_CODE" = "403" ] || [ "$HTTP_CODE" = "401" ]; then
+              echo "ERROR: GitHub Models API returned HTTP ${HTTP_CODE} — likely a permissions issue."
+              echo "Ensure your repo/org has 'models: read' permission enabled."
+              echo "See: https://docs.github.com/en/github-models"
+              AI_STATUS="forbidden"
+              break
+            elif [ "$attempt" = "1" ]; then
               echo "WARNING: AI API returned HTTP ${HTTP_CODE} -- retrying in 10s..."
               sleep 10
             else
@@ -239,8 +245,10 @@ jobs:
               AI_STATUS="empty"
               SUGGESTION="_The AI returned an empty response. Re-run this workflow to retry._"
             fi
+          elif [ "$AI_STATUS" = "forbidden" ]; then
+            SUGGESTION="_⚠️ AI suggestion unavailable — your repository needs **GitHub Models** access enabled. Go to your org/repo settings and ensure the \`models: read\` permission is available. See the [GitHub Models docs](https://docs.github.com/en/github-models) for setup instructions. The scoring and labels below still work without it._"
           else
-            SUGGESTION="_AI suggestion unavailable -- GitHub Models API returned HTTP ${HTTP_CODE}. Re-run this workflow to retry._"
+            SUGGESTION="_AI suggestion unavailable — GitHub Models API returned HTTP ${HTTP_CODE}. Re-run this workflow to retry._"
           fi
 
           CONFIDENCE=$(echo "${SUGGESTION:-}" \

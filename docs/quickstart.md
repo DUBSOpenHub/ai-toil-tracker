@@ -11,6 +11,8 @@ Get your team's toil tracker live with zero configuration.
 - Click the green **"I understand my workflows, go ahead and enable them"** button
 - This enables the AI triage, dashboard, and celebration automations
 
+> **Note:** The AI triage workflow uses [GitHub Models](https://docs.github.com/en/github-models) to generate automation suggestions. This requires `models: read` permission, which is available on GitHub Team/Enterprise plans and for public repos. If your org doesn't have Models access, the triage still works — you'll get scores and labels, just not AI-generated suggestions.
+
 ## Step 3: Generate Your First Dashboard
 - Go to **Actions** → **Dashboard Data** → **Run workflow** → **Run workflow**
 - Wait ~30 seconds for it to complete
