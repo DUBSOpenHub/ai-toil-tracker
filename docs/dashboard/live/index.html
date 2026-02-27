@@ -93,6 +93,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .micro-progress[data-color="danger"] span { background: linear-gradient(90deg, #f87171, #f43f5e); }
 .card.emerald { background: linear-gradient(135deg, #f0fdf4, #f0f9ff); }
 .dark .card { background: #111117; border: 1px solid #27272a; box-shadow: var(--shadow-sm); }
+.dark .card.emerald { background: linear-gradient(135deg, #0a1a14, #0d1520); border-color: #1a3a2a; }
 .dark .card:hover { border-color: #3b3c49; }
 .dark .card .value { color: #f5f7ff; }
 .dark .card .card-subtext { color: #9ea4b8; }
@@ -1133,7 +1134,7 @@ function renderSummaryCards(issues) {
       <div class="micro-progress"><span style="width:${Math.min(automationRate, 100)}%"></span></div>
     </article>
     <article class="card emerald">
-      <div class="label">Hours Saved / Month</div>
+      <div class="label">⚡ Hours Saved / Month</div>
       <div class="value"><span class="value-number" data-animate="${hoursSaved}" data-format="hours">${hoursSaved.toFixed(1)}</span><sup>hrs</sup></div>
       <p class="card-subtext">≈ ${fteRecovered.toFixed(1)} FTEs given back</p>
       <div class="micro-progress" data-color="success"><span style="width:${Math.min(mitigationRate, 100)}%"></span></div>
