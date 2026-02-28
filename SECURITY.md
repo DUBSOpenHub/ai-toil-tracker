@@ -13,7 +13,7 @@
 | Channel | Link |
 |---------|------|
 | Email | **security@dubsopenhub.com** |
-| GitHub Private Reporting | [Open a security advisory](https://github.com/DUBSOpenHub/ai-first-toil-tracker/security/advisories/new) |
+| GitHub Private Reporting | [Open a security advisory](https://github.com/DUBSOpenHub/ai-toil-tracker/security/advisories/new) |
 
 ### What to Include
 

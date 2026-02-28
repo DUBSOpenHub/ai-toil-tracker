@@ -209,7 +209,7 @@ Set up a weekly reminder in your team channel using Slack Workflow Builder:
 >
 > Not sure what counts? Check out the examples in the repo's `docs/examples.md`.
 
-> ⚠️ **Replace** `<YOUR_ORG>/<YOUR_REPO>` with your actual repo path (e.g. `DUBSOpenHub/ai-first-toil-tracker`).
+> ⚠️ **Replace** `<YOUR_ORG>/<YOUR_REPO>` with your actual repo path (e.g. `your-org/toil-tracker`).
 
 ## Labels
 
