@@ -1,42 +1,66 @@
 {
   "meta": {
-    "generatedAt": "2026-02-27T21:27:15Z",
-    "repo": "DUBSOpenHub/ai-toil-tracker",
+    "generatedAt": "2026-01-01T00:00:00Z",
+    "repo": "your-org/your-toil-tracker",
     "labels": {
       "toil": "toil",
       "automated": "automated"
     },
     "summary": {
-      "totalToil": 1,
+      "totalToil": 2,
       "openToil": 1,
-      "automated": 0,
-      "monthlyMinutes": 3
+      "automated": 1,
+      "monthlyMinutes": 123
     }
   },
   "issues": [
     {
-      "number": 17,
-      "title": "Scheduling 6 Month Check-ins with project maintainers",
+      "number": 1,
+      "title": "Example: Manually updating dependency versions across 12 repos",
       "state": "OPEN",
-      "url": "https://github.com/DUBSOpenHub/ai-toil-tracker/issues/17",
-      "author": "DUBSOpenHub",
-      "createdAt": "2026-02-27T21:16:53Z",
-      "updatedAt": "2026-02-27T21:25:57Z",
+      "url": "https://github.com/your-org/your-toil-tracker/issues/1",
+      "author": "octocat",
+      "createdAt": "2026-01-15T10:00:00Z",
+      "updatedAt": "2026-01-20T14:30:00Z",
       "scoring": {
-        "frequency": 1,
-        "time": 1,
-        "people": 1,
-        "base": 1,
+        "frequency": 3,
+        "time": 2,
+        "people": 2,
+        "base": 12,
         "bonusCount": 0,
         "bonusPoints": 0,
-        "adjusted": 1,
+        "adjusted": 12,
+        "priority": "medium"
+      },
+      "roi": {
+        "monthlyMins": 90,
+        "monthlySavedText": "~1.5 hours/month"
+      },
+      "automated": false
+    },
+    {
+      "number": 2,
+      "title": "Example: Generating weekly status reports from GitHub data",
+      "state": "CLOSED",
+      "url": "https://github.com/your-org/your-toil-tracker/issues/2",
+      "author": "octocat",
+      "createdAt": "2026-01-10T09:00:00Z",
+      "updatedAt": "2026-01-25T16:00:00Z",
+      "scoring": {
+        "frequency": 2,
+        "time": 2,
+        "people": 1,
+        "base": 4,
+        "bonusCount": 0,
+        "bonusPoints": 0,
+        "adjusted": 4,
         "priority": "low"
       },
       "roi": {
-        "monthlyMins": 3,
-        "monthlySavedText": "~3 minutes/month"
+        "monthlyMins": 33,
+        "monthlySavedText": "~33 minutes/month"
       },
-      "automated": false
+      "automated": true
     }
   ]
 }
