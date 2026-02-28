@@ -28,6 +28,8 @@ Every team has busywork - the manual, repetitive tasks that eat up time and coul
 
 > ⚡ **Get started fast!** [Use this template](https://github.com/DUBSOpenHub/ai-toil-tracker/generate) to create your own Toil Tracker in one click.
 
+> 🎯 **[See the live demo dashboard →](https://dubsopenhub.github.io/ai-toil-tracker/dashboard/)** — 12 sample toil items, 5 shipped, full glass morphism UI with Pipeline Momentum, Time Reclaimed, and Toil Eliminated gauges.
+
 ## How AI Is Used
 
 This isn't just a tracker - AI is built into the workflow:
