@@ -10,7 +10,7 @@ Every team has busywork - the manual, repetitive tasks that eat up time and coul
 
 <p align="center">
   <a href="https://dubsopenhub.github.io/ai-toil-tracker/dashboard/">
-    <img src="docs/assets/dashboard-preview.png" alt="AI Toil Tracker Dashboard — glass morphism UI with Pipeline Momentum, Time Reclaimed, and Toil Eliminated gauges" width="720">
+    <img src="docs/assets/dashboard-preview.png?v=2" alt="AI Toil Tracker Dashboard — glass morphism UI with Pipeline Momentum, Time Reclaimed, and Toil Eliminated gauges" width="720">
   </a>
 </p>
 
