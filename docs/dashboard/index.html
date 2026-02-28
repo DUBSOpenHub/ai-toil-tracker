@@ -1495,6 +1495,37 @@ function renderPipelineCard(issues) {
   const gauge = card.querySelector('.radial-progress');
   if (gauge) {
     gauge.style.setProperty('--progress', `${automationRate * 3.6}deg`);
+    gauge.style.cursor = 'pointer';
+    gauge.title = 'Click me 👀';
+    gauge.addEventListener('click', function() {
+      const storm = document.createElement('div');
+      storm.className = 'bolt-storm';
+      const flash = document.createElement('div');
+      flash.className = 'bolt-flash';
+      flash.style.background = 'radial-gradient(circle at 50% 20%, rgba(100,200,255,0.35), rgba(168,85,247,0.16) 35%, transparent 68%)';
+      storm.appendChild(flash);
+      const copilotHead = `<svg viewBox="0 0 24 24" width="1em" height="1em" style="display:block"><path fill="currentColor" d="M12 2C6.48 2 2 6 2 11c0 2.8 1.3 5.3 3.4 7l.6.5V22l3-2h3c5.52 0 10-4 10-9s-4.48-9-10-9zm-2.5 11a1.5 1.5 0 110-3 1.5 1.5 0 010 3zm5 0a1.5 1.5 0 110-3 1.5 1.5 0 010 3z"/></svg>`;
+      const colors = ['#8be9fd','#a855f7','#39ff88','#ffe74a','#ff79c6','#d400ff','#00e5ff','#ff3860'];
+      for (let i = 0; i < 20; i++) {
+        const b = document.createElement('span');
+        b.className = 'storm-bolt';
+        b.innerHTML = copilotHead;
+        b.style.color = colors[i % colors.length];
+        b.style.left = (30 + Math.random() * 40) + '%';
+        b.style.top = (20 + Math.random() * 40) + '%';
+        b.style.fontSize = (1.2 + Math.random() * 2.2) + 'rem';
+        b.style.imageRendering = 'pixelated';
+        const angle = (i / 20) * 360;
+        const dist = 100 + Math.random() * 220;
+        b.style.setProperty('--tx', (Math.cos(angle * Math.PI / 180) * dist) + 'px');
+        b.style.setProperty('--ty', (Math.sin(angle * Math.PI / 180) * dist) + 'px');
+        b.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+        b.style.animationDelay = (Math.random() * 0.2) + 's';
+        storm.appendChild(b);
+      }
+      document.body.appendChild(storm);
+      setTimeout(() => storm.remove(), 1800);
+    });
   }
 }
 
