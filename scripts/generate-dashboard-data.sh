@@ -4,6 +4,13 @@ set -euo pipefail
 # Generates docs/dashboard/dashboard-data.json and docs/dashboard/history.json
 # from GitHub Issues labeled as toil.
 
+# Skip generation when a demo marker exists (template repo ships demo data)
+DEMO_MARKER="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/docs/dashboard/.demo"
+if [[ -f "$DEMO_MARKER" ]]; then
+  echo "Demo mode active (.demo marker found) — skipping live data generation."
+  exit 0
+fi
+
 # shellcheck source=./scripts/config.sh
 . "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/config.sh"
 # shellcheck source=./scripts/scoring.sh

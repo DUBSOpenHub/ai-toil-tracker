@@ -1,0 +1,5 @@
+This marker prevents the dashboard-data workflow from overwriting
+demo data with live (empty) issue queries.
+
+Remove this file when your repo has real toil-labeled issues and
+you want the automated workflow to generate dashboard data from them.
