@@ -1070,7 +1070,7 @@ function reversePeopleScore(s) {
 async function loadData() {
   // Try the workflow-generated JSON first (works locally and on Pages)
   try {
-    const res = await fetch('../dashboard-data.json');
+    const res = await fetch('./dashboard-data.json');
     if (res.ok) {
       const json = await res.json();
       if (json.issues && json.issues.length > 0) {
