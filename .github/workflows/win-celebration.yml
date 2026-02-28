@@ -6,6 +6,10 @@ on:
 permissions:
   issues: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
 jobs:
   celebrate-win:
     if: github.event.label.name == 'automated'
@@ -67,4 +71,3 @@ jobs:
           gh issue close "$RELATED_NUM" \
             --repo "$REPO" \
             --reason completed || true
-
