@@ -292,6 +292,6 @@ Thanks to these wonderful humans (and AIs) who help make this project better:
 
 ## 🐙 Built with Love
 
-Created with 💜 by DUBSOpenHub to help more people discover the joy of GitHub Copilot CLI.
+🐙 Built with Love
 
 Let's build! 🚀✨
