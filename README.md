@@ -4,6 +4,8 @@
 
 Every team has busywork - the manual, repetitive tasks that eat up time and could be handled by an agent or script. This tool gives your team a simple way to track it and fix it.
 
+Find it. Track it. Solve it. 
+
 > 💡 **This is for any team.** Use this template, set up a weekly Slack reminder, and start collecting ideas in under 10 minutes. No code required.
 
 ## See It in Action
