@@ -4,23 +4,29 @@
 
 Every team has busywork - the manual, repetitive tasks that eat up time and could be handled by an agent or script. This tool gives your team a simple way to track it and fix it.
 
-Find it. Track it. Solve it. 
-
 > 💡 **This is for any team.** Use this template, set up a weekly Slack reminder, and start collecting ideas in under 10 minutes. No code required.
 
 ## See It in Action
 
+<p align="center"><strong><a href="https://dubsopenhub.github.io/ospo-toil-tracker/dashboard/live/">👉 Open the live demo dashboard</a></strong></p>
+
+<!-- Replace this placeholder with your own screen recording (30 seconds recommended) -->
+<!-- Record: submit issue → AI triage comment appears → dashboard updates -->
+
 <p align="center">
-  <a href="https://dubsopenhub.github.io/ai-toil-tracker/dashboard/">
-    <img src="docs/assets/dashboard-preview.png?v=2" alt="AI Toil Tracker Dashboard — glass morphism UI with Pipeline Momentum, Time Reclaimed, and Toil Eliminated gauges" width="720">
-  </a>
+  <img src="docs/assets/demo.gif" alt="AI Toil Tracker demo — submit a toil idea, AI scores it, dashboard updates" width="720">
 </p>
 
-<p align="center"><strong><a href="https://dubsopenhub.github.io/ai-toil-tracker/dashboard/">👉 Try the live demo dashboard</a></strong></p>
+<details>
+<summary>📸 What the demo shows (click to expand)</summary>
 
-> ⚡ **Get started fast!** [Use this template](https://github.com/DUBSOpenHub/ai-toil-tracker/generate) to create your own Toil Tracker in one click.
+1. **Submit** — A team member clicks the Slack link and fills out the toil idea form (~30 seconds)
+2. **AI Triage** — Within moments, the AI agent scores the idea, applies a priority label, estimates time saved, and suggests an automation approach
+3. **Dashboard** — The live dashboard updates with the new item, sorted by impact score
 
-> 🎯 **[See the live demo dashboard →](https://dubsopenhub.github.io/ai-toil-tracker/dashboard/)** — 12 sample toil items, 5 shipped, full glass morphism UI with Pipeline Momentum, Time Reclaimed, and Toil Eliminated gauges.
+</details>
+
+> **To create your own demo GIF:** Use a screen recorder ([Kap](https://getkap.co) on Mac, [ShareX](https://getsharex.com) on Windows) to capture the flow above. Save it as `docs/assets/demo.gif` and it will appear here automatically.
 
 ## How AI Is Used
 
@@ -110,7 +116,7 @@ All toil ideas and automation proposals are tracked as **GitHub Issues** in this
 
 | View | Link |
 |------|------|
-| 📊 **Dashboard** | Enable GitHub Pages (see [Dashboard setup](#-dashboard)) |
+| 📊 **Dashboard** | [Live demo →](https://dubsopenhub.github.io/ospo-toil-tracker/dashboard/live/) |
 | 📋 **All toil ideas** | [View](../../issues?q=is%3Aissue+label%3Atoil+sort%3Acreated-desc) |
 | ✅ **Automated (done)** | [View](../../issues?q=is%3Aissue+label%3Aautomated+sort%3Acreated-desc) |
 
@@ -203,7 +209,7 @@ Set up a weekly reminder in your team channel using Slack Workflow Builder:
 >
 > Not sure what counts? Check out the examples in the repo's `docs/examples.md`.
 
-> ⚠️ **Replace** `<YOUR_ORG>/<YOUR_REPO>` with your actual repo path (e.g. `your-org/toil-tracker`).
+> ⚠️ **Replace** `<YOUR_ORG>/<YOUR_REPO>` with your actual repo path (e.g. `DUBSOpenHub/ai-first-toil-tracker`).
 
 ## Labels
 
