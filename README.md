@@ -8,7 +8,7 @@ Every team has busywork - the manual, repetitive tasks that eat up time and coul
 
 ## See It in Action
 
-<p align="center"><strong><a href="https://dubsopenhub.github.io/ospo-toil-tracker/dashboard/live/">👉 Open the live demo dashboard</a></strong></p>
+<p align="center"><strong><a href="https://dubsopenhub.github.io/ai-toil-tracker/dashboard/">👉 Open the live demo dashboard</a></strong></p>
 
 <!-- Replace this placeholder with your own screen recording (30 seconds recommended) -->
 <!-- Record: submit issue → AI triage comment appears → dashboard updates -->
@@ -116,7 +116,7 @@ All toil ideas and automation proposals are tracked as **GitHub Issues** in this
 
 | View | Link |
 |------|------|
-| 📊 **Dashboard** | [Live demo →](https://dubsopenhub.github.io/ospo-toil-tracker/dashboard/live/) |
+| 📊 **Dashboard** | [Live demo →](https://dubsopenhub.github.io/ai-toil-tracker/dashboard/) |
 | 📋 **All toil ideas** | [View](../../issues?q=is%3Aissue+label%3Atoil+sort%3Acreated-desc) |
 | ✅ **Automated (done)** | [View](../../issues?q=is%3Aissue+label%3Aautomated+sort%3Acreated-desc) |
 
