@@ -84,8 +84,12 @@ jobs:
 
           _This summary was auto-generated. See docs/roi-tracking.md for methodology._"
 
+          gh label create "roi-summary" \
+            --repo "$REPO" \
+            --description "Auto-generated monthly ROI summaries" \
+            --color "6F42C1" 2>/dev/null || true
+
           gh issue create --repo "$REPO" \
             --title "📊 Monthly ROI Summary — $MONTH" \
             --body "$BODY" \
             --label "roi-summary"
-
