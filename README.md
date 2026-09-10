@@ -10,23 +10,20 @@ Every team has busywork - the manual, repetitive tasks that eat up time and coul
 
 <p align="center"><strong><a href="https://dubsopenhub.github.io/ai-toil-tracker/dashboard/">👉 Open the live demo dashboard</a></strong></p>
 
-<!-- Replace this placeholder with your own screen recording (30 seconds recommended) -->
-<!-- Record: submit issue → AI triage comment appears → dashboard updates -->
-
 <p align="center">
-  <img src="docs/assets/demo.gif" alt="AI Toil Tracker demo — submit a toil idea, AI scores it, dashboard updates" width="720">
+  <img src="docs/assets/dashboard-preview.png" alt="AI Toil Tracker dashboard showing hours reclaimed, ranked time drains, and automation progress" width="960">
 </p>
 
 <details>
-<summary>📸 What the demo shows (click to expand)</summary>
+<summary>📸 What to explore (click to expand)</summary>
 
-1. **Submit** — A team member clicks the Slack link and fills out the toil idea form (~30 seconds)
-2. **AI Triage** — Within moments, the AI agent scores the idea, applies a priority label, estimates time saved, and suggests an automation approach
-3. **Dashboard** — The live dashboard updates with the new item, sorted by impact score
+1. **Prioritize** — Select a Top Time Drains circle to reveal its matching backlog task.
+2. **Follow progress** — Compare triaging, in-progress, and shipped work without confusing ongoing effort with hours already reclaimed.
+3. **Explore team toil** — Compare reported weekly effort and copy an automation prompt for the work you choose.
 
 </details>
 
-> **To create your own demo GIF:** Use a screen recorder ([Kap](https://getkap.co) on Mac, [ShareX](https://getsharex.com) on Windows) to capture the flow above. Save it as `docs/assets/demo.gif` and it will appear here automatically.
+> The demo uses sample data. Status and team-name edits stay in your browser; sharing its URL does not share those edits.
 
 ## How AI Is Used
 

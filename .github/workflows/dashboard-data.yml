@@ -32,10 +32,15 @@ jobs:
           set -euo pipefail
           bash ./scripts/generate-dashboard-data.sh
 
-      - name: Commit updated dashboard data
+      - name: Update dashboard sharing URLs
+        env:
+          PAGES_URL: ${{ vars.PAGES_URL }}
+        run: bash ./scripts/update-dashboard-sharing.sh
+
+      - name: Commit updated dashboard data and metadata
         run: |
           set -euo pipefail
-          if git diff --quiet -- docs/dashboard/dashboard-data.json docs/dashboard/history.json; then
+          if git diff --quiet -- docs/dashboard/dashboard-data.json docs/dashboard/history.json docs/dashboard/index.html; then
             echo "No dashboard changes." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
@@ -43,8 +48,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add docs/dashboard/dashboard-data.json docs/dashboard/history.json
-          git commit -m "chore(dashboard): update dashboard data"
+          git add docs/dashboard/dashboard-data.json docs/dashboard/history.json docs/dashboard/index.html
+          git commit -m "chore(dashboard): update dashboard data and sharing"
           git push
 
-          echo "Updated dashboard JSON." >> "$GITHUB_STEP_SUMMARY"
+          echo "Updated dashboard data and sharing metadata." >> "$GITHUB_STEP_SUMMARY"

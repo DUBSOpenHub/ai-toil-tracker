@@ -4,7 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com; img-src 'self' data:;">
-<title>Your Team — Toil Tracker</title>
+<title>AI Toil Tracker — Less toil. More impact.</title>
+<meta name="description" content="Spot your team's biggest time drains, prioritize automation, and track hours reclaimed. Explore the interactive AI Toil Tracker demo.">
+<link rel="canonical" href="https://dubsopenhub.github.io/ai-toil-tracker/dashboard/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AI Toil Tracker">
+<meta property="og:title" content="AI Toil Tracker — Less toil. More impact.">
+<meta property="og:description" content="Spot your team's biggest time drains, prioritize automation, and track hours reclaimed. Explore the interactive AI Toil Tracker demo.">
+<meta property="og:url" content="https://dubsopenhub.github.io/ai-toil-tracker/dashboard/">
+<meta property="og:image" content="https://dubsopenhub.github.io/ai-toil-tracker/dashboard/social-preview.png?v=2">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="3600">
+<meta property="og:image:height" content="1890">
+<meta property="og:image:alt" content="AI Toil Tracker: Less toil. More impact. A demo dashboard shows monthly open toil, hours reclaimed, and five red circles ranking time drains.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="AI Toil Tracker — Less toil. More impact.">
+<meta name="twitter:description" content="Spot your team's biggest time drains, prioritize automation, and track hours reclaimed. Explore the interactive AI Toil Tracker demo.">
+<meta name="twitter:image" content="https://dubsopenhub.github.io/ai-toil-tracker/dashboard/social-preview.png?v=2">
+<meta name="twitter:image:alt" content="AI Toil Tracker: Less toil. More impact. A demo dashboard shows monthly open toil, hours reclaimed, and five red circles ranking time drains.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -50,23 +67,24 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 
 /* ── Header ── */
 .header { position: sticky; top: 0; z-index: 1000; background: linear-gradient(135deg, #0b0d1d 0%, #1c0f2d 100%); color: #f5f7ff; border-bottom: 1px solid rgba(255,255,255,0.06); box-shadow: 0 4px 30px rgba(0,0,0,0.3); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); overflow: visible; isolation: isolate; }
-.header-inner { max-width: 1440px; margin: 0 auto; padding: 1.25rem 2.25rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; position: relative; }
+.header-inner { max-width: 1440px; margin: 0 auto; padding: 1.25rem 2.25rem; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0.65rem 1rem; position: relative; }
 .header::before { content: ""; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(720px 320px at 12% 5%, rgba(165,107,255,0.18), transparent 60%), radial-gradient(640px 260px at 88% -15%, rgba(67,198,255,0.14), transparent 70%); opacity: 0.85; }
 .header-inner > * { position: relative; }
-.hero-left { display: flex; flex-direction: column; gap: 0.35rem; max-width: 640px; }
+.hero-left { display: flex; flex-direction: column; gap: 0.35rem; min-width: 0; max-width: 640px; }
 .hero-eyebrow { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.45); font-weight: 500; }
 .header h1 { font-size: clamp(1.4rem, 2vw, 1.8rem); font-weight: 750; letter-spacing: -0.03em; display: flex; align-items: center; gap: 0.6rem; color: #fff; }
 .hero-bolt { display: inline-block; cursor: pointer; user-select: none; filter: drop-shadow(0 0 8px rgba(255,231,74,0.45)); transition: transform 160ms ease, filter 160ms ease; }
 .hero-bolt:hover { transform: translateY(-1px) scale(1.1); filter: drop-shadow(0 0 14px rgba(255,231,74,0.7)); }
 .hero-bolt:active { transform: scale(0.95); }
 .hero-subtitle { font-size: 0.85rem; color: rgba(255,255,255,0.55); max-width: 700px; line-height: 1.5; }
-.hero-pulse { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.2rem; }
-.pulse-pill { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.68rem; padding: 0.25rem 0.6rem; border-radius: 999px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.65); font-weight: 500; backdrop-filter: blur(8px); }
+.hero-pulse { grid-column: 1 / -1; display: flex; flex-wrap: nowrap; min-width: 0; gap: 0.4rem; padding: 0.3rem; overflow-x: auto; scrollbar-width: thin; scrollbar-color: rgba(196,181,253,0.4) transparent; }
+.pulse-pill { display: inline-flex; flex-shrink: 0; align-items: center; gap: 0.3rem; white-space: nowrap; font-size: 0.68rem; padding: 0.25rem 0.6rem; border-radius: 999px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.65); font-weight: 500; backdrop-filter: blur(8px); }
 .pulse-pill.success { border-color: rgba(57,255,136,0.55); background: rgba(57,255,136,0.14); color: #39ff88; }
 .pulse-pill.warning { border-color: rgba(255,231,74,0.55); background: rgba(255,231,74,0.14); color: #ffe74a; }
 .pulse-pill.neutral { border-color: rgba(255,255,255,0.15); }
 .pulse-pill[data-filter-status] { transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; }
 .pulse-pill[data-filter-status]:hover { transform: translateY(-1px) scale(1.04); filter: brightness(1.3); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+.pulse-pill[data-filter-status]:focus-visible { outline: 2px solid #c4b5fd; outline-offset: 2px; }
 .header .meta { font-size: 0.75rem; font-weight: 500; color: rgba(255,255,255,0.5); display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; justify-content: flex-end; text-align: right; }
 .header .meta a { color: rgba(255,255,255,0.7); text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.15); transition: all 150ms ease; }
 .header .meta a:hover { border-bottom-color: rgba(168,85,247,0.5); color: #c084fc; }
@@ -107,11 +125,12 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .hotspot-id { font-size: 0.5rem; font-weight: 700; opacity: 0.58; letter-spacing: 0.08em; }
 .hotspot-unit { margin-top: 0.22rem; color: rgba(226,232,240,0.58); font-size: 0.5rem; font-weight: 650; letter-spacing: 0.04em; text-transform: uppercase; }
 .hotspot-task { width: 100%; height: 2.3em; margin-top: 0.52rem; color: rgba(226,232,240,0.82); font-size: 0.61rem; font-weight: 580; line-height: 1.15; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.hotspot-status { margin-top: 0.3rem; font-size: 0.51rem; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; }
+.hotspot-status { display: inline-flex; align-items: center; justify-content: center; min-height: 1.75rem; margin-top: 0.4rem; padding: 0.25rem 0.45rem; border: 1px solid rgba(148,163,184,0.25); border-radius: 999px; font-size: 0.6rem; font-weight: 650; line-height: 1.25; letter-spacing: 0.02em; white-space: nowrap; }
 .hotspot-status.automated { color: #71ffa7; }
-.hotspot-status.building { color: #ed78ff; }
+.hotspot-status.building { color: #edb5ff; background: rgba(168,85,247,0.2); border-color: rgba(192,132,252,0.5); }
+.hotspot-status.triage { color: #ffe899; background: rgba(251,191,36,0.12); border-color: rgba(251,191,36,0.4); }
 .hotspot-status.critical { color: #ff7a92; }
-.hotspot-status.backlog { color: #8bd7ff; }
+.hotspot-status.backlog { color: #cbd5e1; background: rgba(148,163,184,0.08); }
 .hotspot-drain { border: 2px solid #ff4d6d; box-shadow: 0 0 27px rgba(255,77,109,0.3), inset 0 0 20px rgba(255,77,109,0.12); animation: hotspotPulse 2.8s ease-in-out infinite; }
 .hotspot-automated { border: 2px solid #39ff88; box-shadow: 0 0 22px rgba(57,255,136,0.23), inset 0 0 20px rgba(57,255,136,0.1); }
 .hotspot-building { border: 2px solid #d400ff; box-shadow: 0 0 24px rgba(212,0,255,0.28), inset 0 0 20px rgba(212,0,255,0.12); }
@@ -124,6 +143,9 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .light .hotspot-task { color: rgba(30,41,59,0.84); }
 .light .hotspot-unit { color: rgba(51,65,85,0.66); }
 .light .hotspot-metric strong { color: #0f172a; }
+.light .hotspot-status.building { color: #6d28d9; background: #f3e8ff; }
+.light .hotspot-status.triage { color: #8a5900; background: #fff7e1; }
+.light .hotspot-status.backlog { color: #475569; background: #f1f5f9; }
 .card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(34,211,238,0.08), transparent 60%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; opacity: 0; transition: opacity 300ms ease; }
 .card::after { content: ""; position: absolute; inset: -1px; border-radius: inherit; background: radial-gradient(300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(168,85,247,0.06), transparent 60%); pointer-events: none; opacity: 0; transition: opacity 300ms ease; }
 .card:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px rgba(168,85,247,0.1), 0 8px 30px rgba(0,0,0,0.3), 0 0 40px rgba(168,85,247,0.04); }
@@ -137,6 +159,11 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .delta.positive { background: rgba(74,222,128,0.1); color: #4ade80; }
 .delta.negative { background: rgba(248,113,113,0.1); color: #f87171; }
 .card .card-subtext { font-size: 0.8rem; color: rgba(158,164,184,0.55); margin-bottom: 0.75rem; }
+#summaryCards > .card { display: grid; grid-template-rows: subgrid; grid-row: span 4; row-gap: 0.6rem; min-width: 0; }
+#summaryCards .label, #summaryCards .value, #summaryCards .card-subtext { margin-bottom: 0; }
+#summaryCards .label, #summaryCards .value { align-self: start; }
+#summaryCards .card-detail { display: flex; flex-direction: column; align-items: flex-start; gap: 0.45rem; }
+#summaryCards .micro-progress { align-self: end; margin: 0; }
 .micro-progress { width: 100%; height: 4px; border-radius: 999px; background: rgba(255,255,255,0.04); overflow: hidden; position: relative; }
 .micro-progress span { position: absolute; inset: 0; border-radius: 999px; background: linear-gradient(90deg, #d400ff, #00e5ff); transform-origin: left; transition: transform 0.4s ease-out; }
 .micro-progress[data-color="warning"] span { background: linear-gradient(90deg, #ff9f1c, #fff200); }
@@ -200,6 +227,7 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 #trendChart { flex: 1; display: flex; align-items: center; justify-content: center; }
 /* Team card */
 #teamFocusCard { display: flex; flex-direction: column; }
+#teamFocusCard .insight-header { flex-wrap: wrap; }
 .team-load-heading { display: flex; flex-direction: column; gap: 0.22rem; }
 .team-load-heading p { color: rgba(158,164,184,0.58); font-size: 0.72rem; }
 .team-load-total { display: flex; align-items: baseline; gap: 0.4rem; padding: 0.5rem 0.8rem; border: 1px solid rgba(255,77,109,0.2); border-radius: 999px; background: rgba(255,77,109,0.07); white-space: nowrap; }
@@ -317,14 +345,22 @@ th:hover { background: rgba(17,17,23,0.9); color: #e2e8f0; }
 tr:last-child td { border-bottom: none; }
 tbody tr:nth-child(even):not(.total-row) { background: rgba(255,255,255,0.015); }
 tr:hover td { background: rgba(168,85,247,0.04); }
-tr:target { scroll-margin-top: 4rem; }
-tr:target td { background: rgba(255,77,109,0.12); animation: targetRowPulse 1.4s ease-out; }
+#toilTable, #toilTable tr[id] { scroll-margin-top: calc(var(--sticky-header-height, 0px) + 1rem); }
+#toilTable tr:is(:target, .toil-target) { outline: 2px solid rgba(255,77,109,0.7); outline-offset: -2px; }
+tr:is(:target, .toil-target) td { background: rgba(255,77,109,0.12); animation: targetRowPulse 1.4s ease-out; }
 .table-wrap { border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); overflow-x: auto; -webkit-overflow-scrolling: touch; background: rgba(17,17,23,0.4); box-shadow: 0 0 0 1px rgba(255,255,255,0.02); }
 .dark .table-wrap, :root:not(.light) .table-wrap { background: rgba(26,29,46,0.72); border-color: rgba(196,181,253,0.2); box-shadow: 0 0 0 1px rgba(196,181,253,0.08); }
 .dark th, :root:not(.light) th { background: rgba(13,16,28,0.92); color: rgba(214,224,255,0.85); border-bottom-color: rgba(196,181,253,0.22); }
 .dark td, :root:not(.light) td { border-bottom-color: rgba(196,181,253,0.1); color: #e6ecff; }
 .dark tbody tr:nth-child(even):not(.total-row), :root:not(.light) tbody tr:nth-child(even):not(.total-row) { background: rgba(255,255,255,0.03); }
 .dark tr:hover td, :root:not(.light) tr:hover td { background: rgba(192,132,252,0.1); }
+.table-wrap { --time-cell-bg: #1c1f32; --time-cell-alt: #24273a; --time-cell-hover: #302b47; --time-cell-target: #3b263b; --time-header-bg: #0d101c; }
+#toilTable th[data-col="monthly_saved_minutes"], #toilTable td.toil-monthly-cell { position: sticky; right: 0; min-width: 8rem; white-space: nowrap; text-align: right; box-shadow: -1px 0 0 var(--border-card), -8px 0 12px -12px rgba(0,0,0,0.6); }
+#toilTable th[data-col="monthly_saved_minutes"] { z-index: 3; background: var(--time-header-bg); }
+#toilTable td.toil-monthly-cell { z-index: 1; background: var(--time-cell-bg); font-variant-numeric: tabular-nums; }
+#toilTable tbody tr:nth-child(even) td.toil-monthly-cell { background: var(--time-cell-alt); }
+#toilTable tbody tr:hover td.toil-monthly-cell { background: var(--time-cell-hover); }
+#toilTable tbody tr:is(:target, .toil-target) td.toil-monthly-cell { background: var(--time-cell-target); animation: none; }
 
 /* ── Priority Rows ── */
 tr.priority-critical td:first-child { border-left: 4px solid #cf222e; }
@@ -382,13 +418,13 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 .issue-link:hover { color: #d946ef; text-decoration: underline; }
 .light .issue-link { color: #7c3aed; }
 .light .issue-link:hover { color: #6d28d9; }
-.toil-cell { min-width: 320px; padding-top: 1.25rem; padding-bottom: 1.25rem; }
+.toil-cell { min-width: 240px; padding-top: 1.25rem; padding-bottom: 1.25rem; }
 .toil-action-cell .toil-action-inner { white-space: nowrap; display: flex; flex-direction: row; gap: 0.45rem; align-items: center; justify-content: flex-start; }
 .status-toggle { cursor: pointer; transition: all 200ms ease; }
 .status-toggle:hover { filter: brightness(1.2); transform: scale(1.05); }
 
 /* ── Toast ── */
-.toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: #111117; color: #f5f7ff; padding: 0.75rem 1.25rem; border-radius: var(--radius); font-size: 0.875rem; font-weight: 500; z-index: 9999; opacity: 0; transform: translateY(10px); transition: all 150ms ease; pointer-events: none; border: 1px solid #27272a; box-shadow: var(--shadow-md); }
+.toast { position: fixed; bottom: 1.5rem; right: 1.5rem; max-width: calc(100vw - 3rem); background: #111117; color: #f5f7ff; padding: 0.75rem 1.25rem; border-radius: var(--radius); font-size: 0.875rem; font-weight: 500; z-index: 9999; opacity: 0; transform: translateY(10px); transition: all 150ms ease; pointer-events: none; border: 1px solid #27272a; box-shadow: var(--shadow-md); }
 .toast.show { opacity: 1; transform: translateY(0); }
 
 /* ── Lightning Easter Egg ── */
@@ -447,7 +483,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
   .hotspot-legend { justify-content: flex-start; }
   .hotspot-map { overflow-x: auto; justify-content: flex-start; }
   .hotspot-item { min-width: 82px; }
-  .header-inner { padding: 1rem 1.25rem; flex-direction: column; }
+  .header-inner { padding: 1rem 1.25rem; grid-template-columns: minmax(0, 1fr); }
   .header-inner .meta { justify-content: flex-start; text-align: left; }
   .insight-body { flex-direction: column; }
   .stat-list { flex: 1 1 auto; width: 100%; max-width: 220px; }
@@ -540,6 +576,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 .light tr:hover td { background: rgba(168,85,247,0.03); }
 .light tr.total-row { background: rgba(168,85,247,0.04); }
 .light .table-wrap { background: #fff; border-color: #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+.light .table-wrap { --time-cell-bg: #fff; --time-cell-alt: #fafbfc; --time-cell-hover: #fcf8ff; --time-cell-target: #ffeaee; --time-header-bg: #f8fafc; }
 .light .toil-name { color: #0b1220; font-weight: 650; }
 .light .toil-desc { color: #475569; }
 .light .btn { background: #fff; border-color: #e2e8f0; color: #1f2937; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
@@ -737,14 +774,14 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
     <p id="teamName" title="Click to rename your team" style="cursor:pointer;font-size:1.15rem;font-weight:600;color:rgba(255,255,255,0.75);letter-spacing:-0.01em">Your Team ✎</p>
     <p class="hero-subtitle">See your team's repetitive work, watch AI eliminate it, and track the hours everyone gets back.</p>
     <p style="font-size:0.72rem;color:rgba(255,255,255,0.35);margin-top:0.25rem;letter-spacing:0.02em;">Built and powered by the GitHub Copilot CLI</p>
-    <div class="hero-pulse" id="heroPulse">
-      <span class="pulse-pill neutral">⚡ Scanning for toil…</span>
-    </div>
   </div>
   <div class="meta">
     <span id="headerRepo"></span>
     <a href="#" id="headerRepoLink" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a>
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark or light mode" title="Toggle dark/light mode">🌙 Dark</button>
+  </div>
+  <div class="hero-pulse" id="heroPulse" role="group" aria-label="Dashboard overview and status filters">
+    <span class="pulse-pill neutral">⚡ Scanning for toil…</span>
   </div>
   </div>
 </div>
@@ -815,9 +852,11 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
 
 <script>
+const refreshAtTop = prepareReloadScroll();
+
 // ═══════════════════════════════════════════════════
 // THEME — Dark/Light mode with localStorage persistence
 // ═══════════════════════════════════════════════════
@@ -1203,11 +1242,12 @@ function applyLocalEdits() {
     if (edits.frequency) issue.frequency = edits.frequency;
     if (edits.time_per_occurrence) issue.time_per_occurrence = edits.time_per_occurrence;
     if (edits.people_affected) issue.people_affected = edits.people_affected;
-    // Recalculate score
-    const { score, monthlyMins } = calcScore(issue.frequency, issue.time_per_occurrence, issue.people_affected, issue.bonus_factors);
-    issue.toil_score = score;
-    issue.monthly_saved_minutes = monthlyMins;
-    issue.priority = getPriorityLabel(score);
+    if (edits.frequency || edits.time_per_occurrence || edits.people_affected) {
+      const { score, monthlyMins } = calcScore(issue.frequency, issue.time_per_occurrence, issue.people_affected, issue.bonus_factors);
+      issue.toil_score = score;
+      issue.monthly_saved_minutes = monthlyMins;
+      issue.priority = getPriorityLabel(score);
+    }
   });
 }
 
@@ -1238,13 +1278,13 @@ function getStatus(issue) {
 function statusBadge(status, issueNum) {
   const badges = {
     'automated': '✅ Shipped',
-    'in-progress': '🔨 Building',
+    'in-progress': '🔨 In progress',
     'triage': '🔍 Triaging',
     'closed': '📦 Closed, not automated',
-    'toil': '💡 Ready to fix'
+    'toil': '💡 Not started'
   };
   const edited = issueNum && localEdits[issueNum] && localEdits[issueNum].status ? '<span class="edited-marker">✎</span>' : '';
-  return `<span class="badge badge-${status} status-toggle" data-issue="${issueNum || ''}" style="cursor:pointer" title="Click to update status">${badges[status] || status}${edited}</span>`;
+  return `<span class="badge badge-${status} status-toggle" data-issue="${issueNum || ''}" style="cursor:pointer" title="Click to advance status. Changes are saved in this browser only.">${badges[status] || status}${edited}</span>`;
 }
 
 function priorityClass(score) {
@@ -1308,6 +1348,7 @@ function render() {
 
   // Main table
   renderToilTable(issues);
+  updateStickyHeaderHeight();
 }
 
 function populateFilters(issues) {
@@ -1402,19 +1443,24 @@ function renderSummaryCards(issues) {
   if (automated > 0) {
     cards.push(`
     <article class="card">
-      <div class="label">Automation Velocity ${tip('Percentage of reported toil that has been fully automated. Tracks issues that move to "automated" or "closed" status.')}</div>
+      <div class="label">Automation Velocity ${tip('Percentage of reported toil explicitly marked automated. Closing an issue without automating it does not count.')}</div>
       <div class="value"><span class="value-number" data-animate="${automationRate}" data-format="percent">${automationRate}%</span></div>
-      <div class="delta ${deltaClass}">${deltaLabel}</div>
-      <p class="card-subtext">${automated} of ${total} toil signals retired</p>
+      <div class="card-detail">
+        <p class="card-subtext">${automated} of ${total} toil signals retired</p>
+        <div class="delta ${deltaClass}">${deltaLabel}</div>
+      </div>
+      <div class="micro-progress"><span style="width:${automationRate}%"></span></div>
     </article>`);
   } else {
     cards.push(`
     <article class="card card-teaser">
       <div class="label">Automation Velocity ${tip('Percentage of reported toil that has been fully automated. This card lights up when you close your first toil issue as automated.')}</div>
       <div class="value"><span class="value-number">0%</span></div>
-      <div class="delta positive" style="opacity:0.7">🔓 Ships with your first automation</div>
-      <p class="card-subtext">0 of ${total} toil signals retired</p>
-      <div class="micro-progress"><span style="width:15%"></span></div>
+      <div class="card-detail">
+        <p class="card-subtext">0 of ${total} toil signals retired</p>
+        <div class="delta positive" style="opacity:0.7">🔓 Ships with your first automation</div>
+      </div>
+      <div class="micro-progress"><span style="width:0%"></span></div>
     </article>`);
   }
 
@@ -1432,7 +1478,7 @@ function renderSummaryCards(issues) {
       <div class="label">Critical Hotspots ${tip('Issues with a toil score of 40+. Score = frequency × time × people + bonuses. This card appears when high-impact toil is reported.')}</div>
       <div class="value"><span class="value-number">0</span></div>
       <p class="card-subtext">🔓 Appears when toil scores ≥ 40</p>
-      <div class="micro-progress" data-color="danger"><span style="width:15%"></span></div>
+      <div class="micro-progress" data-color="danger"><span style="width:0%"></span></div>
     </article>`);
   }
 
@@ -1478,10 +1524,12 @@ function renderHotspotMap(issues) {
     const minutes = issue.monthly_saved_minutes || 0;
     const hours = minutes / 60;
     const status = getStatus(issue);
-    const visualStatus = status === 'in-progress' ? 'building' : 'backlog';
+    const visualStatus = status === 'in-progress' ? 'building' : status === 'triage' ? 'triage' : 'backlog';
     const statusLabel = visualStatus === 'building'
       ? 'In progress'
-      : 'Not started';
+      : visualStatus === 'triage'
+        ? 'Triaging'
+        : 'Not started';
     const timeMeaning = 'spent per month';
     const safeUrl = getIssueUrl(issue);
     const linkTarget = safeUrl.startsWith('https://github.com/')
@@ -1493,9 +1541,10 @@ function renderHotspotMap(issues) {
       .split(/\s+/)
       .slice(0, 3)
       .join(' ');
-    const accessibleLabel = `${title}. ${hours.toFixed(1)} hours ${timeMeaning}. ${visualStatus}.`;
+    const linkAction = linkTarget ? 'Open GitHub issue' : 'Show backlog task';
+    const accessibleLabel = `${title}. ${hours.toFixed(1)} hours ${timeMeaning}. ${statusLabel}. ${linkAction} #${issue.number}.`;
 
-    return `<a class="hotspot-item" href="${safeUrl}"${linkTarget} aria-label="${esc(accessibleLabel, true)}" title="${esc(accessibleLabel, true)}">
+    return `<a class="hotspot-item" data-issue="${issue.number}" data-status="${status}" href="${esc(safeUrl, true)}"${linkTarget} aria-label="${esc(accessibleLabel, true)}" title="${esc(accessibleLabel, true)}">
       <span class="hotspot-bubble-stage">
         <span class="hotspot-bubble hotspot-drain">
           <span class="hotspot-id">#${issue.number}</span>
@@ -1511,7 +1560,7 @@ function renderHotspotMap(issues) {
   card.innerHTML = `
     <div class="hotspot-header">
       <div>
-        <div class="hotspot-title">🔥 Top Time Drains <span class="card-help">?<span class="card-tip">The five open toil issues consuming the most team time each month. Click one to open its GitHub Issue.</span></span></div>
+        <div class="hotspot-title">🔥 Top Time Drains <span class="card-help">?<span class="card-tip">The five open toil issues consuming the most team time each month. Red circles indicate ongoing effort; badges show progress. Automated tasks leave this view.</span></span></div>
         <p class="hotspot-subtitle">Top 5 open tasks ranked left to right by monthly manual effort.</p>
       </div>
       <div class="hotspot-header-data">
@@ -1563,6 +1612,7 @@ function renderHeroPulse(issues) {
     <span class="pulse-pill success">⚡ ${automationRate}% automated</span>
     <span class="pulse-pill" data-filter-status="" tabindex="0" role="button" style="cursor:pointer;border-color:rgba(67,198,255,0.3);background:rgba(67,198,255,0.06);color:#67c8ff;" title="Show all">📦 ${total} signals</span>
     ${highImpact > 0 ? `<span class="pulse-pill warning">🔥 ${highImpact} critical</span>` : ''}
+    ${triage > 0 ? `<span class="pulse-pill" data-filter-status="triage" tabindex="0" role="button" style="border-color:rgba(251,191,36,0.4);background:rgba(251,191,36,0.12);color:#ffe899;" title="Filter to triaging">🔍 ${triage} triaging</span>` : ''}
     ${automated > 0 ? `<span class="pulse-pill" data-filter-status="automated" tabindex="0" role="button" style="cursor:pointer;border-color:rgba(57,255,136,0.42);background:rgba(57,255,136,0.12);color:#39ff88;" title="Filter to shipped">✅ ${automated} shipped</span>` : ''}
     ${inProgress > 0 ? `<span class="pulse-pill" data-filter-status="in-progress" tabindex="0" role="button" style="cursor:pointer;border-color:rgba(212,0,255,0.42);background:rgba(212,0,255,0.12);color:#f0abfc;" title="Filter to building">🔨 ${inProgress} building</span>` : ''}
   `;
@@ -1692,12 +1742,12 @@ function renderTeamFocusCard(issues) {
   card.innerHTML = `
     <div class="insight-header">
       <div class="team-load-heading">
-        <span class="eyebrow">Open Toil Load <span class="card-help">?<span class="card-tip">Groups open toil by the person who submitted it. Each card estimates weekly team effort from the issue's monthly toil hours.</span></span></span>
+        <span class="eyebrow">Team Member Toil <span class="card-help">?<span class="card-tip">Groups open toil by the person who submitted it. Each card estimates weekly team effort from the issue's monthly toil hours.</span></span></span>
         <p>Where reported manual work is accumulating across the team.</p>
       </div>
       <div class="team-load-total">
         <strong>${formatWeeklyTime(totalWeekly)}</strong>
-        <span>combined open load</span>
+        <span>combined team toil</span>
       </div>
     </div>
     <div class="team-load-grid">
@@ -1938,18 +1988,17 @@ function renderToilTable(issues) {
       `Step 4: Ask the user if they want to refine, test, or commit the changes.`,
       `Start by exploring the repo structure, then present your plan.`
     ].filter(Boolean).join(' ');
-    const ghCmd = `gh copilot "${agentPrompt.replace(/"/g, '\\"')}"`;
-    
+
     // Split "Name — Description" into two parts
     const dashIdx = rawTitle.indexOf(' — ');
     const toilName = dashIdx > -1 ? rawTitle.substring(0, dashIdx) : rawTitle.split(/\s+/).slice(0, 4).join(' ');
     const toilDesc = dashIdx > -1 ? rawTitle.substring(dashIdx + 3) : (dashIdx === -1 && rawTitle.length > toilName.length ? rawTitle : '');
 
     const safeUrl = issueUrl;
-    const actionBtn = `<button class="btn btn-launch" onclick="copyLaunchCmd(this, ${issue.number})" data-cmd="${esc(ghCmd, true)}" title="Copies a ready-to-use prompt to your clipboard. Paste it into GitHub Copilot Chat or any AI assistant to start automating this toil.">⚡ Generate GitHub Copilot Prompt</button>`;
+    const actionBtn = `<button class="btn btn-launch" onclick="copyCopilotPrompt(this, ${issue.number})" data-prompt="${esc(agentPrompt, true)}" title="Copies a ready-to-use prompt for GitHub Copilot or Microsoft 365 Copilot.">⚡ Generate GitHub Copilot Prompt</button>`;
 
-    return `<tr id="toil-${issue.number}" class="${priorityClass(issue.toil_score)}">
-      <td><a href="${safeUrl}"${issueLinkTarget} class="issue-link">#${issue.number}</a></td>
+    return `<tr id="toil-${issue.number}" tabindex="-1" aria-label="Toil #${issue.number}: ${esc(rawTitle, true)}" class="${priorityClass(issue.toil_score)}${window.location.hash === `#toil-${issue.number}` ? ' toil-target' : ''}">
+      <td><a href="${esc(safeUrl, true)}"${issueLinkTarget} class="issue-link">#${issue.number}</a></td>
       <td class="toil-cell"><div class="toil-name">${esc(toilName)}</div>${toilDesc ? `<div class="toil-desc">${esc(toilDesc)}</div>` : ''}</td>
       <td class="toil-action-cell"><div class="toil-action-inner">${actionBtn}</div></td>
       <td>${esc(issue.submitter)}</td>
@@ -1958,7 +2007,7 @@ function renderToilTable(issues) {
       <td class="editable" data-issue="${issue.number}" data-field="people_affected">${esc(issue.people_affected)}</td>
       <td class="toil-score-cell">${issue.toil_score}</td>
       <td class="toil-status-cell">${statusBadge(status, issue.number)}</td>
-      <td>${formatMinutes(issue.monthly_saved_minutes)}</td>
+      <td class="toil-monthly-cell">${formatMinutes(issue.monthly_saved_minutes)}</td>
     </tr>`;
   }).join('');
 }
@@ -2030,7 +2079,7 @@ document.addEventListener('click', function(e) {
   if (!localEdits[issueNum]) localEdits[issueNum] = {};
   localEdits[issueNum].status = next;
   saveLocalEdits();
-  const labels = { 'automated': '✅ Shipped', 'in-progress': '🔨 Building', 'triage': '🔍 Triaging', 'toil': '💡 Ready to fix' };
+  const labels = { 'automated': '✅ Shipped', 'in-progress': '🔨 In progress', 'triage': '🔍 Triaging', 'toil': '💡 Not started' };
   showToast(`Status updated → ${labels[next]}`);
   render();
 });
@@ -2117,21 +2166,39 @@ function timeAgo(ts) {
 // ═══════════════════════════════════════════════════
 // CLIPBOARD & TOAST
 // ═══════════════════════════════════════════════════
-function copyLaunchCmd(btn, issueNum) {
-  const cmd = btn.getAttribute('data-cmd');
-  // Track the launch
-  trackCopilotLaunch(issueNum);
-  navigator.clipboard.writeText(cmd).then(() => {
-    showToast('🚀 Command copied — paste in your terminal to start automating!');
-    render();
-  }).catch(() => {
+async function copyCopilotPrompt(btn, issueNum) {
+  const prompt = btn.getAttribute('data-prompt');
+  if (!prompt) {
+    showToast('No prompt is available to copy. Refresh the dashboard and try again.');
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(prompt);
+  } catch {
     const ta = document.createElement('textarea');
-    ta.value = cmd; document.body.appendChild(ta);
-    ta.select(); document.execCommand('copy');
-    document.body.removeChild(ta);
-    showToast('🚀 Command copied — paste in your terminal to start automating!');
-    render();
-  });
+    ta.value = prompt;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    let copied = false;
+    try {
+      ta.select();
+      copied = document.execCommand('copy');
+    } catch (error) {
+      console.error('Clipboard copy failed:', error);
+    } finally {
+      document.body.removeChild(ta);
+    }
+    if (!copied) {
+      showToast('Unable to copy the prompt. Allow clipboard access and try again.');
+      return;
+    }
+  }
+
+  trackCopilotLaunch(issueNum);
+  showToast('🚀 Prompt copied — paste into GitHub Copilot or Microsoft 365 Copilot.');
+  render();
 }
 
 function showToast(msg) {
@@ -2172,6 +2239,76 @@ function getIssueUrl(issue) {
 
   return '#toilTable';
 }
+
+function updateStickyHeaderHeight() {
+  const height = document.querySelector('.header').getBoundingClientRect().height;
+  document.documentElement.style.setProperty('--sticky-header-height', `${Math.ceil(height)}px`);
+}
+
+function revealToilRow(issueNumber) {
+  if (!Number.isInteger(issueNumber) || issueNumber <= 0 ||
+      !dashboardData?.issues?.some(issue => Number(issue.number) === issueNumber)) {
+    showToast('⚠️ This toil is not available in the current dashboard.');
+    return false;
+  }
+
+  const rowId = `toil-${issueNumber}`;
+  let row = document.getElementById(rowId);
+  if (!row) {
+    ['filterTeam', 'filterStatus', 'searchToil'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    render();
+    row = document.getElementById(rowId);
+    if (!row) {
+      showToast('⚠️ Could not show this toil in the backlog.');
+      return false;
+    }
+    showToast(`Showing toil #${issueNumber} - backlog filters cleared.`);
+  }
+
+  updateStickyHeaderHeight();
+  document.querySelectorAll('#toilTable .toil-target').forEach(previous => previous.classList.remove('toil-target'));
+  row.classList.add('toil-target');
+  row.closest('.table-wrap').scrollLeft = 0;
+  const hash = `#${rowId}`;
+  if (window.location.hash !== hash) window.location.hash = hash;
+  row.scrollIntoView({ behavior: 'auto', block: 'start', inline: 'nearest' });
+  row.focus({ preventScroll: true });
+  return true;
+}
+
+function handleToilLinkClick(event) {
+  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  const link = event.target.closest('a[href^="#toil-"]');
+  const match = /^#toil-(\d+)$/.exec(link?.getAttribute('href') || '');
+  if (!match) return;
+  event.preventDefault();
+  revealToilRow(Number(match[1]));
+}
+
+function revealToilFromHash() {
+  const match = /^#toil-(\d+)$/.exec(window.location.hash);
+  if (match && dashboardData) revealToilRow(Number(match[1]));
+  else document.querySelectorAll('#toilTable .toil-target').forEach(row => row.classList.remove('toil-target'));
+}
+
+function prepareReloadScroll() {
+  if (performance.getEntriesByType('navigation')[0]?.type !== 'reload') return false;
+  window.history.scrollRestoration = 'manual';
+  window.history.replaceState(window.history.state, '', window.location.pathname + window.location.search);
+  window.scrollTo(0, 0);
+  window.addEventListener('pageshow', () => {
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+      window.history.scrollRestoration = 'auto';
+    });
+  }, { once: true });
+  return true;
+}
+
+document.addEventListener('click', handleToilLinkClick);
+window.addEventListener('hashchange', revealToilFromHash);
 
 // ═══════════════════════════════════════════════════
 // EXPORT — CSV & JSON downloads
@@ -2220,7 +2357,7 @@ function exportJSON() {
 // EASTER EGGS 🥚
 // ═══════════════════════════════════════════════════
 
-// 1. Konami Code → Confetti celebration
+// Konami Code → Confetti celebration
 (function() {
   const code = [38,38,40,40,37,39,37,39,66,65];
   let pos = 0;
@@ -2283,59 +2420,7 @@ function exportJSON() {
   }
 })();
 
-// 2. Click the gauge → rainbow fill + Copilot heads storm
-document.addEventListener('click', function(e) {
-  const gauge = e.target.closest('.radial-progress');
-  if (!gauge) return;
-  const strong = gauge.querySelector('strong');
-  if (!strong) return;
-  // Rainbow fill
-  gauge.style.transition = 'none';
-  gauge.style.background = 'conic-gradient(#f472b6 0deg, #a855f7 60deg, #818cf8 120deg, #22d3ee 180deg, #4ade80 240deg, #fbbf24 300deg, #f472b6 360deg)';
-  gauge.style.boxShadow = '0 0 30px rgba(168,85,247,0.4), 0 0 60px rgba(34,211,238,0.2)';
-  const origText = strong.textContent;
-  strong.textContent = '✨';
-  const span = gauge.querySelector('span');
-  const origSpan = span ? span.textContent : '';
-  if (span) span.textContent = 'COPILOT';
-  showToast('🤖 GitHub Copilot CLI is your co-pilot!');
-  // Copilot heads storm
-  const storm = document.createElement('div');
-  storm.className = 'bolt-storm';
-  const flash = document.createElement('div');
-  flash.className = 'bolt-flash';
-  flash.style.background = 'radial-gradient(circle at 50% 20%, rgba(133,52,243,0.35), rgba(168,85,247,0.16) 35%, transparent 68%)';
-  storm.appendChild(flash);
-  const copilotSvg = '<svg viewBox="0 0 24 24" width="1em" height="1em" style="display:block"><path fill="currentColor" d="M23.922 16.992c-.861 1.495-5.859 5.023-11.922 5.023-6.063 0-11.061-3.528-11.922-5.023A.641.641 0 0 1 0 16.736v-2.869a.841.841 0 0 1 .053-.22c.372-.935 1.347-2.292 2.605-2.656.167-.429.414-1.055.644-1.517a10.195 10.195 0 0 1-.052-1.086c0-1.331.282-2.499 1.132-3.368.397-.406.89-.717 1.474-.952 1.399-1.136 3.392-2.093 6.122-2.093 2.731 0 4.767.957 6.166 2.093.584.235 1.077.546 1.474.952.85.869 1.132 2.037 1.132 3.368 0 .368-.014.733-.052 1.086.23.462.477 1.088.644 1.517 1.258.364 2.233 1.721 2.605 2.656a.832.832 0 0 1 .053.22v2.869a.641.641 0 0 1-.078.256ZM12.172 11h-.344a4.323 4.323 0 0 1-.355.508C10.703 12.455 9.555 13 7.965 13c-1.725 0-2.989-.359-3.782-1.259a2.005 2.005 0 0 1-.085-.104L4 11.741v6.585c1.435.779 4.514 2.179 8 2.179 3.486 0 6.565-1.4 8-2.179v-6.585l-.098-.104s-.033.045-.085.104c-.793.9-2.057 1.259-3.782 1.259-1.59 0-2.738-.545-3.508-1.492a4.323 4.323 0 0 1-.355-.508h-.016.016Zm.641-2.935c.136 1.057.403 1.913.878 2.497.442.544 1.134.938 2.344.938 1.573 0 2.292-.337 2.657-.751.384-.435.558-1.15.558-2.361 0-1.14-.243-1.847-.705-2.319-.477-.488-1.319-.862-2.824-1.025-1.487-.161-2.192.138-2.533.529-.269.307-.437.808-.438 1.578v.021c0 .265.021.562.063.893Zm-1.626 0c.042-.331.063-.628.063-.894v-.02c-.001-.77-.169-1.271-.438-1.578-.341-.391-1.046-.69-2.533-.529-1.505.163-2.347.537-2.824 1.025-.462.472-.705 1.179-.705 2.319 0 1.211.175 1.926.558 2.361.365.414 1.084.751 2.657.751 1.21 0 1.902-.394 2.344-.938.475-.584.742-1.44.878-2.497Z"/><path fill="currentColor" d="M14.5 14.25a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0v-2a1 1 0 0 1 1-1Zm-5 0a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0v-2a1 1 0 0 1 1-1Z"/></svg>';
-  const colors = ['#8534F3','#B870FF','#C898FD','#43179E','#8534F3','#B870FF','#C898FD','#43179E'];
-  for (let i = 0; i < 20; i++) {
-    const b = document.createElement('span');
-    b.className = 'storm-bolt';
-    b.innerHTML = copilotSvg;
-    b.style.color = colors[i % colors.length];
-    b.style.left = (30 + Math.random() * 40) + '%';
-    b.style.top = (20 + Math.random() * 40) + '%';
-    b.style.fontSize = (1.2 + Math.random() * 2.2) + 'rem';
-    const angle = (i / 20) * 360;
-    const dist = 100 + Math.random() * 220;
-    b.style.setProperty('--tx', (Math.cos(angle * Math.PI / 180) * dist) + 'px');
-    b.style.setProperty('--ty', (Math.sin(angle * Math.PI / 180) * dist) + 'px');
-    b.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
-    b.style.animationDelay = (Math.random() * 0.2) + 's';
-    storm.appendChild(b);
-  }
-  document.body.appendChild(storm);
-  setTimeout(() => storm.remove(), 1800);
-  setTimeout(() => {
-    gauge.style.transition = 'all 0.6s ease';
-    gauge.style.background = '';
-    gauge.style.boxShadow = '';
-    strong.textContent = origText;
-    if (span) span.textContent = origSpan;
-  }, 2500);
-});
-
-// 3. Card hover glow tracking (mouse position for radial gradient)
+// Card hover glow tracking (mouse position for radial gradient)
 document.addEventListener('mousemove', function(e) {
   document.querySelectorAll('.card, .insight-card').forEach(card => {
     const rect = card.getBoundingClientRect();
@@ -2399,7 +2484,11 @@ document.addEventListener('mousemove', function(e) {
 
 // ═══════════════════════════════════════════════════
 // INIT
-loadData();
+new ResizeObserver(updateStickyHeaderHeight).observe(document.querySelector('.header'));
+loadData().then(() => {
+  if (refreshAtTop) window.scrollTo(0, 0);
+  else revealToilFromHash();
+});
 </script>
 </body>
 </html>

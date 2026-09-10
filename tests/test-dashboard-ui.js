@@ -60,7 +60,9 @@ const NEEDED = [
   'BONUS_FACTORS', 'PRIORITY_BANDS',
   'bonusSlug', 'bonusLabel', 'getPriorityBand', 'getPriorityLabel', 'isCritical',
   'reverseFreqScore', 'reverseTimeScore', 'reversePeopleScore',
-  'normalizeData', 'getStatus', 'calcScore', 'extractCheckedBonus'
+  'normalizeData', 'getStatus', 'calcScore', 'extractCheckedBonus',
+  'applyLocalEdits', 'getIssueUrl', 'renderHotspotMap', 'renderHeroPulse', 'renderSummaryCards',
+  'updateStickyHeaderHeight', 'revealToilRow', 'handleToilLinkClick', 'revealToilFromHash', 'prepareReloadScroll'
 ];
 
 const sandbox = {
@@ -213,6 +215,197 @@ assertEq('legacy frequency is reverse-mapped from the score',
 assertEq('legacy issue without the automated flag is not automated',
   sandbox.getStatus(normV1.issues[0]), 'toil');
 
+const stageIssue = { ...normV1.issues[0] };
+const stageCard = { innerHTML: '' };
+sandbox.dashboardData = { issues: [stageIssue] };
+sandbox.document = { getElementById: id => id === 'hotspotMapCard' ? stageCard : null };
+sandbox.esc = value => String(value ?? '');
+for (const [status, label, className] of [
+  ['toil', 'Not started', 'backlog'],
+  ['triage', 'Triaging', 'triage'],
+  ['in-progress', 'In progress', 'building']
+]) {
+  sandbox.localEdits[stageIssue.number] = { status };
+  sandbox.applyLocalEdits();
+  sandbox.renderHotspotMap([stageIssue]);
+  assertEq(`${status}: preserves the recorded monthly effort`, stageIssue.monthly_saved_minutes, 400);
+  assertEq(`${status}: preserves the recorded score`, stageIssue.toil_score, 212);
+  assertEq(`${status}: displays its lifecycle badge`,
+    stageCard.innerHTML.includes(`<span class="hotspot-status ${className}">${label}</span>`), true);
+  assertEq(`${status}: exposes the stage in the accessible label`,
+    stageCard.innerHTML.includes(`hours spent per month. ${label}.`), true);
+  assertEq(`${status}: keeps unfinished effort in a red circle`,
+    stageCard.innerHTML.includes('hotspot-bubble hotspot-drain'), true);
+}
+sandbox.localEdits[stageIssue.number] = { status: 'automated' };
+sandbox.renderHotspotMap([stageIssue]);
+assertEq('automated tasks leave Top Time Drains',
+  stageCard.innerHTML.includes('class="hotspot-item"'), false);
+delete sandbox.localEdits[stageIssue.number];
+stageIssue.labels = ['toil', 'in-progress'];
+sandbox.renderHotspotMap([stageIssue]);
+assertEq('GitHub in-progress labels display the same stage without a local override',
+  stageCard.innerHTML.includes('<span class="hotspot-status building">In progress</span>'), true);
+stageIssue.labels = ['toil', 'triage'];
+sandbox.renderHotspotMap([stageIssue]);
+assertEq('GitHub triage labels display Triaging without a local override',
+  stageCard.innerHTML.includes('<span class="hotspot-status triage">Triaging</span>'), true);
+sandbox.localEdits[stageIssue.number] = { frequency: '⚪ Monthly or less' };
+sandbox.applyLocalEdits();
+const rescored = sandbox.calcScore('⚪ Monthly or less', stageIssue.time_per_occurrence,
+  stageIssue.people_affected, stageIssue.bonus_factors);
+assertEq('effort edits still recalculate monthly minutes', stageIssue.monthly_saved_minutes, rescored.monthlyMins);
+assertEq('effort edits still recalculate the score', stageIssue.toil_score, rescored.score);
+delete sandbox.localEdits[stageIssue.number];
+
+const heroPulse = { innerHTML: '' };
+sandbox.document = { getElementById: id => id === 'heroPulse' ? heroPulse : null };
+const triageIssues = [
+  { ...norm.issues[0], number: 91, labels: ['toil', 'triage'] },
+  { ...norm.issues[0], number: 92, labels: ['toil', 'triage'] },
+  { ...norm.issues[0], number: 93, labels: ['toil', 'in-progress'] },
+  { ...norm.issues[1], number: 94, labels: ['toil', 'triage', 'automated'] }
+];
+sandbox.renderHeroPulse(triageIssues);
+const triagePill = heroPulse.innerHTML.match(/<span[^>]*data-filter-status="triage"[^>]*>[^<]*<\/span>/)?.[0] || '';
+assertEq('header triage bubble counts triaging tasks, not automated or building tasks',
+  triagePill.includes('🔍 2 triaging</span>'), true);
+assertEq('header triage bubble is keyboard accessible',
+  triagePill.includes('tabindex="0"') && triagePill.includes('role="button"'), true);
+assertEq('header triage bubble explains its filter action',
+  triagePill.includes('title="Filter to triaging"'), true);
+sandbox.localEdits[91] = { status: 'in-progress' };
+sandbox.renderHeroPulse(triageIssues);
+assertEq('header triage count updates when work starts',
+  heroPulse.innerHTML.includes('🔍 1 triaging</span>'), true);
+sandbox.localEdits[92] = { status: 'automated' };
+sandbox.renderHeroPulse(triageIssues);
+assertEq('header triage bubble hides at zero like the other stage bubbles',
+  heroPulse.innerHTML.includes('data-filter-status="triage"'), false);
+assertEq('other header stage counts stay correct after triage transitions',
+  heroPulse.innerHTML.includes('2 shipped</span>') && heroPulse.innerHTML.includes('2 building</span>'), true);
+delete sandbox.localEdits[91];
+delete sandbox.localEdits[92];
+sandbox.renderHeroPulse([]);
+assertEq('empty dashboards do not show a triage bubble',
+  heroPulse.innerHTML.includes('data-filter-status="triage"'), false);
+
+const summaryCards = { dataset: {}, innerHTML: '' };
+sandbox.document = { getElementById: id => id === 'summaryCards' ? summaryCards : null };
+sandbox.animateSummaryNumbers = () => {};
+for (const issues of [norm.issues, []]) {
+  sandbox.renderSummaryCards(issues);
+  assertEq(`${issues.length} issues: all five summary cards have a progress track`,
+    (summaryCards.innerHTML.match(/class="micro-progress"/g) || []).length, 5);
+  assertEq(`${issues.length} issues: velocity groups its details into one shared layout row`,
+    summaryCards.innerHTML.includes('class="card-detail"'), true);
+}
+assertEq('empty summary cards do not show fictional progress',
+  summaryCards.innerHTML.includes('width:15%'), false);
+assertEq('summary content shares aligned grid tracks',
+  HTML.includes('grid-template-rows: subgrid; grid-row: span 4;'), true);
+assertEq('header bubbles occupy their own non-wrapping row',
+  HTML.includes('.hero-pulse { grid-column: 1 / -1; display: flex; flex-wrap: nowrap;'), true);
+
+function navigationFixture(visible = true) {
+  const state = { visible, renders: 0, scrolls: 0, focuses: 0, prevented: 0, notices: [], style: {} };
+  const controls = {
+    filterTeam: { value: 'Platform' },
+    filterStatus: { value: 'toil' },
+    searchToil: { value: 'flaky' }
+  };
+  const wrap = { scrollLeft: 600 };
+  const row = {
+    closest: () => wrap,
+    classList: { add: value => { state.highlight = value; } },
+    scrollIntoView: options => { state.scrolls++; state.scrollOptions = options; },
+    focus: options => { state.focuses++; state.focusOptions = options; }
+  };
+  sandbox.dashboardData = { issues: [{ number: 8 }] };
+  sandbox.window = { location: { hash: '' } };
+  sandbox.document = {
+    getElementById: id => id === 'toil-8' ? (state.visible ? row : null) : controls[id],
+    querySelector: () => ({ getBoundingClientRect: () => ({ height: 294.25 }) }),
+    querySelectorAll: () => [{ classList: { remove: value => { state.removedHighlight = value; } } }],
+    documentElement: { style: { setProperty: (name, value) => { state.style[name] = value; } } }
+  };
+  sandbox.render = () => { state.renders++; state.visible = true; };
+  sandbox.showToast = message => state.notices.push(message);
+  state.event = (href, overrides = {}) => ({
+    button: 0,
+    target: { closest: () => ({ getAttribute: () => href }) },
+    preventDefault: () => { state.prevented++; },
+    ...overrides
+  });
+  return { state, controls, wrap };
+}
+
+let navigation = navigationFixture();
+sandbox.handleToilLinkClick(navigation.state.event('#toil-8'));
+assertEq('demo clicks use the exact issue number', sandbox.window.location.hash, '#toil-8');
+assertEq('demo navigation takes control of the anchor scroll', navigation.state.prevented, 1);
+assertEq('navigation measures the actual sticky header', navigation.state.style['--sticky-header-height'], '295px');
+assertEq('demo navigation reveals the task-name columns', navigation.wrap.scrollLeft, 0);
+assertEq('navigation focuses the row without a second browser scroll',
+  navigation.state.focusOptions, { preventScroll: true });
+assertEq('already-visible tasks keep the active filters', navigation.controls.searchToil.value, 'flaky');
+assertEq('already-visible tasks avoid unnecessary rendering', navigation.state.renders, 0);
+sandbox.handleToilLinkClick(navigation.state.event('#toil-8'));
+assertEq('clicking the same circle again still reveals its row', navigation.state.scrolls, 2);
+assertEq('repeat navigation explicitly highlights newly rendered rows', navigation.state.highlight, 'toil-target');
+assertEq('navigation removes the previous row highlight', navigation.state.removedHighlight, 'toil-target');
+
+navigation = navigationFixture(false);
+sandbox.handleToilLinkClick(navigation.state.event('#toil-8'));
+assertEq('hidden tasks trigger a fresh backlog render', navigation.state.renders, 1);
+assertEq('conflicting team, status and search filters are cleared',
+  Object.values(navigation.controls).map(control => control.value), ['', '', '']);
+assertEq('filter changes are explained to the user',
+  navigation.state.notices[0], 'Showing toil #8 - backlog filters cleared.');
+assertEq('hidden tasks are scrolled into view after rendering', navigation.state.scrolls, 1);
+
+navigation = navigationFixture();
+sandbox.handleToilLinkClick(navigation.state.event('https://github.com/test/repo/issues/8'));
+for (const override of [{ metaKey: true }, { ctrlKey: true }, { shiftKey: true }, { altKey: true }, { button: 1 }]) {
+  sandbox.handleToilLinkClick(navigation.state.event('#toil-8', override));
+}
+assertEq('real issue links and modified clicks keep native browser behavior', navigation.state.prevented, 0);
+assertEq('native links do not mutate backlog navigation', navigation.state.scrolls, 0);
+assertEq('unknown tasks fail explicitly', sandbox.revealToilRow(999), false);
+assertEq('unknown tasks do not clear filters', navigation.controls.searchToil.value, 'flaky');
+assertEq('unknown tasks explain why navigation failed',
+  navigation.state.notices[0], '⚠️ This toil is not available in the current dashboard.');
+sandbox.window.location.hash = '#toil-8';
+sandbox.revealToilFromHash();
+assertEq('direct links and history navigation reveal the matching task', navigation.state.scrolls, 1);
+
+const reloadScrolls = [];
+let pageshow;
+sandbox.performance = { getEntriesByType: () => [{ type: 'reload' }] };
+sandbox.window.location = { pathname: '/dashboard/', search: '?preview=22', hash: '#toil-8' };
+sandbox.window.history = {
+  scrollRestoration: 'auto',
+  state: { existing: true },
+  replaceState: (state, title, url) => { sandbox.window.replacedUrl = url; }
+};
+sandbox.window.scrollTo = (x, y) => reloadScrolls.push([x, y]);
+sandbox.window.addEventListener = (name, handler, options) => {
+  assertEq('reload positioning runs at page-show once', [name, options.once], ['pageshow', true]);
+  pageshow = handler;
+};
+sandbox.requestAnimationFrame = callback => callback();
+assertEq('reload navigation is detected', sandbox.prepareReloadScroll(), true);
+assertEq('reload removes only the old fragment', sandbox.window.replacedUrl, '/dashboard/?preview=22');
+assertEq('reload initially prevents the browser restoring an old scroll position',
+  sandbox.window.history.scrollRestoration, 'manual');
+pageshow();
+assertEq('reload resets both scroll axes before and after page-show',
+  reloadScrolls, [[0, 0], [0, 0]]);
+assertEq('ordinary history restoration resumes after reload',
+  sandbox.window.history.scrollRestoration, 'auto');
+sandbox.performance = { getEntriesByType: () => [{ type: 'navigate' }] };
+assertEq('opening a direct link is not treated as a refresh', sandbox.prepareReloadScroll(), false);
+
 // --- priorities --------------------------------------------------------------
 assertEq('212 is critical', sandbox.getPriorityBand(212).id, 'critical');
 assertEq('25 is high', sandbox.getPriorityBand(25).id, 'high');
@@ -242,6 +435,15 @@ if (/(?<!GitHub )Copilot CLI/.test(HTML)) {
 
 assertEq('prompt button omits CLI wording',
   HTML.includes('⚡ Generate GitHub Copilot Prompt</button>'), true);
+assertEq('prompt button copies a plain prompt instead of a shell command',
+  SRC.includes('data-prompt="${esc(agentPrompt, true)}"') &&
+  !SRC.includes('const ghCmd =') && !SRC.includes('copyLaunchCmd'), true);
+assertEq('prompt feedback names GitHub Copilot and Microsoft 365 Copilot',
+  SRC.includes('Prompt copied — paste into GitHub Copilot or Microsoft 365 Copilot.') &&
+  !SRC.includes('paste in your terminal'), true);
+assertEq('monthly time cells have a pinned-column selector',
+  SRC.includes('<td class="toil-monthly-cell">${formatMinutes(issue.monthly_saved_minutes)}</td>') &&
+  HTML.includes('#toilTable td.toil-monthly-cell { position: sticky; right: 0;'), true);
 assertEq('category filter is removed from the dashboard',
   HTML.includes('id="filterCategory"'), false);
 assertEq('category column is removed from the dashboard',
@@ -293,12 +495,16 @@ assertEq('real issue links still open GitHub in a new tab',
 assertEq('team load derives weekly effort and excludes completed toil',
   SRC.includes('weekly_time_spent: (item.roi?.monthlyMins || 0) / 4.33') &&
   SRC.includes("getStatus(issue) !== 'automated' && issue.state !== 'closed'") &&
-  HTML.includes('Open Toil Load'), true);
+  HTML.includes('Team Member Toil') && !HTML.includes('Open Toil Load'), true);
 assertEq('team load renders a visual ranked card grid',
   HTML.includes('class="team-load-grid"') &&
   HTML.includes('class="load-person-card"') &&
   HTML.includes('class="load-avatar"') &&
   SRC.includes('const share = totalWeekly > 0'), true);
+assertEq('the weekly team total uses the requested terminology',
+  HTML.includes('combined team toil') && !HTML.includes('combined open load'), true);
+assertEq('the automation gauge no longer has a metric-replacing click Easter egg',
+  !SRC.includes("e.target.closest('.radial-progress')") && !SRC.includes("span.textContent = 'COPILOT'"), true);
 
 // --- cross-language parity with scripts/scoring.sh ---------------------------
 // The shell scorer writes the score onto the issue; this file recomputes it in
@@ -349,9 +555,149 @@ if (parityMismatch.length === 0 && parityChecked === FREQS.length * TIMES.length
   if (parityMismatch.length > 8) console.log(`       …and ${parityMismatch.length - 8} more`);
 }
 
-console.log('');
-console.log('════════════════════════════════════════════');
-console.log(`  Tests: ${total}  |  ✅ Passed: ${pass}  |  ❌ Failed: ${fail}`);
-console.log('════════════════════════════════════════════');
-console.log('');
-process.exit(fail === 0 ? 0 : 1);
+// --- sharing metadata and fork URL adaptation --------------------------------
+const head = HTML.slice(0, HTML.indexOf('</head>'));
+const sharingTags = Object.fromEntries(
+  [...head.matchAll(/<meta (?:property|name)="([^"]+)" content="([^"]*)">/g)]
+    .map(match => [match[1], match[2]])
+);
+assertEq('sharing metadata is present without running dashboard JavaScript',
+  sharingTags['og:type'], 'website');
+assertEq('social platforms receive a large-image card', sharingTags['twitter:card'], 'summary_large_image');
+assertEq('sharing images use an absolute HTTPS URL',
+  /^https:\/\/.+\/dashboard\/social-preview\.png\?v=2$/.test(sharingTags['og:image']), true);
+assertEq('both sharing formats use the same image',
+  sharingTags['twitter:image'], sharingTags['og:image']);
+assertEq('sharing images have descriptive alternative text',
+  sharingTags['og:image:alt'] === sharingTags['twitter:image:alt'] &&
+    sharingTags['og:image:alt'].includes('demo dashboard'), true);
+const socialImage = fs.readFileSync(path.join(ROOT, 'docs/dashboard/social-preview.png'));
+const socialSvg = fs.readFileSync(path.join(ROOT, 'docs/dashboard/social-preview.svg'), 'utf8');
+const svgColor = (id, attribute) => socialSvg.match(new RegExp(`id="${id}"[^>]*\\b${attribute}="([^"]+)"`))?.[1];
+const darkTokens = HTML.match(/\.dark, :root:not\(\.light\)\s*\{([^}]+)\}/)?.[1] || '';
+assertEq('sharing image canvas matches the dashboard dark theme',
+  svgColor('canvas-edge', 'stop-color'), darkTokens.match(/--bg-surface:\s*([^;]+);/)?.[1]);
+assertEq('sharing image primary text matches the dashboard dark theme',
+  svgColor('headline', 'fill'), darkTokens.match(/--text-primary:\s*([^;]+);/)?.[1]);
+assertEq('sharing image uses the dashboard purple accent',
+  svgColor('accent-start', 'stop-color'), HTML.match(/--accent:\s*([^;]+);/)?.[1]);
+assertEq('sharing image time-drain circles match the dashboard red',
+  svgColor('time-drain-circles', 'stroke'), HTML.match(/\.hotspot-drain \{ border: 2px solid (#[a-f0-9]+);/)?.[1]);
+assertEq('sharing image reclaimed hours use the dashboard success green',
+  svgColor('reclaimed-hours', 'fill'), HTML.match(/\.pulse-pill\.success \{[^}]* color: (#[a-f0-9]+);/)?.[1]);
+assertEq('the sharing asset is a PNG', socialImage.subarray(0, 8).toString('hex'), '89504e470d0a1a0a');
+assertEq('sharing image dimensions match the metadata',
+  [socialImage.readUInt32BE(16), socialImage.readUInt32BE(20)],
+  [Number(sharingTags['og:image:width']), Number(sharingTags['og:image:height'])]);
+assertEq('high-resolution sharing image stays below 2 MB', socialImage.length < 2000000, true);
+const sharingFixtureDir = fs.mkdtempSync(path.join(require('os').tmpdir(), 'toil-sharing-'));
+const sharingFixture = path.join(sharingFixtureDir, 'index.html');
+const sharingScript = path.join(ROOT, 'scripts/update-dashboard-sharing.sh');
+try {
+  for (const [repo, pagesUrl, expected] of [
+    ['Another-Team/toil-board', '', 'https://another-team.github.io/toil-board/dashboard/'],
+    ['Another-Team/Another-Team.github.io', '', 'https://another-team.github.io/dashboard/'],
+    ['Another-Team/toil-board', 'https://work.example.test/tools/', 'https://work.example.test/tools/dashboard/']
+  ]) {
+    fs.writeFileSync(sharingFixture, HTML);
+    const env = { ...process.env, REPO: repo, PAGES_URL: pagesUrl, DASHBOARD_HTML: sharingFixture };
+    execFileSync('bash', [sharingScript], { env, encoding: 'utf8' });
+    const updated = fs.readFileSync(sharingFixture, 'utf8');
+    assertEq(`${expected}: canonical URL adapts`, updated.includes(`<link rel="canonical" href="${expected}">`), true);
+    assertEq(`${expected}: Open Graph URL adapts`, updated.includes(`<meta property="og:url" content="${expected}">`), true);
+    assertEq(`${expected}: both image URLs adapt`,
+      (updated.match(new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + 'social-preview\\.png\\?v=2', 'g')) || []).length, 2);
+    assertEq(`${expected}: dashboard code is unchanged`,
+      updated.slice(updated.indexOf('<script>')), HTML.slice(HTML.indexOf('<script>')));
+    execFileSync('bash', [sharingScript], { env, encoding: 'utf8' });
+    assertEq(`${expected}: URL updates are idempotent`, fs.readFileSync(sharingFixture, 'utf8'), updated);
+  }
+  fs.writeFileSync(sharingFixture, HTML);
+  const { spawnSync } = require('child_process');
+  for (const badUrl of ['http://insecure.example.test', 'https://example.test/?query=1', 'https://example.test/#fragment']) {
+    const run = spawnSync('bash', [sharingScript], {
+      env: { ...process.env, REPO: 'test/repo', PAGES_URL: badUrl, DASHBOARD_HTML: sharingFixture },
+      encoding: 'utf8'
+    });
+    assertEq(`${badUrl}: invalid sharing URLs fail explicitly`, run.status, 2);
+    assertEq(`${badUrl}: failed validation leaves the page unchanged`, fs.readFileSync(sharingFixture, 'utf8'), HTML);
+  }
+  fs.writeFileSync(sharingFixture, HTML.replace(/<meta property="og:image"[^>]*>\n/, ''));
+  const before = fs.readFileSync(sharingFixture, 'utf8');
+  const missingTag = spawnSync('bash', [sharingScript], {
+    env: { ...process.env, REPO: 'test/repo', PAGES_URL: '', DASHBOARD_HTML: sharingFixture },
+    encoding: 'utf8'
+  });
+  assertEq('missing sharing tags fail explicitly', missingTag.status, 1);
+  assertEq('missing sharing tags do not truncate the HTML', fs.readFileSync(sharingFixture, 'utf8'), before);
+} finally {
+  fs.rmSync(sharingFixtureDir, { recursive: true, force: true });
+}
+
+async function testPromptCopy() {
+  const prompt = 'Automate "the toil".\nPreserve the issue context.';
+  const successMessage = '🚀 Prompt copied — paste into GitHub Copilot or Microsoft 365 Copilot.';
+  const failureMessage = 'Unable to copy the prompt. Allow clipboard access and try again.';
+  for (const mode of ['clipboard', 'fallback', 'no-api', 'denied', 'throws', 'missing']) {
+    const messages = [], tracked = [], writes = [], removed = [];
+    const textarea = { value: '', style: {}, select() {} };
+    let renders = 0;
+    const context = {
+      console: { error() {} },
+      navigator: mode === 'no-api' ? {} : {
+        clipboard: {
+          async writeText(text) {
+            if (mode !== 'clipboard') throw new Error('Clipboard unavailable');
+            writes.push(text);
+          }
+        }
+      },
+      document: {
+        createElement() { return textarea; },
+        body: {
+          appendChild() {},
+          removeChild(node) { removed.push(node === textarea); }
+        },
+        execCommand(command) {
+          assertEq(`${mode}: legacy copy command`, command, 'copy');
+          if (mode === 'throws') throw new Error('Copy blocked');
+          if (mode === 'denied') return false;
+          writes.push(textarea.value);
+          return true;
+        }
+      },
+      showToast(message) { messages.push(message); },
+      trackCopilotLaunch(number) { tracked.push(number); },
+      render() { renders++; }
+    };
+    vm.createContext(context);
+    vm.runInContext(extractDeclaration('copyCopilotPrompt'), context);
+    const succeeds = ['clipboard', 'fallback', 'no-api'].includes(mode);
+    await context.copyCopilotPrompt({
+      getAttribute(name) {
+        assertEq(`${mode}: reads prompt data`, name, 'data-prompt');
+        return mode === 'missing' ? null : prompt;
+      }
+    }, 10);
+    assertEq(`${mode}: copy feedback`, messages, [succeeds ? successMessage :
+      mode === 'missing' ? 'No prompt is available to copy. Refresh the dashboard and try again.' :
+        failureMessage]);
+    assertEq(`${mode}: preserves prompt text`, writes, succeeds ? [prompt] : []);
+    assertEq(`${mode}: only tracks a successful copy`, tracked, succeeds ? [10] : []);
+    assertEq(`${mode}: only rerenders after success`, renders, succeeds ? 1 : 0);
+    assertEq(`${mode}: cleans up fallback textarea`, removed,
+      ['fallback', 'no-api', 'denied', 'throws'].includes(mode) ? [true] : []);
+  }
+}
+
+testPromptCopy().then(() => {
+  console.log('');
+  console.log('════════════════════════════════════════════');
+  console.log(`  Tests: ${total}  |  ✅ Passed: ${pass}  |  ❌ Failed: ${fail}`);
+  console.log('════════════════════════════════════════════');
+  console.log('');
+  process.exit(fail === 0 ? 0 : 1);
+}).catch(error => {
+  console.error('Prompt copy tests failed:', error);
+  process.exit(1);
+});
