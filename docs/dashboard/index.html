@@ -76,11 +76,54 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 
 /* ── Summary Cards ── */
 .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.25rem; overflow: visible; }
+.cards[data-count="5"] { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 .card { background: rgba(17,17,23,0.6); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); padding: 1.25rem 1.35rem; transition: all 250ms cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 0 0 1px rgba(255,255,255,0.03), 0 2px 8px rgba(0,0,0,0.2); text-align: left; position: relative; overflow: visible; animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) backwards; backdrop-filter: blur(12px); }
 .card:nth-child(1) { animation-delay: 0.05s; }
 .card:nth-child(2) { animation-delay: 0.1s; }
 .card:nth-child(3) { animation-delay: 0.15s; }
 .card:nth-child(4) { animation-delay: 0.2s; }
+.hotspot-card { margin-bottom: 1.25rem; overflow: hidden; }
+.hotspot-header { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; margin-bottom: 0.9rem; }
+.hotspot-title { display: flex; align-items: center; gap: 0.55rem; font-size: 0.78rem; font-weight: 650; color: rgba(214,224,255,0.82); text-transform: uppercase; letter-spacing: 0.12em; }
+.hotspot-subtitle { margin-top: 0.28rem; color: rgba(158,164,184,0.62); font-size: 0.75rem; }
+.hotspot-header-data { display: flex; flex-direction: column; align-items: flex-end; gap: 0.55rem; }
+.hotspot-summary { display: flex; align-items: center; gap: 0.55rem; }
+.hotspot-metric { display: inline-flex; align-items: baseline; gap: 0.28rem; padding: 0.32rem 0.58rem; border: 1px solid rgba(196,181,253,0.13); border-radius: 999px; background: rgba(255,255,255,0.025); color: rgba(158,164,184,0.68); font-size: 0.62rem; white-space: nowrap; }
+.hotspot-metric strong { color: #f8fbff; font-size: 0.75rem; font-variant-numeric: tabular-nums; }
+.hotspot-metric.burning strong { color: #ff7a92; }
+.hotspot-metric.reclaimed strong { color: #71ffa7; }
+.hotspot-legend { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.7rem; color: rgba(158,164,184,0.72); font-size: 0.68rem; }
+.hotspot-legend span { display: inline-flex; align-items: center; gap: 0.32rem; white-space: nowrap; }
+.hotspot-legend i { width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 10px currentColor; }
+.hotspot-map { min-height: 190px; display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: nowrap; gap: clamp(0.3rem, 0.65vw, 0.8rem); padding: 1.1rem 1rem 0.9rem; overflow: hidden; border-radius: calc(var(--radius) - 0.3rem); background: radial-gradient(circle at 50% 36%, rgba(168,85,247,0.11), transparent 44%), linear-gradient(180deg, rgba(255,255,255,0.018), transparent), rgba(7,9,20,0.38); border: 1px solid rgba(196,181,253,0.1); }
+.hotspot-item { min-width: 0; flex: 1 1 0; display: flex; flex-direction: column; align-items: center; color: #f8fbff; text-decoration: none; text-align: center; }
+.hotspot-bubble-stage { width: 100%; height: 104px; display: flex; align-items: flex-end; justify-content: center; }
+.hotspot-bubble { width: min(100%, 100px); max-width: 100px; min-width: 72px; height: auto; aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 50%; color: #f8fbff; line-height: 1; position: relative; isolation: isolate; transition: transform 220ms cubic-bezier(0.16,1,0.3,1), filter 220ms ease, box-shadow 220ms ease; }
+.hotspot-bubble::before { content: ""; position: absolute; inset: 5px; border-radius: inherit; background: radial-gradient(circle at 35% 28%, rgba(255,255,255,0.2), transparent 28%), rgba(20,23,38,0.9); z-index: -1; }
+.hotspot-item:hover .hotspot-bubble, .hotspot-item:focus-visible .hotspot-bubble { transform: translateY(-5px) scale(1.06); filter: brightness(1.16); z-index: 2; }
+.hotspot-item:focus-visible { outline: none; }
+.hotspot-item:focus-visible .hotspot-bubble { box-shadow: 0 0 0 3px #fff, 0 0 0 6px #a855f7; }
+.hotspot-bubble strong { margin-top: 0.12rem; font-size: clamp(0.82rem, 1.2vw, 1.28rem); letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+.hotspot-id { font-size: 0.5rem; font-weight: 700; opacity: 0.58; letter-spacing: 0.08em; }
+.hotspot-unit { margin-top: 0.22rem; color: rgba(226,232,240,0.58); font-size: 0.5rem; font-weight: 650; letter-spacing: 0.04em; text-transform: uppercase; }
+.hotspot-task { width: 100%; height: 2.3em; margin-top: 0.52rem; color: rgba(226,232,240,0.82); font-size: 0.61rem; font-weight: 580; line-height: 1.15; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.hotspot-status { margin-top: 0.3rem; font-size: 0.51rem; font-weight: 650; letter-spacing: 0.06em; text-transform: uppercase; }
+.hotspot-status.automated { color: #71ffa7; }
+.hotspot-status.building { color: #ed78ff; }
+.hotspot-status.critical { color: #ff7a92; }
+.hotspot-status.backlog { color: #8bd7ff; }
+.hotspot-drain { border: 2px solid #ff4d6d; box-shadow: 0 0 27px rgba(255,77,109,0.3), inset 0 0 20px rgba(255,77,109,0.12); animation: hotspotPulse 2.8s ease-in-out infinite; }
+.hotspot-automated { border: 2px solid #39ff88; box-shadow: 0 0 22px rgba(57,255,136,0.23), inset 0 0 20px rgba(57,255,136,0.1); }
+.hotspot-building { border: 2px solid #d400ff; box-shadow: 0 0 24px rgba(212,0,255,0.28), inset 0 0 20px rgba(212,0,255,0.12); }
+.hotspot-critical { border: 2px solid #ff4d6d; box-shadow: 0 0 27px rgba(255,77,109,0.3), inset 0 0 20px rgba(255,77,109,0.12); animation: hotspotPulse 2.8s ease-in-out infinite; }
+.hotspot-backlog { border: 2px solid #67c8ff; box-shadow: 0 0 22px rgba(103,200,255,0.22), inset 0 0 20px rgba(103,200,255,0.1); }
+.hotspot-empty { color: rgba(158,164,184,0.7); font-size: 0.8rem; }
+.light .hotspot-map { background: radial-gradient(circle at 50% 45%, rgba(124,58,237,0.06), transparent 42%), rgba(248,250,252,0.82); border-color: rgba(100,116,139,0.14); }
+.light .hotspot-bubble::before { background: radial-gradient(circle at 35% 28%, rgba(255,255,255,0.85), transparent 34%), rgba(241,245,249,0.96); }
+.light .hotspot-bubble, .light .hotspot-item { color: #0f172a; }
+.light .hotspot-task { color: rgba(30,41,59,0.84); }
+.light .hotspot-unit { color: rgba(51,65,85,0.66); }
+.light .hotspot-metric strong { color: #0f172a; }
 .card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(34,211,238,0.08), transparent 60%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; opacity: 0; transition: opacity 300ms ease; }
 .card::after { content: ""; position: absolute; inset: -1px; border-radius: inherit; background: radial-gradient(300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(168,85,247,0.06), transparent 60%); pointer-events: none; opacity: 0; transition: opacity 300ms ease; }
 .card:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px rgba(168,85,247,0.1), 0 8px 30px rgba(0,0,0,0.3), 0 0 40px rgba(168,85,247,0.04); }
@@ -157,6 +200,30 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 #trendChart { flex: 1; display: flex; align-items: center; justify-content: center; }
 /* Team card */
 #teamFocusCard { display: flex; flex-direction: column; }
+.team-load-heading { display: flex; flex-direction: column; gap: 0.22rem; }
+.team-load-heading p { color: rgba(158,164,184,0.58); font-size: 0.72rem; }
+.team-load-total { display: flex; align-items: baseline; gap: 0.4rem; padding: 0.5rem 0.8rem; border: 1px solid rgba(255,77,109,0.2); border-radius: 999px; background: rgba(255,77,109,0.07); white-space: nowrap; }
+.team-load-total strong { color: #ff8da2; font-size: 1rem; font-variant-numeric: tabular-nums; }
+.team-load-total span { color: rgba(214,224,255,0.62); font-size: 0.66rem; }
+.team-load-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0.75rem; margin-top: 0.85rem; }
+.load-person-card { position: relative; overflow: hidden; min-width: 0; padding: 0.9rem; border: 1px solid rgba(196,181,253,0.13); border-radius: calc(var(--radius) - 0.2rem); background: linear-gradient(145deg, rgba(255,255,255,0.045), rgba(255,255,255,0.012)); transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease; }
+.load-person-card::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--load-color) 16%, transparent), transparent 45%); pointer-events: none; }
+.load-person-card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--load-color) 48%, transparent); box-shadow: 0 12px 28px rgba(0,0,0,0.2), 0 0 24px color-mix(in srgb, var(--load-color) 12%, transparent); }
+.load-person-top { position: relative; display: flex; align-items: center; gap: 0.65rem; }
+.load-rank { align-self: flex-start; color: rgba(158,164,184,0.48); font-size: 0.58rem; font-weight: 750; letter-spacing: 0.06em; }
+.load-avatar { width: 34px; height: 34px; flex: 0 0 34px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: color-mix(in srgb, var(--load-color) 14%, rgba(20,23,38,0.95)); border: 1px solid color-mix(in srgb, var(--load-color) 48%, transparent); color: #f8fbff; font-size: 0.75rem; font-weight: 750; box-shadow: 0 0 16px color-mix(in srgb, var(--load-color) 15%, transparent); }
+.load-person-copy { min-width: 0; }
+.load-person-copy strong { display: block; overflow: hidden; color: #f8fbff; font-size: 0.82rem; text-overflow: ellipsis; white-space: nowrap; }
+.load-person-copy small { display: block; margin-top: 0.1rem; color: rgba(158,164,184,0.58); font-size: 0.61rem; }
+.load-person-metric { position: relative; display: flex; align-items: baseline; gap: 0.28rem; margin-top: 0.85rem; }
+.load-person-metric strong { color: #f8fbff; font-size: 1.5rem; letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
+.load-person-metric span { color: rgba(158,164,184,0.62); font-size: 0.66rem; }
+.load-share { position: relative; display: flex; justify-content: space-between; gap: 0.5rem; margin-top: 0.25rem; color: rgba(158,164,184,0.52); font-size: 0.58rem; }
+.load-track { position: relative; height: 5px; margin-top: 0.65rem; overflow: hidden; border-radius: 999px; background: rgba(255,255,255,0.055); }
+.load-fill { height: 100%; width: var(--load-pct); border-radius: inherit; background: linear-gradient(90deg, var(--load-color), #d400ff); box-shadow: 0 0 12px color-mix(in srgb, var(--load-color) 35%, transparent); }
+.light .load-person-card { background: linear-gradient(145deg, #fff, #f8fafc); border-color: #e2e8f0; }
+.light .load-person-copy strong, .light .load-person-metric strong, .light .load-avatar { color: #0f172a; }
+.light .team-load-heading p, .light .load-person-copy small, .light .load-person-metric span, .light .load-share { color: #64748b; }
 /* Shipped card */
 #shippedCard { display: flex; flex-direction: column; }
 #shippedCard .shipped-body { flex: 1; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 1rem; padding: 0.5rem 0; }
@@ -250,6 +317,8 @@ th:hover { background: rgba(17,17,23,0.9); color: #e2e8f0; }
 tr:last-child td { border-bottom: none; }
 tbody tr:nth-child(even):not(.total-row) { background: rgba(255,255,255,0.015); }
 tr:hover td { background: rgba(168,85,247,0.04); }
+tr:target { scroll-margin-top: 4rem; }
+tr:target td { background: rgba(255,77,109,0.12); animation: targetRowPulse 1.4s ease-out; }
 .table-wrap { border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); overflow-x: auto; -webkit-overflow-scrolling: touch; background: rgba(17,17,23,0.4); box-shadow: 0 0 0 1px rgba(255,255,255,0.02); }
 .dark .table-wrap, :root:not(.light) .table-wrap { background: rgba(26,29,46,0.72); border-color: rgba(196,181,253,0.2); box-shadow: 0 0 0 1px rgba(196,181,253,0.08); }
 .dark th, :root:not(.light) th { background: rgba(13,16,28,0.92); color: rgba(214,224,255,0.85); border-bottom-color: rgba(196,181,253,0.22); }
@@ -271,6 +340,7 @@ tr.priority-critical, tr.priority-high, tr.priority-medium, tr.priority-low { bo
 .badge-triage { background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
 .badge-in-progress { background: rgba(168,85,247,0.1); color: #c084fc; border: 1px solid rgba(168,85,247,0.2); }
 .badge-automated { background: rgba(74,222,128,0.1); color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
+.badge-closed { background: rgba(148,163,184,0.12); color: #94a3b8; border: 1px solid rgba(148,163,184,0.25); }
 .dark .badge-toil, :root:not(.light) .badge-toil { background: rgba(168,85,247,0.16); color: #d8b4fe; border-color: rgba(168,85,247,0.35); }
 .dark .badge-triage, :root:not(.light) .badge-triage { background: rgba(255,231,74,0.16); color: #fff59d; border-color: rgba(255,231,74,0.35); }
 .dark .badge-in-progress, :root:not(.light) .badge-in-progress { background: rgba(212,0,255,0.16); color: #f0abfc; border-color: rgba(212,0,255,0.35); }
@@ -344,6 +414,14 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
   0%, 100% { box-shadow: 0 0 20px rgba(168,85,247,0.1); }
   50% { box-shadow: 0 0 40px rgba(168,85,247,0.2), 0 0 60px rgba(168,85,247,0.05); }
 }
+@keyframes hotspotPulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(255,77,109,0.22), inset 0 0 18px rgba(255,77,109,0.1); }
+  50% { box-shadow: 0 0 34px rgba(255,77,109,0.42), inset 0 0 24px rgba(255,77,109,0.16); }
+}
+@keyframes targetRowPulse {
+  0% { background: rgba(255,77,109,0.3); }
+  100% { background: rgba(255,77,109,0.12); }
+}
 @keyframes boltFlash {
   0% { opacity: 0; }
   12% { opacity: 1; }
@@ -362,6 +440,13 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 @media (max-width: 900px) {
   .container { padding: 1rem; }
   .cards { grid-template-columns: repeat(2, 1fr); }
+  .cards[data-count="5"] { grid-template-columns: repeat(2, 1fr); }
+  .hotspot-header { flex-direction: column; }
+  .hotspot-header-data { align-items: flex-start; }
+  .hotspot-summary { flex-wrap: wrap; }
+  .hotspot-legend { justify-content: flex-start; }
+  .hotspot-map { overflow-x: auto; justify-content: flex-start; }
+  .hotspot-item { min-width: 82px; }
   .header-inner { padding: 1rem 1.25rem; flex-direction: column; }
   .header-inner .meta { justify-content: flex-start; text-align: left; }
   .insight-body { flex-direction: column; }
@@ -382,6 +467,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
   .cards { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
   .card { padding: 0.85rem; border-radius: calc(var(--radius) - 0.25rem); }
   .card .value { font-size: 1.6rem; }
+  .hotspot-map { min-height: 175px; gap: 0.55rem; padding: 0.75rem; }
   .section { padding: 0.85rem; border-radius: calc(var(--radius) - 0.25rem); }
   .filters { flex-direction: column; gap: 0.5rem; }
   .filters select { width: 100%; }
@@ -467,6 +553,7 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 .light .badge-triage { background: rgba(191,135,0,0.08); color: #bf8700; }
 .light .badge-in-progress { background: rgba(168,85,247,0.08); color: #7c3aed; }
 .light .badge-automated { background: rgba(34,197,94,0.08); color: #16a34a; }
+.light .badge-closed { background: rgba(100,116,139,0.1); color: #475569; }
 .light .toast { background: #fff; color: #0f172a; border-color: #e2e8f0; box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
 .light .trend-label { fill: #94a3b8; }
 .light .trend-value { fill: #0f172a; }
@@ -649,14 +736,13 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
     <h1><span class="hero-bolt" title="Psst… click me">⚡</span> AI Toil Tracker</h1>
     <p id="teamName" title="Click to rename your team" style="cursor:pointer;font-size:1.15rem;font-weight:600;color:rgba(255,255,255,0.75);letter-spacing:-0.01em">Your Team ✎</p>
     <p class="hero-subtitle">See your team's repetitive work, watch AI eliminate it, and track the hours everyone gets back.</p>
-    <p style="font-size:0.72rem;color:rgba(255,255,255,0.35);margin-top:0.25rem;letter-spacing:0.02em;">Built and powered by the Copilot CLI</p>
+    <p style="font-size:0.72rem;color:rgba(255,255,255,0.35);margin-top:0.25rem;letter-spacing:0.02em;">Built and powered by the GitHub Copilot CLI</p>
     <div class="hero-pulse" id="heroPulse">
       <span class="pulse-pill neutral">⚡ Scanning for toil…</span>
     </div>
   </div>
   <div class="meta">
     <span id="headerRepo"></span>
-    <span>Generated: <span id="headerDate">—</span></span>
     <a href="#" id="headerRepoLink" target="_blank" rel="noopener noreferrer">View on GitHub ↗</a>
     <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark or light mode" title="Toggle dark/light mode">🌙 Dark</button>
   </div>
@@ -667,6 +753,9 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
 
   <!-- Summary Cards -->
   <div class="cards" id="summaryCards" aria-live="polite" aria-label="Summary statistics"></div>
+
+  <!-- Toil Hotspot Map -->
+  <article class="insight-card hotspot-card" id="hotspotMapCard" aria-label="Toil hotspot map"></article>
 
   <!-- Insights Grid -->
   <div class="insights-grid" id="insightsGrid">
@@ -689,8 +778,6 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
       <input type="search" id="searchToil" placeholder="🔍 Search toil ideas..." aria-label="Search toil ideas">
       <label for="filterTeam">Team:</label>
       <select id="filterTeam"><option value="">All</option></select>
-      <label for="filterCategory">Category:</label>
-      <select id="filterCategory"><option value="">All</option></select>
       <label for="filterStatus">Status:</label>
       <select id="filterStatus"><option value="">All</option></select>
       <label for="filterSort">📊 Sort by:</label>
@@ -699,7 +786,6 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
         <option value="toil_score">🎯 Impact Score</option>
         <option value="submitter">🧑‍💻 Person</option>
       </select>
-      <button class="show-cols-toggle" id="toggleCols" onclick="toggleColumns()">+ Show all details</button>
       <button class="show-cols-toggle" onclick="exportCSV()" title="Download as CSV">📥 CSV</button>
       <button class="show-cols-toggle" onclick="exportJSON()" title="Download as JSON">📥 JSON</button>
     </div>
@@ -711,13 +797,12 @@ td.editable input, td.editable select { font-size: 0.82rem; padding: 0.2rem 0.35
             <th scope="col" data-col="title" tabindex="0" role="button" aria-label="Sort by toil name">💡 Toil</th>
             <th scope="col" data-col="actions"></th>
             <th scope="col" data-col="submitter" tabindex="0" role="button" aria-label="Sort by submitter">🧑‍💻 Submitter</th>
-            <th scope="col" data-col="category" class="col-hidden" tabindex="0" role="button" aria-label="Sort by category">🏷️ Category</th>
             <th scope="col" data-col="frequency" tabindex="0" role="button" aria-label="Sort by frequency">🔄 Frequency</th>
             <th scope="col" data-col="time_per_occurrence" tabindex="0" role="button" aria-label="Sort by time">⏱️ Time</th>
             <th scope="col" data-col="people_affected" tabindex="0" role="button" aria-label="Sort by people affected">👥 People</th>
             <th scope="col" data-col="toil_score" tabindex="0" role="button" aria-label="Sort by impact score">Score</th>
             <th scope="col" data-col="status" tabindex="0" role="button" aria-label="Sort by status">Status</th>
-            <th scope="col" data-col="monthly_saved_minutes" tabindex="0" role="button" aria-label="Sort by time saved">⏱️ Time Saved / Month</th>
+            <th scope="col" data-col="monthly_saved_minutes" tabindex="0" role="button" aria-label="Sort by time per month">⏱️ Time / Month</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -806,13 +891,32 @@ const PEOPLE_SCORES = {
   '2\u20133 people': { score: 2 },
   'Just me': { score: 1 }
 };
-const BONUS_MAP = {
-  '❌ Error-prone': 2,
-  '🔗 Blocking': 3,
-  '😤 Morale killer': 1,
-  '📈 Growing worse': 2,
-  '🆕 New team friction': 1
+// Bonus factors must stay in lockstep with scoring.bonus_per_factor in
+// config.yml and parse_bonus_checkboxes() in scripts/parse-form.sh, otherwise a
+// score recalculated in the browser disagrees with the one on the issue.
+const BONUS_PER_FACTOR = 10;
+const BONUS_FACTORS = {
+  'error-prone': { label: '❌ Error-prone', points: BONUS_PER_FACTOR },
+  'morale-killer': { label: '😤 Morale killer', points: BONUS_PER_FACTOR },
+  'blocking': { label: '🔗 Blocking', points: BONUS_PER_FACTOR }
 };
+
+// Accepts either the slug the workflow emits ("error-prone") or the raw
+// checkbox label a browser-side parse produces ("❌ Error-prone").
+function bonusSlug(value) {
+  if (!value) return null;
+  const raw = String(value).toLowerCase();
+  if (BONUS_FACTORS[raw]) return raw;
+  if (/error.?prone/.test(raw)) return 'error-prone';
+  if (/morale.?killer/.test(raw)) return 'morale-killer';
+  if (/blocking/.test(raw)) return 'blocking';
+  return null;
+}
+
+function bonusLabel(value) {
+  const slug = bonusSlug(value);
+  return slug ? BONUS_FACTORS[slug].label : String(value);
+}
 
 const PRIORITY_BANDS = [
   { id: 'critical', min: 40, className: 'priority-critical', label: '🔴 Critical' },
@@ -831,160 +935,6 @@ function isCritical(score = 0) {
 }
 
 // ═══════════════════════════════════════════════════
-// SAMPLE DATA
-// ═══════════════════════════════════════════════════
-const SAMPLE_DATA = {
-  repo: CONFIG.fullRepo,
-  generated_at: new Date().toISOString(),
-  issues: [
-    {
-      number: 1,
-      title: "[TOIL] Staging Deploy — Manual deployment steps for staging environment",
-      url: `https://github.com/${CONFIG.fullRepo}/issues/1`,
-      state: "open",
-      labels: ["toil", "high-impact", "🔴 multiple-times-daily"],
-      submitter: "Maya Patel (@mayap)",
-      team: "Platform",
-      category: "🔧 CI/CD & Builds",
-      frequency: "🔴 Multiple times per day",
-      time_per_occurrence: "30–60 minutes",
-      people_affected: "Entire team",
-      bonus_factors: ["❌ Error-prone", "🔗 Blocking"],
-      automation_idea: "Create a CI/CD pipeline with GitHub Actions to automate staging deployments",
-      toil_score: 200,
-      priority: "🔴 Critical",
-      monthly_saved_minutes: 6000,
-      weekly_time_spent: 1500,
-      team_weekly_time_spent: 4200,
-      weekly_time_spent_display: "25 hrs/week",
-      team_weekly_time_spent_display: "70 hrs/week",
-      created_at: "2026-02-10T10:00:00Z",
-      ai_suggestion: "Use reusable GitHub Actions workflow with environment gates"
-    },
-    {
-      number: 2,
-      title: "[TOIL] Credential Rotation — Rotating database credentials manually every week",
-      url: `https://github.com/${CONFIG.fullRepo}/issues/2`,
-      state: "open",
-      labels: ["toil", "triage"],
-      submitter: "Liam Ortiz (@liamortiz)",
-      team: "DevOps",
-      category: "🔐 Security & Compliance",
-      frequency: "🔵 Weekly",
-      time_per_occurrence: "15–30 minutes",
-      people_affected: "2-3 people",
-      bonus_factors: ["❌ Error-prone"],
-      automation_idea: "Use AWS Secrets Manager automatic rotation",
-      toil_score: 14,
-      priority: "🟡 Medium",
-      monthly_saved_minutes: 4800,
-      weekly_time_spent: 1200,
-      team_weekly_time_spent: 2400,
-      weekly_time_spent_display: "20 hrs/week",
-      team_weekly_time_spent_display: "40 hrs/week",
-      created_at: "2026-02-04T14:30:00Z",
-      ai_suggestion: "Configure AWS Secrets Manager with Lambda rotation function"
-    },
-    {
-      number: 3,
-      title: "[TOIL] Test Results — Copy-pasting test results into Slack every morning",
-      url: `https://github.com/${CONFIG.fullRepo}/issues/3`,
-      state: "closed",
-      labels: ["toil", "automated"],
-      submitter: "Nina Gomez (@ninagomez)",
-      team: "Engineering",
-      category: "📊 Reporting & Communication",
-      frequency: "🟠 Daily",
-      time_per_occurrence: "5–15 minutes",
-      people_affected: "Just you",
-      bonus_factors: ["😤 Morale killer"],
-      automation_idea: "Slack bot that posts CI results automatically",
-      toil_score: 11,
-      priority: "🟡 Medium",
-      monthly_saved_minutes: 3600,
-      weekly_time_spent: 900,
-      team_weekly_time_spent: 900,
-      weekly_time_spent_display: "15 hrs/week",
-      team_weekly_time_spent_display: "15 hrs/week",
-      created_at: "2026-01-18T09:00:00Z",
-      ai_suggestion: "GitHub Actions workflow with Slack notification step"
-    },
-    {
-      number: 4,
-      title: "[TOIL] Dep Updates — Updating dependency versions across 12 microservices",
-      url: `https://github.com/${CONFIG.fullRepo}/issues/4`,
-      state: "open",
-      labels: ["toil", "in-progress", "high-impact"],
-      submitter: "Ravi Shah (@ravishah)",
-      team: "Platform",
-      category: "🔧 CI/CD & Builds",
-      frequency: "🟡 Multiple times per week",
-      time_per_occurrence: "> 1 hour",
-      people_affected: "4-6 people",
-      bonus_factors: ["❌ Error-prone", "📈 Growing worse"],
-      automation_idea: "Dependabot with auto-merge for patch versions",
-      toil_score: 76,
-      priority: "🔴 Critical",
-      monthly_saved_minutes: 2400,
-      weekly_time_spent: 600,
-      team_weekly_time_spent: 1800,
-      weekly_time_spent_display: "10 hrs/week",
-      team_weekly_time_spent_display: "30 hrs/week",
-      created_at: "2025-12-12T11:00:00Z",
-      ai_suggestion: "Set up Dependabot with grouped updates and auto-merge workflow"
-    },
-    {
-      number: 5,
-      title: "[TOIL] Dev Onboarding — Manual environment setup for new engineers",
-      url: `https://github.com/${CONFIG.fullRepo}/issues/5`,
-      state: "open",
-      labels: ["toil", "triage"],
-      submitter: "Priya Desai (@priyadesai)",
-      team: "Product",
-      category: "🆕 Onboarding & Access",
-      frequency: "⚪ Monthly or less",
-      time_per_occurrence: "> 1 hour",
-      people_affected: "2-3 people",
-      bonus_factors: ["🆕 New team friction", "😤 Morale killer"],
-      automation_idea: "Dev container or Codespaces setup with scripted provisioning",
-      toil_score: 18,
-      priority: "🟡 Medium",
-      monthly_saved_minutes: 1200,
-      weekly_time_spent: 300,
-      team_weekly_time_spent: 600,
-      weekly_time_spent_display: "5 hrs/week",
-      team_weekly_time_spent_display: "10 hrs/week",
-      created_at: "2025-11-05T16:00:00Z",
-      ai_suggestion: "Create devcontainer.json with all tools and extensions pre-configured"
-    },
-    {
-      number: 6,
-      title: "[TOIL] Ticket Triage — Routing incoming support tickets from Zendesk",
-      url: `https://github.com/${CONFIG.fullRepo}/issues/6`,
-      state: "closed",
-      labels: ["toil", "high-impact", "automated"],
-      submitter: "Jordan Reed (@jordanreed)",
-      team: "Engineering",
-      category: "📊 Reporting & Communication",
-      frequency: "🟠 Daily",
-      time_per_occurrence: "30–60 minutes",
-      people_affected: "Entire team",
-      bonus_factors: ["🔗 Blocking", "📈 Growing worse"],
-      automation_idea: "Use an AI classifier to auto-route tickets by category",
-      toil_score: 55,
-      priority: "🔴 Critical",
-      monthly_saved_minutes: 3000,
-      weekly_time_spent: 750,
-      team_weekly_time_spent: 2250,
-      weekly_time_spent_display: "12.5 hrs/week",
-      team_weekly_time_spent_display: "37.5 hrs/week",
-      created_at: "2026-01-05T08:00:00Z",
-      ai_suggestion: "Train a classifier on historical ticket data to auto-label and route"
-    }
-  ]
-};
-
-// ═══════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════
 let dashboardData = null;
@@ -996,28 +946,38 @@ const localEdits = JSON.parse(localStorage.getItem('toilEdits') || '{}');
 // DATA LOADING
 // ═══════════════════════════════════════════════════
 function normalizeData(raw) {
-  // Workflow-generated format: { meta: {...}, issues: [{scoring:{}, roi:{}}] }
+  // Workflow-generated format: { meta: {...}, issues: [{scoring:{}, roi:{}, form:{}}] }
   if (raw.meta && raw.issues) {
+    const schema = raw.meta.schemaVersion || 1;
     return {
       repo: raw.meta.repo || CONFIG.fullRepo,
       generated_at: raw.meta.generatedAt || new Date().toISOString(),
+      schemaVersion: schema,
+      summary: raw.meta.summary || null,
+      byTeam: raw.meta.byTeam || [],
+      byCategory: raw.meta.byCategory || [],
       issues: raw.issues.map(item => ({
         number: item.number,
         title: item.title,
         url: item.url,
         state: (item.state || '').toLowerCase(),
         labels: item.labels || [],
-        submitter: item.author ? `${item.author} (@${item.author})` : 'Unknown contributor',
+        automated: item.automated === true,
+        // schema 2 carries the answers people actually typed; schema 1 could only
+        // reverse-engineer a label back out of the numeric score.
+        submitter: item.submitter || (item.author ? `${item.author} (@${item.author})` : 'Unknown contributor'),
         team: item.team || 'Unassigned team',
         category: item.category || 'Other',
-        frequency: reverseFreqScore(item.scoring?.frequency),
-        time_per_occurrence: reverseTimeScore(item.scoring?.time),
-        people_affected: reversePeopleScore(item.scoring?.people),
-        bonus_factors: [],
-        automation_idea: '',
+        frequency: item.form?.frequency || reverseFreqScore(item.scoring?.frequency),
+        time_per_occurrence: item.form?.timePerOccurrence || reverseTimeScore(item.scoring?.time),
+        people_affected: item.form?.peopleAffected || reversePeopleScore(item.scoring?.people),
+        bonus_factors: item.form?.bonusFactors || [],
+        automation_idea: item.form?.automationIdea || '',
         toil_score: item.scoring?.adjusted || item.scoring?.base || 1,
         priority: getPriorityLabel(item.scoring?.adjusted || item.scoring?.base || 1),
         monthly_saved_minutes: item.roi?.monthlyMins || 0,
+        weekly_time_spent: (item.roi?.monthlyMins || 0) / 4.33,
+        realized: item.roi?.realized === true,
         created_at: item.createdAt,
         ai_suggestion: ''
       }))
@@ -1044,6 +1004,7 @@ function normalizeData(raw) {
         toil_score: item.toilScore,
         priority: item.priority,
         monthly_saved_minutes: item.monthlyMinutes,
+        weekly_time_spent: (item.monthlyMinutes || 0) / 4.33,
         created_at: item.createdAt,
         ai_suggestion: ''
       })),
@@ -1070,16 +1031,22 @@ function reversePeopleScore(s) {
 // Embedded demo data so the dashboard works when opened via file:// protocol
 const DEMO_DATA = {"meta":{"generatedAt":"2026-02-28T00:00:00Z","repo":"acme-corp/toil-tracker","labels":{"toil":"toil","automated":"automated"},"summary":{"totalToil":12,"openToil":7,"automated":5,"monthlyMinutes":2847}},"issues":[{"number":1,"title":"Manually updating dependency versions across 12 repos","state":"CLOSED","url":"#","author":"sarahchen","createdAt":"2025-10-05T10:00:00Z","updatedAt":"2025-11-12T14:30:00Z","scoring":{"frequency":3,"time":5,"people":5,"base":75,"bonusCount":2,"bonusPoints":20,"adjusted":95,"priority":"critical"},"roi":{"monthlyMins":450,"monthlySavedText":"~7.5 hours/month"},"automated":true},{"number":2,"title":"Generating weekly status reports from GitHub data","state":"CLOSED","url":"#","author":"marcusj","createdAt":"2025-10-12T09:00:00Z","updatedAt":"2025-12-01T16:00:00Z","scoring":{"frequency":2,"time":5,"people":3,"base":30,"bonusCount":1,"bonusPoints":10,"adjusted":40,"priority":"critical"},"roi":{"monthlyMins":180,"monthlySavedText":"~3 hours/month"},"automated":true},{"number":3,"title":"Onboarding new team members — 23-step manual checklist","state":"CLOSED","url":"#","author":"priyap","createdAt":"2025-11-01T11:00:00Z","updatedAt":"2026-01-15T09:00:00Z","scoring":{"frequency":1,"time":8,"people":5,"base":40,"bonusCount":2,"bonusPoints":20,"adjusted":60,"priority":"critical"},"roi":{"monthlyMins":600,"monthlySavedText":"~10 hours/month"},"automated":true},{"number":4,"title":"Rotating secrets and API keys across staging and production","state":"CLOSED","url":"#","author":"alexk","createdAt":"2025-11-20T08:00:00Z","updatedAt":"2026-01-05T10:00:00Z","scoring":{"frequency":1,"time":5,"people":2,"base":10,"bonusCount":3,"bonusPoints":30,"adjusted":40,"priority":"critical"},"roi":{"monthlyMins":45,"monthlySavedText":"~45 minutes/month"},"automated":true},{"number":5,"title":"Triaging incoming support tickets and routing to correct team","state":"CLOSED","url":"#","author":"jordanl","createdAt":"2025-12-01T14:00:00Z","updatedAt":"2026-02-10T11:00:00Z","scoring":{"frequency":8,"time":2,"people":5,"base":80,"bonusCount":1,"bonusPoints":10,"adjusted":90,"priority":"critical"},"roi":{"monthlyMins":960,"monthlySavedText":"~16 hours/month"},"automated":true},{"number":6,"title":"Copying release notes from PRs into changelog and Slack","state":"OPEN","url":"#","author":"sarahchen","createdAt":"2025-12-15T10:00:00Z","updatedAt":"2026-02-20T09:00:00Z","scoring":{"frequency":5,"time":2,"people":3,"base":30,"bonusCount":0,"bonusPoints":0,"adjusted":30,"priority":"high"},"roi":{"monthlyMins":200,"monthlySavedText":"~3.3 hours/month"},"automated":false},{"number":7,"title":"Manually checking license compliance on new dependencies","state":"OPEN","url":"#","author":"marcusj","createdAt":"2026-01-05T13:00:00Z","updatedAt":"2026-02-18T15:00:00Z","scoring":{"frequency":3,"time":3,"people":2,"base":18,"bonusCount":1,"bonusPoints":10,"adjusted":28,"priority":"high"},"roi":{"monthlyMins":132,"monthlySavedText":"~2.2 hours/month"},"automated":false},{"number":8,"title":"Re-running flaky CI tests and investigating false failures","state":"OPEN","url":"#","author":"alexk","createdAt":"2026-01-10T09:00:00Z","updatedAt":"2026-02-25T08:00:00Z","scoring":{"frequency":8,"time":2,"people":8,"base":128,"bonusCount":2,"bonusPoints":20,"adjusted":148,"priority":"critical"},"roi":{"monthlyMins":960,"monthlySavedText":"~16 hours/month"},"automated":false},{"number":9,"title":"Scheduling and sending 6-month check-ins with project maintainers","state":"OPEN","url":"#","author":"priyap","createdAt":"2026-01-20T11:00:00Z","updatedAt":"2026-02-22T14:00:00Z","scoring":{"frequency":1,"time":2,"people":1,"base":2,"bonusCount":0,"bonusPoints":0,"adjusted":2,"priority":"low"},"roi":{"monthlyMins":10,"monthlySavedText":"~10 minutes/month"},"automated":false},{"number":10,"title":"Manually provisioning cloud sandbox environments for demos","state":"OPEN","url":"#","author":"jordanl","createdAt":"2026-01-25T15:00:00Z","updatedAt":"2026-02-24T10:00:00Z","scoring":{"frequency":2,"time":5,"people":3,"base":30,"bonusCount":1,"bonusPoints":10,"adjusted":40,"priority":"critical"},"roi":{"monthlyMins":180,"monthlySavedText":"~3 hours/month"},"automated":false},{"number":11,"title":"Auditing GitHub org permissions and removing stale collaborators","state":"OPEN","url":"#","author":"sarahchen","createdAt":"2026-02-01T10:00:00Z","updatedAt":"2026-02-26T16:00:00Z","scoring":{"frequency":1,"time":3,"people":2,"base":6,"bonusCount":1,"bonusPoints":10,"adjusted":16,"priority":"medium"},"roi":{"monthlyMins":22,"monthlySavedText":"~22 minutes/month"},"automated":false},{"number":12,"title":"Syncing documentation across wiki, README, and internal portal","state":"OPEN","url":"#","author":"marcusj","createdAt":"2026-02-10T08:00:00Z","updatedAt":"2026-02-27T12:00:00Z","scoring":{"frequency":3,"time":3,"people":5,"base":45,"bonusCount":1,"bonusPoints":10,"adjusted":55,"priority":"critical"},"roi":{"monthlyMins":330,"monthlySavedText":"~5.5 hours/month"},"automated":false}]};
 
+let usingDemoData = false;
+
 async function loadData() {
   // Try the workflow-generated JSON first (works on Pages via HTTP)
   try {
     const res = await fetch('./dashboard-data.json');
     if (res.ok) {
       const json = await res.json();
-      if (json.issues && json.issues.length > 0) {
+      // A valid payload with zero issues is a real answer, not a failure. Falling
+      // through to demo data here is what made empty trackers show Acme Corp's
+      // numbers as if they were the viewer's own.
+      if (json && Array.isArray(json.issues)) {
         dashboardData = normalizeData(json);
         applyLocalEdits();
         render();
+        if (dashboardData.issues.length === 0) showEmptyState();
         return;
       }
     }
@@ -1100,11 +1067,14 @@ async function loadData() {
     }
   } catch (_) { /* fall through */ }
 
-  // Fallback: embedded demo data (works on file:// protocol)
+  // Fallback: embedded demo data, only when nothing real is reachable
+  // (typically opening this file directly over file://).
   if (DEMO_DATA && DEMO_DATA.issues && DEMO_DATA.issues.length > 0) {
+    usingDemoData = true;
     dashboardData = normalizeData(DEMO_DATA);
     applyLocalEdits();
     render();
+    showDemoBanner();
     return;
   }
 
@@ -1112,6 +1082,24 @@ async function loadData() {
   dashboardData = { repo: CONFIG.fullRepo, generated_at: new Date().toISOString(), issues: [] };
   render();
   showEmptyState();
+}
+
+function showDemoBanner() {
+  const container = document.querySelector('.container');
+  if (!container || document.getElementById('demo-banner')) return;
+  const msg = document.createElement('div');
+  msg.id = 'demo-banner';
+  msg.className = 'section';
+  msg.style.cssText = 'text-align:center;padding:1rem 1.25rem;border:1px solid rgba(251,191,36,0.35);background:rgba(251,191,36,0.08)';
+  msg.innerHTML = `
+    <strong>⚠️ Sample data</strong>
+    <span style="color:var(--text-soft)">
+      — these are example numbers for a fictional team, not
+      <a href="https://github.com/${CONFIG.fullRepo}" target="_blank" rel="noopener">${CONFIG.fullRepo}</a>.
+      Run the <em>Update Dashboard Data</em> workflow and open this page over HTTPS to see your own toil.
+    </span>
+  `;
+  container.prepend(msg);
 }
 
 function showEmptyState() {
@@ -1147,8 +1135,7 @@ function convertApiIssues(apiIssues) {
       const team = extractField(body, 'What team or group are you on?') || 'Unassigned team';
       const category = extractField(body, 'What area does this toil fall under?') || 'Other';
       const submitter = issue.user ? `${issue.user.login} (@${issue.user.login})` : 'Unknown contributor';
-      const bonusRaw = extractField(body, 'Bonus factors (check all that apply)') || '';
-      const bonus = Object.keys(BONUS_MAP).filter(b => bonusRaw.includes(b));
+      const bonus = extractCheckedBonus(body);
       const { score, monthlyMins } = calcScore(freq, time, people, bonus);
       return {
         number: issue.number,
@@ -1181,13 +1168,28 @@ function extractField(body, field) {
   return m ? m[1].trim() : null;
 }
 
+// Bonus factors are checkboxes, so every ticked line matters — reading only the
+// first line of the section (as extractField does) can never find more than one.
+function extractCheckedBonus(body) {
+  const found = [];
+  String(body || '').split('\n').forEach(line => {
+    if (!/^\s*-\s*\[[xX]\]/.test(line)) return;
+    const slug = bonusSlug(line);
+    if (slug && !found.includes(slug)) found.push(slug);
+  });
+  return found;
+}
+
 function calcScore(freq, time, people, bonus) {
   const fObj = FREQ_SCORES[freq] || { score: 1, monthly: 1 };
   const tObj = TIME_SCORES[time] || { score: 1, mins: 3 };
   const pObj = PEOPLE_SCORES[people] || { score: 1 };
   const base = fObj.score * tObj.score * pObj.score;
   const bonusList = Array.isArray(bonus) ? bonus : [];
-  const bonusTotal = bonusList.reduce((s, b) => s + (BONUS_MAP[b] || 0), 0);
+  const bonusTotal = bonusList.reduce((s, b) => {
+    const slug = bonusSlug(b);
+    return s + (slug ? BONUS_FACTORS[slug].points : 0);
+  }, 0);
   const score = base + bonusTotal;
   const monthlyMins = fObj.monthly * tObj.mins * pObj.score;
   return { score, monthlyMins };
@@ -1222,9 +1224,14 @@ function getStatus(issue) {
     return localEdits[issue.number].status;
   }
   const labels = issue.labels.map(l => l.toLowerCase());
-  if (labels.includes('automated') || issue.state === 'closed') return 'automated';
+  // "Automated" is proven by the automated label (or the generator's own flag) —
+  // never by the issue merely being closed. Issues also get closed as duplicates,
+  // as not-planned, and by the stale bot, and counting those as automation wins
+  // silently inflated every savings number on this page.
+  if (issue.automated === true || labels.includes('automated')) return 'automated';
   if (labels.includes('in-progress')) return 'in-progress';
   if (labels.includes('triage')) return 'triage';
+  if (issue.state === 'closed') return 'closed';
   return 'toil';
 }
 
@@ -1233,6 +1240,7 @@ function statusBadge(status, issueNum) {
     'automated': '✅ Shipped',
     'in-progress': '🔨 Building',
     'triage': '🔍 Triaging',
+    'closed': '📦 Closed, not automated',
     'toil': '💡 Ready to fix'
   };
   const edited = issueNum && localEdits[issueNum] && localEdits[issueNum].status ? '<span class="edited-marker">✎</span>' : '';
@@ -1277,7 +1285,6 @@ function render() {
 
   // Header
   document.getElementById('headerRepo').textContent = data.repo;
-  document.getElementById('headerDate').textContent = new Date(data.generated_at).toLocaleDateString();
   document.getElementById('headerRepoLink').href = `https://github.com/${data.repo}`;
 
   const issues = data.issues;
@@ -1287,6 +1294,7 @@ function render() {
 
   // Summary cards (dynamically shows relevant cards)
   renderSummaryCards(issues);
+  renderHotspotMap(issues);
 
   // Hero + insight telemetry
   renderHeroPulse(issues);
@@ -1304,11 +1312,9 @@ function render() {
 
 function populateFilters(issues) {
   const teams = [...new Set(issues.map(i => i.team).filter(Boolean))].sort();
-  const categories = [...new Set(issues.map(i => i.category).filter(Boolean))].sort();
   const statuses = [...new Set(issues.map(i => getStatus(i)))].sort();
 
   fillSelect('filterTeam', teams);
-  fillSelect('filterCategory', categories);
   fillSelect('filterStatus', statuses);
 }
 
@@ -1336,13 +1342,23 @@ function renderSummaryCards(issues) {
   const automated = statusCounts['automated'] || 0;
   const inProgress = statusCounts['in-progress'] || 0;
   const backlog = statusCounts['toil'] || 0;
-  const totalMinsSaved = issues.reduce((s, i) => s + (i.monthly_saved_minutes || 0), 0);
-  const hoursSaved = totalMinsSaved / 60;
+  const totalMinsTracked = issues.reduce((s, i) => s + (i.monthly_saved_minutes || 0), 0);
+  // Only automated toil has actually been saved. Everything else is still being
+  // done by hand, so it belongs in "still burning", not in the savings total.
+  const realizedMins = issues
+    .filter(i => getStatus(i) === 'automated')
+    .reduce((s, i) => s + (i.monthly_saved_minutes || 0), 0);
+  const potentialMins = issues
+    .filter(i => getStatus(i) !== 'automated' && i.state !== 'closed')
+    .reduce((s, i) => s + (i.monthly_saved_minutes || 0), 0);
+  const hoursSaved = realizedMins / 60;
+  const potentialHours = potentialMins / 60;
+  const trackedHours = totalMinsTracked / 60;
   const automationRate = total ? Math.round((automated / total) * 100) : 0;
   const riskIssues = issues.filter(i => getStatus(i) !== 'automated' && isCritical(i.toil_score));
   const riskMins = riskIssues.reduce((s, i) => s + (i.monthly_saved_minutes || 0), 0);
   const riskHours = riskMins / 60;
-  const avgHoursPerIdea = total ? (hoursSaved / total) : 0;
+  const avgHoursPerIdea = total ? (trackedHours / total) : 0;
   const weeklyBurn = issues.reduce((s, i) => s + (i.team_weekly_time_spent || 0), 0) / 60;
   const fteRecovered = hoursSaved / 160;
   const targetRate = 55;
@@ -1369,10 +1385,18 @@ function renderSummaryCards(issues) {
 
   cards.push(`
     <article class="card emerald">
-      <div class="label">⚡ Hours Saved / Month ${tip('Estimated hours your team saves each month from automating toil. Calculated from frequency × time × people affected for each issue.')}</div>
+      <div class="label">⚡ Hours Saved / Month ${tip('Hours your team has actually stopped spending, counted only from toil that is marked automated. Estimated as frequency × time × people affected.')}</div>
       <div class="value"><span class="value-number" data-animate="${hoursSaved}" data-format="hours">${hoursSaved.toFixed(1)}</span><sup>hrs</sup></div>
-      <p class="card-subtext">≈ ${fteRecovered.toFixed(1)} FTEs given back</p>
+      <p class="card-subtext">≈ ${fteRecovered.toFixed(1)} FTEs given back · ${potentialHours.toFixed(1)} hrs still on the table</p>
       <div class="micro-progress" data-color="success"><span style="width:${Math.min(mitigationRate, 100)}%"></span></div>
+    </article>`);
+
+  cards.push(`
+    <article class="card">
+      <div class="label">🔥 Hours Still Burning / Month ${tip('Hours per month still being spent by hand on open toil that has not been automated yet. This is the opportunity, not a saving.')}</div>
+      <div class="value"><span class="value-number" data-animate="${potentialHours}" data-format="hours">${potentialHours.toFixed(1)}</span><sup>hrs</sup></div>
+      <p class="card-subtext">${backlog + inProgress} open ${backlog + inProgress === 1 ? 'item' : 'items'} · ${trackedHours.toFixed(1)} hrs tracked in total</p>
+      <div class="micro-progress" data-color="warning"><span style="width:${trackedHours > 0 ? Math.min(Math.round((potentialHours / trackedHours) * 100), 100) : 0}%"></span></div>
     </article>`);
 
   if (automated > 0) {
@@ -1412,7 +1436,9 @@ function renderSummaryCards(issues) {
     </article>`);
   }
 
-  document.getElementById('summaryCards').innerHTML = cards.join('');
+  const summaryCards = document.getElementById('summaryCards');
+  summaryCards.dataset.count = cards.length;
+  summaryCards.innerHTML = cards.join('');
   animateSummaryNumbers();
 }
 
@@ -1424,6 +1450,79 @@ function animateSummaryNumbers() {
       animateValue(el, target, format);
     });
   });
+}
+
+function renderHotspotMap(issues) {
+  const card = document.getElementById('hotspotMapCard');
+  if (!card) return;
+
+  const openIssues = issues.filter(issue =>
+    getStatus(issue) !== 'automated' && issue.state !== 'closed'
+  );
+  const ranked = openIssues
+    .slice()
+    .sort((a, b) => {
+      const monthlyDiff = (b.monthly_saved_minutes || 0) - (a.monthly_saved_minutes || 0);
+      if (monthlyDiff !== 0) return monthlyDiff;
+      const scoreDiff = (b.toil_score || 0) - (a.toil_score || 0);
+      return scoreDiff !== 0 ? scoreDiff : (a.number || 0) - (b.number || 0);
+    })
+    .slice(0, 5);
+  const burningMinutes = openIssues.reduce(
+    (sum, issue) => sum + (issue.monthly_saved_minutes || 0),
+    0
+  );
+  const topDrainMinutes = ranked[0]?.monthly_saved_minutes || 0;
+
+  const bubbles = ranked.map(issue => {
+    const minutes = issue.monthly_saved_minutes || 0;
+    const hours = minutes / 60;
+    const status = getStatus(issue);
+    const visualStatus = status === 'in-progress' ? 'building' : 'backlog';
+    const statusLabel = visualStatus === 'building'
+      ? 'In progress'
+      : 'Not started';
+    const timeMeaning = 'spent per month';
+    const safeUrl = getIssueUrl(issue);
+    const linkTarget = safeUrl.startsWith('https://github.com/')
+      ? ' target="_blank" rel="noopener noreferrer"'
+      : '';
+    const title = (issue.title || `Toil #${issue.number}`).replace(/^\[TOIL\]\s*/i, '');
+    const taskName = title
+      .split(' — ')[0]
+      .split(/\s+/)
+      .slice(0, 3)
+      .join(' ');
+    const accessibleLabel = `${title}. ${hours.toFixed(1)} hours ${timeMeaning}. ${visualStatus}.`;
+
+    return `<a class="hotspot-item" href="${safeUrl}"${linkTarget} aria-label="${esc(accessibleLabel, true)}" title="${esc(accessibleLabel, true)}">
+      <span class="hotspot-bubble-stage">
+        <span class="hotspot-bubble hotspot-drain">
+          <span class="hotspot-id">#${issue.number}</span>
+          <strong>${hours < 10 ? hours.toFixed(1) : Math.round(hours)} hrs</strong>
+          <span class="hotspot-unit">${timeMeaning}</span>
+        </span>
+      </span>
+      <span class="hotspot-task">${esc(taskName)}</span>
+      <span class="hotspot-status ${visualStatus}">${statusLabel}</span>
+    </a>`;
+  }).join('');
+
+  card.innerHTML = `
+    <div class="hotspot-header">
+      <div>
+        <div class="hotspot-title">🔥 Top Time Drains <span class="card-help">?<span class="card-tip">The five open toil issues consuming the most team time each month. Click one to open its GitHub Issue.</span></span></div>
+        <p class="hotspot-subtitle">Top 5 open tasks ranked left to right by monthly manual effort.</p>
+      </div>
+      <div class="hotspot-header-data">
+        <div class="hotspot-summary" aria-label="Monthly toil summary">
+          <span class="hotspot-metric burning"><strong>${(burningMinutes / 60).toFixed(1)}h</strong> monthly burn</span>
+          <span class="hotspot-metric"><strong>${openIssues.length}</strong> open tasks</span>
+          <span class="hotspot-metric"><strong>${(topDrainMinutes / 60).toFixed(1)}h</strong> top drain</span>
+        </div>
+      </div>
+    </div>
+    <div class="hotspot-map">${bubbles || '<span class="hotspot-empty">No toil signals to map yet.</span>'}</div>`;
 }
 
 function animateValue(el, target, format) {
@@ -1472,7 +1571,6 @@ function renderHeroPulse(issues) {
 function renderInsightPanels(issues) {
   renderPipelineCard(issues);
   renderShippedCard(issues);
-  renderTeamFocusCard(issues);
 }
 
 function renderPipelineCard(issues) {
@@ -1572,15 +1670,15 @@ function renderTeamFocusCard(issues) {
   const card = document.getElementById('teamFocusCard');
   if (!card) return;
   const personMap = {};
-  issues.forEach(issue => {
-    const person = issue.submitter || 'Unknown contributor';
-    const name = person.replace(/\s*\(@\w+\)/, '');
-    if (!personMap[name]) personMap[name] = { weekly: 0, saved: 0, count: 0, automated: 0, team: issue.team || '' };
-    personMap[name].weekly += (issue.weekly_time_spent || 0);
-    personMap[name].saved += (issue.monthly_saved_minutes || 0);
-    personMap[name].count++;
-    if (getStatus(issue) === 'automated') personMap[name].automated++;
-  });
+  issues
+    .filter(issue => getStatus(issue) !== 'automated' && issue.state !== 'closed')
+    .forEach(issue => {
+      const person = issue.submitter || 'Unknown contributor';
+      const name = person.replace(/\s*\(@\w+\)/, '');
+      if (!personMap[name]) personMap[name] = { weekly: 0, count: 0 };
+      personMap[name].weekly += issue.weekly_time_spent || (issue.monthly_saved_minutes || 0) / 4.33;
+      personMap[name].count++;
+    });
   const people = Object.entries(personMap).sort((a, b) => (b[1].weekly || 0) - (a[1].weekly || 0)).slice(0, 6);
   const maxWeekly = Math.max(...people.map(([, d]) => d.weekly), 1);
   const totalWeekly = people.reduce((s, [, d]) => s + d.weekly, 0);
@@ -1593,26 +1691,46 @@ function renderTeamFocusCard(issues) {
 
   card.innerHTML = `
     <div class="insight-header">
-      <span class="eyebrow">Team Load <span class="card-help">?<span class="card-tip">Shows who carries the most toil burden. Bar length = weekly hours on toil. Color intensity: 🟢 light → 🟡 moderate → 🔴 heavy.</span></span></span>
-      <span class="mini-pill">${people.length} ${people.length === 1 ? 'person' : 'people'}</span>
+      <div class="team-load-heading">
+        <span class="eyebrow">Open Toil Load <span class="card-help">?<span class="card-tip">Groups open toil by the person who submitted it. Each card estimates weekly team effort from the issue's monthly toil hours.</span></span></span>
+        <p>Where reported manual work is accumulating across the team.</p>
+      </div>
+      <div class="team-load-total">
+        <strong>${formatWeeklyTime(totalWeekly)}</strong>
+        <span>combined open load</span>
+      </div>
     </div>
-    <div class="team-load-bars" style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:0.45rem;">
-      ${people.length === 0 ? '<p style="color:var(--text-soft);font-size:0.82rem;">Submit toil ideas to see team load.</p>' : people.map(([name, data]) => {
+    <div class="team-load-grid">
+      ${people.length === 0 ? '<p style="color:var(--text-soft);font-size:0.82rem;">Submit toil ideas to see team load.</p>' : people.map(([name, data], index) => {
         const pct = data.weekly / maxWeekly;
         const barPct = Math.max(pct * 100, 4);
         const color = heatColor(pct);
-        const automatedPct = data.count > 0 ? Math.round((data.automated / data.count) * 100) : 0;
+        const share = totalWeekly > 0 ? Math.round((data.weekly / totalWeekly) * 100) : 0;
+        const weeklyValue = data.weekly >= 60 ? (data.weekly / 60).toFixed(1) : Math.round(data.weekly);
+        const weeklyUnit = data.weekly >= 60 ? 'hours / week' : 'minutes / week';
+        const initial = name.trim().charAt(0).toUpperCase() || '?';
         return `
-        <div class="load-row" title="${name}: ${formatWeeklyTime(data.weekly)}/wk across ${data.count} toil item${data.count !== 1 ? 's' : ''} (${automatedPct}% automated)">
-          <span class="load-name">${esc(name.split(' ')[0])}</span>
-          <div class="load-track">
-            <div class="load-fill" style="width:${barPct}%;background:${color};"></div>
+        <article class="load-person-card" style="--load-pct:${barPct}%;--load-color:${color};" title="${name}: ${formatWeeklyTime(data.weekly)} across ${data.count} open toil item${data.count !== 1 ? 's' : ''}">
+          <div class="load-person-top">
+            <span class="load-rank">#${index + 1}</span>
+            <span class="load-avatar">${esc(initial)}</span>
+            <div class="load-person-copy">
+              <strong>${esc(name)}</strong>
+              <small>${data.count} open ${data.count === 1 ? 'task' : 'tasks'}</small>
+            </div>
           </div>
-          <span class="load-val">${formatWeeklyTime(data.weekly)}</span>
-        </div>`;
+          <div class="load-person-metric">
+            <strong>${weeklyValue}</strong>
+            <span>${weeklyUnit}</span>
+          </div>
+          <div class="load-share">
+            <span>${share}% of reported load</span>
+            <span>${formatWeeklyTime(data.weekly)}</span>
+          </div>
+          <div class="load-track" aria-hidden="true"><div class="load-fill"></div></div>
+        </article>`;
       }).join('')}
     </div>
-    <p class="insight-note" style="margin-top:auto;">${people.length ? `Combined: ${formatWeeklyTime(totalWeekly)}/wk across ${people.length} ${people.length === 1 ? 'person' : 'people'}` : ''}</p>
   `;
 }
 
@@ -1751,13 +1869,11 @@ function renderTrendChart(issues) {
 // ── Main Toil Table ──
 function renderToilTable(issues) {
   const teamF = document.getElementById('filterTeam').value;
-  const catF = document.getElementById('filterCategory').value;
   const statF = document.getElementById('filterStatus').value;
   const searchQ = (document.getElementById('searchToil').value || '').toLowerCase().trim();
 
   let filtered = issues.slice();
   if (teamF) filtered = filtered.filter(i => i.team === teamF);
-  if (catF) filtered = filtered.filter(i => i.category === catF);
   if (statF) filtered = filtered.filter(i => getStatus(i) === statF);
   if (searchQ) filtered = filtered.filter(i =>
     (i.title || '').toLowerCase().includes(searchQ) ||
@@ -1793,12 +1909,15 @@ function renderToilTable(issues) {
   tbody.innerHTML = filtered.map(issue => {
     const status = getStatus(issue);
     const edited = localEdits[issue.number] ? '<span class="edited-marker">✎</span>' : '';
-    const bonusStr = (issue.bonus_factors || []).join(' ');
+    const bonusStr = (issue.bonus_factors || []).map(bonusLabel).join(' ');
     const rawTitle = (issue.title || '').replace(/^\[TOIL\]\s*/i, '');
     const freq = issue.frequency || 'unknown frequency';
     const time = issue.time_per_occurrence || 'unknown duration';
     const idea = issue.automation_idea || '';
-    const issueUrl = issue.url || `https://github.com/${CONFIG.fullRepo}/issues/${issue.number}`;
+    const issueUrl = getIssueUrl(issue);
+    const issueLinkTarget = issueUrl.startsWith('https://github.com/')
+      ? ' target="_blank" rel="noopener noreferrer"'
+      : '';
     const repoUrl = `https://github.com/${CONFIG.fullRepo}`;
     const contextUrls = [issueUrl, repoUrl].filter(u => u && u.startsWith('https://'));
     const agentPrompt = [
@@ -1826,15 +1945,14 @@ function renderToilTable(issues) {
     const toilName = dashIdx > -1 ? rawTitle.substring(0, dashIdx) : rawTitle.split(/\s+/).slice(0, 4).join(' ');
     const toilDesc = dashIdx > -1 ? rawTitle.substring(dashIdx + 3) : (dashIdx === -1 && rawTitle.length > toilName.length ? rawTitle : '');
 
-    const safeUrl = issue.url && issue.url.startsWith('https://github.com/') ? issue.url : '#';
-    const actionBtn = `<button class="btn btn-launch" onclick="copyLaunchCmd(this, ${issue.number})" data-cmd="${esc(ghCmd, true)}" title="Copies a ready-to-use prompt to your clipboard. Paste it into GitHub Copilot CLI, Copilot Chat, or any AI assistant to start automating this toil.">⚡ Generate Copilot CLI Prompt</button>`;
+    const safeUrl = issueUrl;
+    const actionBtn = `<button class="btn btn-launch" onclick="copyLaunchCmd(this, ${issue.number})" data-cmd="${esc(ghCmd, true)}" title="Copies a ready-to-use prompt to your clipboard. Paste it into GitHub Copilot Chat or any AI assistant to start automating this toil.">⚡ Generate GitHub Copilot Prompt</button>`;
 
-    return `<tr class="${priorityClass(issue.toil_score)}">
-      <td><a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="issue-link">#${issue.number}</a></td>
+    return `<tr id="toil-${issue.number}" class="${priorityClass(issue.toil_score)}">
+      <td><a href="${safeUrl}"${issueLinkTarget} class="issue-link">#${issue.number}</a></td>
       <td class="toil-cell"><div class="toil-name">${esc(toilName)}</div>${toilDesc ? `<div class="toil-desc">${esc(toilDesc)}</div>` : ''}</td>
       <td class="toil-action-cell"><div class="toil-action-inner">${actionBtn}</div></td>
       <td>${esc(issue.submitter)}</td>
-      <td class="col-hidden">${esc(issue.category)}</td>
       <td class="editable" data-issue="${issue.number}" data-field="frequency">${esc(issue.frequency)}${edited}</td>
       <td class="editable" data-issue="${issue.number}" data-field="time_per_occurrence">${esc(issue.time_per_occurrence)}</td>
       <td class="editable" data-issue="${issue.number}" data-field="people_affected">${esc(issue.people_affected)}</td>
@@ -1962,7 +2080,7 @@ document.querySelector('#toilTable thead').addEventListener('keydown', function(
 // ═══════════════════════════════════════════════════
 // FILTERS
 // ═══════════════════════════════════════════════════
-['filterTeam', 'filterCategory', 'filterStatus'].forEach(id => {
+['filterTeam', 'filterStatus'].forEach(id => {
   document.getElementById(id).addEventListener('change', () => render());
 });
 document.getElementById('searchToil').addEventListener('input', () => render());
@@ -2041,14 +2159,18 @@ function escapeHtml(str, attr) {
 // Compatibility alias (to be removed in future refactor)
 const esc = escapeHtml;
 
-// ═══════════════════════════════════════════════════
-// COLUMN TOGGLE
-// ═══════════════════════════════════════════════════
-let showAllCols = false;
-function toggleColumns() {
-  showAllCols = !showAllCols;
-  document.querySelectorAll('.col-hidden').forEach(el => el.style.display = showAllCols ? '' : 'none');
-  document.getElementById('toggleCols').textContent = showAllCols ? '− Fewer columns' : '+ Show all columns';
+function getIssueUrl(issue) {
+  const explicitUrl = String(issue?.url || '');
+  if (/^https:\/\/github\.com\/[^/]+\/[^/]+\/issues\/\d+(?:[/?#].*)?$/.test(explicitUrl)) {
+    return explicitUrl;
+  }
+
+  const issueNumber = Number(issue?.number);
+  if (Number.isInteger(issueNumber) && issueNumber > 0) {
+    return `#toil-${issueNumber}`;
+  }
+
+  return '#toilTable';
 }
 
 // ═══════════════════════════════════════════════════
@@ -2176,7 +2298,7 @@ document.addEventListener('click', function(e) {
   const span = gauge.querySelector('span');
   const origSpan = span ? span.textContent : '';
   if (span) span.textContent = 'COPILOT';
-  showToast('🤖 Copilot CLI is your co-pilot!');
+  showToast('🤖 GitHub Copilot CLI is your co-pilot!');
   // Copilot heads storm
   const storm = document.createElement('div');
   storm.className = 'bolt-storm';
