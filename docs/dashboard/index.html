@@ -206,7 +206,8 @@ button:focus-visible, select:focus-visible, input:focus-visible, a:focus-visible
 .mini-pill { font-size: 0.62rem; padding: 0.15rem 0.5rem; border-radius: 999px; border: 1px solid rgba(255,255,255,0.08); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 500; }
 .mini-pill.live { border-color: rgba(57,255,136,0.4); color: #39ff88; background: rgba(57,255,136,0.12); animation: pulseGlow 3s ease-in-out infinite; }
 .insight-body { display: flex; gap: 0.9rem; flex-wrap: wrap; align-items: center; justify-content: center; flex: 1; position: relative; z-index: 1; }
-.radial-progress { --size: 72px; --progress: 0deg; width: var(--size); height: var(--size); border-radius: 50%; background: conic-gradient(#a855f7 var(--progress), rgba(168,85,247,0.1) var(--progress), rgba(168,85,247,0.1) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; position: relative; box-shadow: 0 0 20px rgba(168,85,247,0.1), 0 0 0 2px rgba(168,85,247,0.08); }
+.radial-progress { --size: 72px; --progress: 0deg; appearance: none; border: 0; padding: 0; font: inherit; cursor: pointer; width: var(--size); height: var(--size); border-radius: 50%; background: conic-gradient(#a855f7 var(--progress), rgba(168,85,247,0.1) var(--progress), rgba(168,85,247,0.1) 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; position: relative; box-shadow: 0 0 20px rgba(168,85,247,0.1), 0 0 0 2px rgba(168,85,247,0.08); }
+.radial-progress:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 .radial-progress::after { content: ""; position: absolute; inset: 5px; background: rgba(5,4,7,0.95); border-radius: 50%; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
 .radial-progress strong { position: relative; z-index: 1; font-size: 0.9rem; font-weight: 700; color: #f5f7ff; line-height: 1.2; }
 .radial-progress span { position: relative; z-index: 1; font-size: 0.38rem; color: rgba(158,164,184,0.5); text-transform: uppercase; letter-spacing: 0.12em; line-height: 1; }
@@ -1654,11 +1655,11 @@ function renderPipelineCard(issues) {
   const automationRate = total ? Math.round((counts.shipped / total) * 100) : 0;
   card.innerHTML = `
     <div class="insight-header">
-      <span class="eyebrow">Pipeline Momentum <span class="card-help">?<span class="card-tip">Shows where your toil issues are in the automation pipeline — from backlog to shipped. The gauge tracks your overall automation rate.</span></span></span>
+      <span class="eyebrow">Pipeline Momentum <span class="card-help">?<span class="card-tip">Shows where your toil issues are in the automation pipeline — from backlog to shipped. Select the gauge for a GitHub Copilot logo celebration; your progress stays visible.</span></span></span>
       <span class="mini-pill live">Live</span>
     </div>
     <div class="insight-body">
-      <div class="radial-progress"><strong>${automationRate}%</strong><span>Automated</span></div>
+      <button type="button" class="radial-progress" aria-label="${automationRate}% automated. Celebrate with GitHub Copilot."><strong>${automationRate}%</strong><span>Automated</span></button>
       <div class="stat-list">
         <div class="stat-row"><strong class="stat-val-green">${counts.shipped}</strong><span style="display:flex;align-items:center;gap:6px"><span class="stat-dot stat-dot-green"></span>Automated</span></div>
         <div class="stat-row"><strong class="stat-val-purple">${counts.building}</strong><span style="display:flex;align-items:center;gap:6px"><span class="stat-dot stat-dot-purple"></span>Building</span></div>
@@ -1670,9 +1671,48 @@ function renderPipelineCard(issues) {
   const gauge = card.querySelector('.radial-progress');
   if (gauge) {
     gauge.style.setProperty('--progress', `${automationRate * 3.6}deg`);
-    gauge.style.cursor = 'pointer';
-    gauge.title = 'Click me 👀';
+    gauge.title = 'Celebrate with GitHub Copilot logos';
+    gauge.addEventListener('click', launchCopilotStorm);
   }
+}
+
+function launchCopilotStorm() {
+  if (document.querySelector('.copilot-storm')) return;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const storm = document.createElement('div');
+  storm.className = 'bolt-storm copilot-storm';
+  storm.setAttribute('aria-hidden', 'true');
+  if (!reducedMotion) {
+    const flash = document.createElement('div');
+    flash.className = 'bolt-flash';
+    flash.style.background = 'radial-gradient(circle at 50% 20%, rgba(133,52,243,0.35), rgba(168,85,247,0.16) 35%, transparent 68%)';
+    storm.appendChild(flash);
+  }
+  const copilotSvg = '<svg viewBox="0 0 24 24" width="1em" height="1em" style="display:block"><path fill="currentColor" d="M23.922 16.992c-.861 1.495-5.859 5.023-11.922 5.023-6.063 0-11.061-3.528-11.922-5.023A.641.641 0 0 1 0 16.736v-2.869a.841.841 0 0 1 .053-.22c.372-.935 1.347-2.292 2.605-2.656.167-.429.414-1.055.644-1.517a10.195 10.195 0 0 1-.052-1.086c0-1.331.282-2.499 1.132-3.368.397-.406.89-.717 1.474-.952 1.399-1.136 3.392-2.093 6.122-2.093 2.731 0 4.767.957 6.166 2.093.584.235 1.077.546 1.474.952.85.869 1.132 2.037 1.132 3.368 0 .368-.014.733-.052 1.086.23.462.477 1.088.644 1.517 1.258.364 2.233 1.721 2.605 2.656a.832.832 0 0 1 .053.22v2.869a.641.641 0 0 1-.078.256ZM12.172 11h-.344a4.323 4.323 0 0 1-.355.508C10.703 12.455 9.555 13 7.965 13c-1.725 0-2.989-.359-3.782-1.259a2.005 2.005 0 0 1-.085-.104L4 11.741v6.585c1.435.779 4.514 2.179 8 2.179 3.486 0 6.565-1.4 8-2.179v-6.585l-.098-.104s-.033.045-.085.104c-.793.9-2.057 1.259-3.782 1.259-1.59 0-2.738-.545-3.508-1.492a4.323 4.323 0 0 1-.355-.508h-.016.016Zm.641-2.935c.136 1.057.403 1.913.878 2.497.442.544 1.134.938 2.344.938 1.573 0 2.292-.337 2.657-.751.384-.435.558-1.15.558-2.361 0-1.14-.243-1.847-.705-2.319-.477-.488-1.319-.862-2.824-1.025-1.487-.161-2.192.138-2.533.529-.269.307-.437.808-.438 1.578v.021c0 .265.021.562.063.893Zm-1.626 0c.042-.331.063-.628.063-.894v-.02c-.001-.77-.169-1.271-.438-1.578-.341-.391-1.046-.69-2.533-.529-1.505.163-2.347.537-2.824 1.025-.462.472-.705 1.179-.705 2.319 0 1.211.175 1.926.558 2.361.365.414 1.084.751 2.657.751 1.21 0 1.902-.394 2.344-.938.475-.584.742-1.44.878-2.497Z"/><path fill="currentColor" d="M14.5 14.25a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0v-2a1 1 0 0 1 1-1Zm-5 0a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0v-2a1 1 0 0 1 1-1Z"/></svg>';
+  const colors = ['#8534F3', '#B870FF', '#C898FD', '#43179E'];
+  const count = reducedMotion ? 6 : 20;
+  for (let i = 0; i < count; i++) {
+    const logo = document.createElement('span');
+    logo.className = 'storm-bolt';
+    logo.innerHTML = copilotSvg;
+    logo.style.color = colors[i % colors.length];
+    logo.style.left = (30 + Math.random() * 40) + '%';
+    logo.style.top = (20 + Math.random() * 40) + '%';
+    logo.style.fontSize = (1.2 + Math.random() * 2.2) + 'rem';
+    const angle = (i / count) * Math.PI * 2;
+    const distance = 100 + Math.random() * 220;
+    logo.style.setProperty('--tx', (Math.cos(angle) * distance) + 'px');
+    logo.style.setProperty('--ty', (Math.sin(angle) * distance) + 'px');
+    logo.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+    logo.style.animationDelay = (Math.random() * 0.2) + 's';
+    if (reducedMotion) {
+      logo.style.animation = 'none';
+      logo.style.opacity = '1';
+    }
+    storm.appendChild(logo);
+  }
+  document.body.appendChild(storm);
+  setTimeout(() => storm.remove(), 1800);
 }
 
 function renderShippedCard(issues) {

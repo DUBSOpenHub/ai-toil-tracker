@@ -531,8 +531,48 @@ assertEq('team load renders a visual ranked card grid',
   SRC.includes('const share = totalWeekly > 0'), true);
 assertEq('the weekly team total uses the requested terminology',
   HTML.includes('combined team toil') && !HTML.includes('combined open load'), true);
-assertEq('the automation gauge no longer has a metric-replacing click Easter egg',
-  !SRC.includes("e.target.closest('.radial-progress')") && !SRC.includes("span.textContent = 'COPILOT'"), true);
+assertEq('the pipeline celebration uses a native keyboard-accessible button',
+  SRC.includes('<button type="button" class="radial-progress"') &&
+    SRC.includes("gauge.addEventListener('click', launchCopilotStorm)"), true);
+const stormSource = extractDeclaration('launchCopilotStorm');
+assertEq('the logo celebration is independent of the gauge and its metrics',
+  !/automationRate|dashboardData|localEdits|radial-progress/.test(stormSource) &&
+    !SRC.includes("span.textContent = 'COPILOT'"), true);
+for (const reducedMotion of [false, true]) {
+  const storms = [], timers = [];
+  const environment = {
+    document: {
+      querySelector: () => storms.find(storm => !storm.removed) || null,
+      createElement: tag => ({
+        tag, children: [], attributes: {}, style: { setProperty(name, value) { this[name] = value; } },
+        setAttribute(name, value) { this.attributes[name] = value; },
+        appendChild(child) { this.children.push(child); },
+        remove() { this.removed = true; }
+      }),
+      body: { appendChild(storm) { storms.push(storm); } }
+    },
+    window: { matchMedia: () => ({ matches: reducedMotion }) },
+    setTimeout: (callback, duration) => { timers.push({ callback, duration }); }
+  };
+  vm.runInNewContext(stormSource, environment);
+  environment.launchCopilotStorm();
+  const storm = storms[0];
+  const logos = storm.children.filter(node => node.className === 'storm-bolt');
+  assertEq(`logo celebration creates the requested artwork (reduced motion: ${reducedMotion})`,
+    logos.length === (reducedMotion ? 6 : 20) && logos.every(node => node.innerHTML.includes('<svg')), true);
+  assertEq(`logo celebration is decorative (reduced motion: ${reducedMotion})`,
+    storm.attributes['aria-hidden'], 'true');
+  assertEq(`logo celebration honors motion preferences (${reducedMotion})`,
+    reducedMotion
+      ? logos.every(node => node.style.animation === 'none' && node.style.opacity === '1') &&
+        !storm.children.some(node => node.className === 'bolt-flash')
+      : storm.children.some(node => node.className === 'bolt-flash'), true);
+  environment.launchCopilotStorm();
+  assertEq(`repeated clicks do not stack logo storms (${reducedMotion})`, storms.length, 1);
+  assertEq(`logo celebration has a bounded lifetime (${reducedMotion})`, timers[0].duration, 1800);
+  timers[0].callback();
+  assertEq(`logo celebration removes its overlay (${reducedMotion})`, storm.removed, true);
+}
 
 // --- cross-language parity with scripts/scoring.sh ---------------------------
 // The shell scorer writes the score onto the issue; this file recomputes it in
