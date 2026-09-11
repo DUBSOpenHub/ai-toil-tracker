@@ -1,8 +1,8 @@
 # 🤖 AI Toil Tracker
 
-**Stop doing repetitive work. Start automating it.**
+**Find the work slowing your team down.**
 
-Every team has busywork - the manual, repetitive tasks that eat up time and could be handled by an agent or script. This tool gives your team a simple way to track it and fix it.
+Every team has repetitive work - manual tasks that consume time and could be handled by an agent or script. This tool gives your team a simple way to track and automate it.
 
 > 💡 **This is for any team.** Use this template, set up a weekly Slack reminder, and start collecting ideas in under 10 minutes. No code required.
 
@@ -11,19 +11,51 @@ Every team has busywork - the manual, repetitive tasks that eat up time and coul
 <p align="center"><strong><a href="https://dubsopenhub.github.io/ai-toil-tracker/dashboard/">👉 Open the live demo dashboard</a></strong></p>
 
 <p align="center">
-  <img src="docs/assets/dashboard-preview.png" alt="AI Toil Tracker dashboard showing hours reclaimed, ranked time drains, and automation progress" width="960">
+  <a href="https://dubsopenhub.github.io/ai-toil-tracker/dashboard/"><img src="docs/dashboard/social-preview-yc.png" alt="Find the work slowing your team down: an illustrated overview of shared team time drains" width="960"></a>
 </p>
+
+<details>
+<summary>📸 Desktop and mobile dashboard screenshots</summary>
+
+**Desktop**
+
+<p align="center">
+  <img src="docs/assets/dashboard-preview.png" alt="Desktop dashboard with automation progress, shared team time drains, and monthly effort" width="960">
+</p>
+
+**Mobile**
+
+<p align="center">
+  <img src="docs/assets/dashboard-mobile.png" alt="Mobile dashboard showing the summary cards and a single ranked row of time drains" width="360">
+</p>
+
+</details>
 
 <details>
 <summary>📸 What to explore (click to expand)</summary>
 
 1. **Prioritize** — Select a Top Time Drains circle to reveal its matching backlog task.
 2. **Follow progress** — Compare triaging, in-progress, and shipped work without confusing ongoing effort with hours already reclaimed.
-3. **Explore team toil** — Compare reported weekly effort and copy an automation prompt for the work you choose.
+3. **Explore team toil** — Compare reported weekly effort and copy a GitHub Copilot prompt for the work you choose.
 
 </details>
 
 > The demo uses sample data. Status and team-name edits stay in your browser; sharing its URL does not share those edits.
+
+<details>
+<summary>Presentation artwork and transparent logos</summary>
+
+[Full-resolution presentation image](docs/dashboard/social-preview-yc.png) · [Editable artwork](docs/dashboard/social-preview-yc.svg)
+
+Use dark lettering on light backgrounds and white lettering on dark backgrounds.
+The PNG logos have transparent backgrounds; SVG originals are included.
+
+| Slide background | Transparent PNG | SVG |
+|---|---|---|
+| Light | [Dark-text logo](docs/assets/brand/ai-toil-tracker-dark-text.png) | [Dark-text SVG](docs/assets/brand/ai-toil-tracker-dark-text.svg) |
+| Dark | [White-text logo](docs/assets/brand/ai-toil-tracker-white-text.png) | [White-text SVG](docs/assets/brand/ai-toil-tracker-white-text.svg) |
+
+</details>
 
 ## How AI Is Used
 
@@ -125,11 +157,12 @@ A visual dashboard lets your team and manager see all ideas, filter by team, and
 
 ### What's on the Dashboard
 
-- **Summary Cards** — Total ideas, wins, hours saved/month, automation rate, in-progress, and high-impact counts
-- **Team & Individual Breakdown** — Per-person and per-team stats: ideas submitted, automated, and estimated monthly hours saved
+- **Summary Cards** — Reported toil, hours saved, hours still spent manually, automation progress, and critical hotspots
+- **Top Time Drains** — The five largest unfinished tasks, ranked by monthly effort, with lifecycle badges and links to their backlog rows
+- **Team Member Toil** — Reported open workload grouped by submitter, with weekly effort, task counts, and share bars
 - **Toil Ideas Table** — Every toil idea with sortable columns, inline-editable scores, color-coded priority rows, and status badges
-- **🚀 Automate Button** — Choose your tool: **GitHub Copilot CLI** (copies a command). Toggle in the dashboard header
-- **Filters** — Filter by team, category, or status to focus on what matters
+- **GitHub Copilot Prompts** — Copy a ready-to-use plain-text prompt with the task, repository, and automation context
+- **Filters** — Filter by team or status, and search the backlog to focus on what matters
 
 ### Setting Up the Dashboard
 
@@ -138,11 +171,13 @@ A visual dashboard lets your team and manager see all ideas, filter by team, and
 3. **Data updates automatically** — The `dashboard-data.yml` workflow runs daily and on every issue change, committing fresh data to `docs/dashboard/dashboard-data.json`
 4. **Works immediately** — The dashboard includes sample data so you can see it right away, even before any real issues are filed
 
+> This demonstration repository keeps `docs/dashboard/.demo`. Remove that marker in your own repository to let the data workflow generate live issue data.
+
 ### Editing & Interacting
 
 - **Click any score cell** (Frequency, Time, People) to edit it inline — the toil score recalculates in real time
 - **Edits persist** in your browser via localStorage
-- **"Save to GitHub"** link opens the issue on GitHub so you can update the actual issue
+- **Issue links** open GitHub for real issues; sample tasks navigate within the demo
 - **Sort** by clicking any column header
 - **Filter** using the dropdowns above the table
 - **Print** the dashboard for leadership presentations (print-friendly styling included)

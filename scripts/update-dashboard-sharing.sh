@@ -38,7 +38,7 @@ if [[ ! "$base_url" =~ ^https://[[:alnum:].-]+(/[[:alnum:]_.~%/-]*)?$ ]]; then
 fi
 
 dashboard_url="${base_url}/dashboard/"
-image_url="${dashboard_url}social-preview.png?v=2"
+image_url="${dashboard_url}social-preview-yc.png?v=3"
 tmp="$(mktemp "${HTML_FILE}.XXXXXX")"
 trap 'rm -f "$tmp"' EXIT
 awk -v dashboard_url="$dashboard_url" -v image_url="$image_url" '

@@ -1,36 +1,41 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
-  <title id="title">AI Toil Tracker: Find the busywork worth automating.</title>
-  <desc id="description">A minimalist, light-theme design concept using the dashboard's colors. A ranked list shows the five largest time drains in the sample dataset, with 30.6 hours of open toil per month. This is an independent design concept, not a Y Combinator endorsement.</desc>
+  <title id="title">AI Toil Tracker: Find the work slowing your team down.</title>
+  <desc id="description">A light-theme preview showing shared team workflows, their remaining monthly effort, and a summary of automated and remaining tasks. All figures are illustrative demo data. This is an independent design concept, not a Y Combinator endorsement.</desc>
   <rect width="1200" height="630" fill="#f9fafb"/>
   <g font-family="Arial, Helvetica, sans-serif">
     <rect x="60" y="48" width="32" height="32" rx="6" fill="#7c3bff"/>
     <path d="m79 53-13 14h9l-3 10 14-16h-9Z" fill="#fff"/>
-    <text x="106" y="72" fill="#0e1018" font-size="23" font-weight="700" letter-spacing="-.7">AI Toil Tracker</text>
-    <text x="1140" y="70" text-anchor="end" fill="#5e6474" font-size="12" font-weight="700" letter-spacing="1.5">OPEN SOURCE</text>
+    <text id="product-name" x="106" y="75" fill="#0e1018" font-size="30" font-weight="700" letter-spacing="-.7">AI Toil Tracker</text>
 
-    <text class="yc-headline" x="60" y="188" fill="#0e1018" font-size="66" font-weight="700" letter-spacing="-2.8">Find the busywork</text>
-    <text class="yc-headline" x="60" y="266" fill="#7c3bff" font-size="66" font-weight="700" letter-spacing="-2.8">worth automating.</text>
-    <text class="yc-copy" x="63" y="321" fill="#5e6474" font-size="22">Rank your team's busywork by hours lost.</text>
-    <text class="yc-copy" x="63" y="354" fill="#5e6474" font-size="22">Copy an AI prompt. Start automating.</text>
+    <text class="yc-headline" x="60" y="168" fill="#0e1018" font-size="88" font-weight="700" textLength="540" lengthAdjust="spacing">Find the work</text>
+    <text class="yc-headline" x="60" y="256" fill="#ff4d6d" font-size="92" font-weight="700" textLength="539" lengthAdjust="spacing">slowing your</text>
+    <text class="yc-headline" x="60" y="370" fill="#ff4d6d" font-size="104" font-weight="700" textLength="540" lengthAdjust="spacing">team down.</text>
+    <text class="yc-copy" x="63" y="430" fill="#5e6474" font-size="26" textLength="360" lengthAdjust="spacing">Use GitHub Copilot to create</text>
+    <text class="yc-copy" x="63" y="470" fill="#5e6474" font-size="26" textLength="360" lengthAdjust="spacing">capacity for what matters most.</text>
 
-    <text x="60" y="426" fill="#7c3bff" font-size="42" font-weight="700" letter-spacing="-1.5">30.6 <tspan fill="#0e1018" font-size="24" font-weight="400" letter-spacing="-.5">hours / month</tspan></text>
-    <text x="63" y="452" fill="#5e6474" font-size="16">of open toil identified in the demo.</text>
-    <rect x="60" y="485" width="229" height="49" rx="5" fill="#7c3bff"/>
-    <text x="82" y="516" fill="#fff" font-size="17" font-weight="700">Explore the demo</text>
-    <path d="M253 509h15m-6-6 6 6-6 6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect class="preview-cta" x="60" y="508" width="229" height="47" rx="5" fill="#7c3bff"/>
+    <text x="82" y="538" fill="#fff" font-size="17" font-weight="700">Explore the demo</text>
+    <path d="M253 531h15m-6-6 6 6-6 6" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 
     <g transform="translate(658 121)">
-      <rect width="482" height="394" rx="12" fill="#fff" stroke="#dfe3ec"/>
-      <text x="24" y="37" fill="#0e1018" font-size="12" font-weight="700" letter-spacing="1.2">WHERE THE HOURS GO</text>
+      <rect id="yc-task-panel" width="482" height="394" rx="12" fill="#fff" stroke="#dfe3ec"/>
+      <text x="24" y="37" fill="#0e1018" font-size="12" font-weight="700" letter-spacing="1.2">TOP REMAINING TIME DRAINS</text>
       <text x="458" y="37" text-anchor="end" fill="#5e6474" font-size="10" font-weight="700" letter-spacing=".8">DEMO DATA</text>
       <path d="M24 59h434" stroke="#dfe3ec"/>
 
+      <g class="task-teams" fill="#5e6474" font-size="9" font-weight="700" letter-spacing="1">
+        <text x="24" y="75">ENGINEERING</text>
+        <text x="24" y="135">PRODUCT</text>
+        <text x="24" y="195">PROGRAM MANAGEMENT</text>
+        <text x="24" y="255">OPERATIONS</text>
+        <text x="24" y="315">SECURITY</text>
+      </g>
       <g fill="#0e1018" font-size="16">
-        <text x="24" y="96">Flaky CI tests</text>
-        <text x="24" y="156">Documentation sync</text>
-        <text x="24" y="216">Release notes</text>
-        <text x="24" y="276">Demo sandboxes</text>
-        <text x="24" y="336">License checks</text>
+        <text data-issue="8" x="24" y="96">Shared build failures</text>
+        <text data-issue="12" x="24" y="156">Team roadmap updates</text>
+        <text data-issue="6" x="24" y="216">Team status reports</text>
+        <text data-issue="10" x="24" y="276">Team action follow-ups</text>
+        <text data-issue="7" x="24" y="336">Shared dependency checks</text>
       </g>
       <g fill="#0e1018" font-size="16" font-weight="700" text-anchor="end">
         <text x="458" y="96">16 h/mo</text>
@@ -53,10 +58,10 @@
         <rect x="24" y="290" width="81.4" height="6" rx="3"/>
         <rect x="24" y="350" width="59.7" height="6" rx="3"/>
       </g>
+      <path d="m24 376 5 5 9-11" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="48" y="380" fill="#5e6474" font-size="11">5 automated, 7 remaining</text>
     </g>
-    <path d="m680 545 5 5 9-11" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <text x="706" y="551" fill="#5e6474" font-size="15">37.3 h/mo already reclaimed in the demo</text>
-    <path d="M60 568h1080" stroke="#dfe3ec"/>
-    <text x="60" y="597" fill="#5e6474" font-size="13.5">Open source. GitHub-native. Built with GitHub Copilot CLI.</text>
+    <path d="M60 578h1080" stroke="#dfe3ec"/>
+    <text x="60" y="606" fill="#5e6474" font-size="13.5">Open source. GitHub-native. Built with GitHub Copilot CLI.</text>
   </g>
 </svg>

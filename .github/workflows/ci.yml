@@ -8,6 +8,7 @@ on:
     paths:
       - "scripts/**"
       - "tests/**"
+      - "docs/**"
       - ".github/workflows/**"
       - "config.yml"
 
@@ -36,6 +37,9 @@ jobs:
 
       - name: Run parsing unit tests
         run: bash tests/test-parsing.sh
+
+      - name: Run dashboard UI logic tests
+        run: node tests/test-dashboard-ui.js
 
       - name: Validate YAML syntax
         run: |

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title description">
-  <title id="title">AI Toil Tracker: Less toil. More impact.</title>
-  <desc id="description">An interactive demo invitation beside a dashboard showing 30.6 hours of monthly open toil, 37.3 hours reclaimed, and the five biggest time drains. All numbers are illustrative demo data.</desc>
+  <title id="title">AI Toil Tracker: Find the work slowing your team down.</title>
+  <desc id="description">An interactive demo invitation beside a dashboard showing 30.6 hours of monthly open toil, 37.3 hours saved per month, and time drains across engineering, product, program management, operations, and security. All numbers are illustrative demo data.</desc>
   <defs>
     <radialGradient id="glow" cx="83%" cy="22%" r="85%">
       <stop offset="0" stop-color="#1c0f2d"/>
@@ -35,18 +35,19 @@
   <rect x="20" y="20" width="1160" height="590" rx="28" fill="none" stroke="#c4b5fd" stroke-opacity=".12"/>
   <g font-family="Arial, Helvetica, sans-serif">
     <path d="M77 52 59 77h15l-5 21 24-30H78l7-16Z" fill="url(#accent)"/>
-    <text x="108" y="83" fill="#f7faff" font-size="24" font-weight="700" letter-spacing="-.6">AI Toil Tracker</text>
+    <text id="product-name" x="108" y="86" fill="#f7faff" font-size="30" font-weight="700" letter-spacing="-.6">AI Toil Tracker</text>
     <rect x="925" y="54" width="223" height="36" rx="18" fill="#1c0f2d" stroke="#a56bff"/>
     <circle cx="947" cy="72" r="4" fill="#a56bff"/>
     <text x="962" y="77" fill="#dec0ff" font-size="12" font-weight="700" letter-spacing="1.4">INTERACTIVE DEMO</text>
 
-    <text id="headline" x="60" y="213" fill="#f7faff" font-size="78" font-weight="700" letter-spacing="-3.5">Less toil.</text>
-    <text x="60" y="298" fill="url(#accent)" font-size="76" font-weight="700" letter-spacing="-3.8">More impact.</text>
-    <text x="63" y="352" fill="#b9c4e6" font-size="23">Find the busywork worth automating.</text>
-    <text x="63" y="387" fill="#b9c4e6" font-size="23">See the hours your team gets back.</text>
-    <rect x="60" y="428" width="270" height="55" rx="27.5" fill="url(#button)"/>
-    <text x="85" y="463" fill="#fff" font-size="19" font-weight="700">Explore the demo</text>
-    <path d="M288 455h17m-7-7 7 7-7 7" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text id="headline" class="preview-headline" x="60" y="171" fill="#f7faff" font-size="72" font-weight="700" letter-spacing="-3">Find the work</text>
+    <text class="preview-headline" x="60" y="249" fill="#ff4d6d" font-size="72" font-weight="700" letter-spacing="-3">slowing your</text>
+    <text class="preview-headline" x="60" y="327" fill="#ff4d6d" font-size="72" font-weight="700" letter-spacing="-3">team down.</text>
+    <text class="preview-copy" x="63" y="381" fill="#b9c4e6" font-size="26" textLength="360" lengthAdjust="spacing">Use GitHub Copilot to create</text>
+    <text class="preview-copy" x="63" y="421" fill="#b9c4e6" font-size="26" textLength="360" lengthAdjust="spacing">capacity for what matters most.</text>
+    <rect class="preview-cta" x="60" y="469" width="270" height="55" rx="27.5" fill="url(#button)"/>
+    <text x="85" y="504" fill="#fff" font-size="19" font-weight="700">Explore the demo</text>
+    <path d="M288 496h17m-7-7 7 7-7 7" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
     <text x="63" y="555" fill="#b9c4e6" font-size="12" font-weight="700" letter-spacing="1.8">OPEN SOURCE  /  GITHUB-NATIVE</text>
     <text x="63" y="583" fill="#9ea4b8" font-size="15">Built with GitHub Copilot CLI</text>
 
@@ -61,7 +62,7 @@
       <text x="38" y="132" fill="#f7faff" font-size="40" font-weight="700" letter-spacing="-1.5">30.6<tspan fill="#9ea4b8" font-size="19" font-weight="400" letter-spacing="0"> h</tspan></text>
       <text x="40" y="154" fill="#9ea4b8" font-size="11">spent per month</text>
       <rect x="268" y="60" width="230" height="114" rx="14" fill="#0a2a1d" fill-opacity=".78" stroke="#39ff88" stroke-opacity=".24"/>
-      <text x="286" y="88" fill="#b9c4e6" font-size="11" font-weight="700" letter-spacing="1.1">TIME RECLAIMED</text>
+      <text x="286" y="88" fill="#b9c4e6" font-size="11" font-weight="700" letter-spacing="1.1">TIME SAVED</text>
       <text id="reclaimed-hours" x="285" y="132" fill="#39ff88" font-size="40" font-weight="700" letter-spacing="-1.5">37.3<tspan fill="#b9c4e6" font-size="19" font-weight="400" letter-spacing="0"> h</tspan></text>
       <text x="287" y="154" fill="#9ea4b8" font-size="11">saved per month</text>
 
@@ -89,12 +90,19 @@
         <text x="351" y="298">HOURS</text>
         <text x="442" y="298">HOURS</text>
       </g>
+      <g class="task-teams" text-anchor="middle" fill="#b9c4e6" font-size="8" font-weight="700" letter-spacing=".6">
+        <text x="78" y="327">ENGINEERING</text>
+        <text x="169" y="327">PRODUCT</text>
+        <text x="260" y="327">PROGRAM MGMT</text>
+        <text x="351" y="327">OPERATIONS</text>
+        <text x="442" y="327">SECURITY</text>
+      </g>
       <g text-anchor="middle" fill="#b9c4e6" font-size="10.5">
-        <text x="78" y="337">Flaky CI</text>
-        <text x="169" y="337">Docs sync</text>
-        <text x="260" y="337">Release notes</text>
-        <text x="351" y="337">Sandboxes</text>
-        <text x="442" y="337">License checks</text>
+        <text data-issue="8" x="78" y="346">Shared builds</text>
+        <text data-issue="12" x="169" y="346">Team roadmap</text>
+        <text data-issue="6" x="260" y="346">Team reports</text>
+        <text data-issue="10" x="351" y="346">Team follow-ups</text>
+        <text data-issue="7" x="442" y="346">Shared checks</text>
       </g>
       <path d="M57 360h406" fill="none" stroke="#3a4167" stroke-width="3" stroke-linecap="round"/>
       <path d="M57 360h171" fill="none" stroke="url(#progress)" stroke-width="3" stroke-linecap="round"/>

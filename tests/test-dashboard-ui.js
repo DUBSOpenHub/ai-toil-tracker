@@ -56,7 +56,7 @@ function extractDeclaration(name) {
 }
 
 const NEEDED = [
-  'CONFIG', 'FREQ_SCORES', 'TIME_SCORES', 'PEOPLE_SCORES',
+  'CONFIG', 'DEMO_DATA', 'FREQ_SCORES', 'TIME_SCORES', 'PEOPLE_SCORES',
   'BONUS_FACTORS', 'PRIORITY_BANDS',
   'bonusSlug', 'bonusLabel', 'getPriorityBand', 'getPriorityLabel', 'isCritical',
   'reverseFreqScore', 'reverseTimeScore', 'reversePeopleScore',
@@ -96,6 +96,33 @@ function assertEq(desc, got, want) {
 }
 
 console.log('\n── dashboard ui logic tests ────────────────');
+
+const publishedDemo = JSON.parse(fs.readFileSync(path.join(ROOT, 'docs/dashboard/dashboard-data.json'), 'utf8'));
+const embeddedDemo = JSON.parse(JSON.stringify(sandbox.DEMO_DATA));
+if (fs.existsSync(path.join(ROOT, 'docs/dashboard/.demo'))) {
+  assertEq('embedded and published demo data stay identical while demo mode is enabled',
+    require('node:util').isDeepStrictEqual(embeddedDemo, publishedDemo), true);
+}
+const normalizedDemo = sandbox.normalizeData(embeddedDemo).issues;
+const demoOpen = normalizedDemo.filter(issue => sandbox.getStatus(issue) !== 'automated' && issue.state !== 'closed');
+const demoShipped = normalizedDemo.filter(issue => sandbox.getStatus(issue) === 'automated');
+const demoTop = [...demoOpen].sort((a, b) => b.monthly_saved_minutes - a.monthly_saved_minutes).slice(0, 5);
+assertEq('the top five mix technical, product, program and operations tasks',
+  demoTop.map(issue => [issue.number, issue.title.split(' — ')[0], issue.team, issue.monthly_saved_minutes]),
+  [
+    [8, 'Flaky CI tests', 'Engineering', 960],
+    [12, 'Product roadmap updates', 'Product', 330],
+    [6, 'Program status updates', 'Program Management', 200],
+    [10, 'Meeting follow-ups', 'Operations', 180],
+    [7, 'License checks', 'Security', 132]
+  ]);
+assertEq('updated demo examples preserve issue counts', [demoOpen.length, demoShipped.length], [7, 5]);
+assertEq('updated demo examples preserve recorded monthly effort',
+  [demoOpen.reduce((sum, issue) => sum + issue.monthly_saved_minutes, 0),
+    demoShipped.reduce((sum, issue) => sum + issue.monthly_saved_minutes, 0)], [1834, 2235]);
+assertEq('every demo task has a meaningful team', normalizedDemo.every(issue => issue.team !== 'Unassigned team'), true);
+assertEq('non-technical examples carry useful automation context',
+  [6, 10, 12].every(number => normalizedDemo.find(issue => issue.number === number).automation_idea.length > 0), true);
 
 // --- bonus factor alignment with the backend --------------------------------
 assertEq('bonus slug passes through', sandbox.bonusSlug('error-prone'), 'error-prone');
@@ -438,9 +465,10 @@ assertEq('prompt button omits CLI wording',
 assertEq('prompt button copies a plain prompt instead of a shell command',
   SRC.includes('data-prompt="${esc(agentPrompt, true)}"') &&
   !SRC.includes('const ghCmd =') && !SRC.includes('copyLaunchCmd'), true);
-assertEq('prompt feedback names GitHub Copilot and Microsoft 365 Copilot',
-  SRC.includes('Prompt copied — paste into GitHub Copilot or Microsoft 365 Copilot.') &&
-  !SRC.includes('paste in your terminal'), true);
+assertEq('prompt feedback and tooltip name only GitHub Copilot',
+  SRC.includes('Prompt copied — paste into GitHub Copilot.') &&
+  SRC.includes('Copies a ready-to-use prompt for GitHub Copilot.') &&
+  !SRC.includes('Microsoft 365 Copilot') && !SRC.includes('paste in your terminal'), true);
 assertEq('monthly time cells have a pinned-column selector',
   SRC.includes('<td class="toil-monthly-cell">${formatMinutes(issue.monthly_saved_minutes)}</td>') &&
   HTML.includes('#toilTable td.toil-monthly-cell { position: sticky; right: 0;'), true);
@@ -565,14 +593,74 @@ assertEq('sharing metadata is present without running dashboard JavaScript',
   sharingTags['og:type'], 'website');
 assertEq('social platforms receive a large-image card', sharingTags['twitter:card'], 'summary_large_image');
 assertEq('sharing images use an absolute HTTPS URL',
-  /^https:\/\/.+\/dashboard\/social-preview\.png\?v=2$/.test(sharingTags['og:image']), true);
+  /^https:\/\/.+\/dashboard\/social-preview-yc\.png\?v=3$/.test(sharingTags['og:image']), true);
 assertEq('both sharing formats use the same image',
   sharingTags['twitter:image'], sharingTags['og:image']);
 assertEq('sharing images have descriptive alternative text',
   sharingTags['og:image:alt'] === sharingTags['twitter:image:alt'] &&
-    sharingTags['og:image:alt'].includes('demo dashboard'), true);
-const socialImage = fs.readFileSync(path.join(ROOT, 'docs/dashboard/social-preview.png'));
+    sharingTags['og:image:alt'].includes('Demo tasks span engineering, product'), true);
+const socialImage = fs.readFileSync(path.join(ROOT, 'docs/dashboard/social-preview-yc.png'));
 const socialSvg = fs.readFileSync(path.join(ROOT, 'docs/dashboard/social-preview.svg'), 'utf8');
+const ycSvg = fs.readFileSync(path.join(ROOT, 'docs/dashboard/social-preview-yc.svg'), 'utf8');
+for (const variant of ['dark-text', 'white-text']) {
+  const logo = fs.readFileSync(path.join(ROOT, `docs/assets/brand/ai-toil-tracker-${variant}.png`));
+  assertEq(`${variant} logo retains high-resolution RGBA output`,
+    [logo.readUInt32BE(16), logo.readUInt32BE(20), logo[25]], [2976, 480, 6]);
+  const logoSvg = fs.readFileSync(path.join(ROOT, `docs/assets/brand/ai-toil-tracker-${variant}.svg`), 'utf8');
+  assertEq(`${variant} logo includes its editable source`,
+    logoSvg.includes('>AI Toil Tracker</text>') && logoSvg.includes('viewBox="0 0 248 40"'), true);
+}
+assertEq('the light artwork omits the top-right open-source badge',
+  ycSvg.includes('>OPEN SOURCE</text>'), false);
+assertEq('the product wordmark stays legible in both previews',
+  [ycSvg, socialSvg].map(svg => Number(svg.match(/id="product-name"[^>]*font-size="([^"]+)"/)?.[1])), [30, 30]);
+assertEq('preview copy avoids the replaced busywork wording', /busywork/i.test(socialSvg + ycSvg), false);
+assertEq('preview copy uses the requested title',
+  [ycSvg, socialSvg].every(svg => svg.includes('>Find the work</text>') &&
+    svg.includes('>slowing your</text>') && svg.includes('>team down.</text>')), true);
+const highlightColors = svg => [...svg.matchAll(/<text\b[^>]*\bfill="([^"]+)"[^>]*>(?:slowing your|team down\.)<\/text>/g)]
+  .map(match => match[1]);
+assertEq('the whole highlighted phrase uses the selected red',
+  [highlightColors(ycSvg), highlightColors(socialSvg)],
+  [['#ff4d6d', '#ff4d6d'], ['#ff4d6d', '#ff4d6d']]);
+const lightHeadlines = [...ycSvg.matchAll(/<text class="yc-headline"[^>]*>/g)].map(match => match[0]);
+assertEq('the light headline fills its column with natural larger letterforms',
+  lightHeadlines.map(tag => [
+    Number(tag.match(/font-size="([^"]+)"/)?.[1]),
+    Number(tag.match(/textLength="([^"]+)"/)?.[1]),
+    tag.match(/lengthAdjust="([^"]+)"/)?.[1]
+  ]), [[88, 540, 'spacing'], [92, 539, 'spacing'], [104, 540, 'spacing']]);
+const subtitleWidths = svg => [...svg.matchAll(/<text\b[^>]*class="(?:yc|preview)-copy"[^>]*textLength="([^"]+)"[^>]*>/g)]
+  .map(match => Number(match[1]));
+assertEq('subtitle lines have equal widths in both previews',
+  [subtitleWidths(ycSvg), subtitleWidths(socialSvg)], [[360, 360], [360, 360]]);
+assertEq('the light preview has no standalone savings callout',
+  ycSvg.includes('id="yc-saved-hours"') || ycSvg.includes('id="yc-saved-caption"'), false);
+assertEq('the light preview does not repeat removed savings captions',
+  ycSvg.includes('37.3') || /\bin the demo\b/i.test(ycSvg), false);
+assertEq('the preview distinguishes completed and remaining tasks',
+  ycSvg.includes('>TOP REMAINING TIME DRAINS</text>') &&
+    ycSvg.includes(`>${demoShipped.length} automated, ${demoOpen.length} remaining</text>`), true);
+assertEq('the preview visibly identifies each task function',
+  demoTop.every(issue => ycSvg.includes(`>${issue.team.toUpperCase()}</text>`)), true);
+assertEq('preview copy uses the requested subtitle and full product name',
+  [ycSvg, socialSvg].every(svg => svg.includes('>Use GitHub Copilot to create</text>') &&
+    svg.includes('>capacity for what matters most.</text>') && !/\bAI prompt\b/i.test(svg)), true);
+assertEq('sharing metadata uses the requested subtitle',
+  sharingTags['og:description'], 'Use GitHub Copilot to create capacity for what matters most.');
+const artworkLabels = {
+  8: ['Shared build failures', 'Shared builds'],
+  12: ['Team roadmap updates', 'Team roadmap'],
+  6: ['Team status reports', 'Team reports'],
+  10: ['Team action follow-ups', 'Team follow-ups'],
+  7: ['Shared dependency checks', 'Shared checks']
+};
+const artworkTasks = svg => [...svg.matchAll(/<text\b[^>]*data-issue="(\d+)"[^>]*>([^<]+)<\/text>/g)]
+  .map(match => [Number(match[1]), match[2]]);
+assertEq('the detailed preview maps shared-work labels to the same demo issues',
+  artworkTasks(ycSvg), demoTop.map(issue => [issue.number, artworkLabels[issue.number][0]]));
+assertEq('the compact preview preserves the same team-workflow mapping',
+  artworkTasks(socialSvg), demoTop.map(issue => [issue.number, artworkLabels[issue.number][1]]));
 const svgColor = (id, attribute) => socialSvg.match(new RegExp(`id="${id}"[^>]*\\b${attribute}="([^"]+)"`))?.[1];
 const darkTokens = HTML.match(/\.dark, :root:not\(\.light\)\s*\{([^}]+)\}/)?.[1] || '';
 assertEq('sharing image canvas matches the dashboard dark theme',
@@ -606,7 +694,7 @@ try {
     assertEq(`${expected}: canonical URL adapts`, updated.includes(`<link rel="canonical" href="${expected}">`), true);
     assertEq(`${expected}: Open Graph URL adapts`, updated.includes(`<meta property="og:url" content="${expected}">`), true);
     assertEq(`${expected}: both image URLs adapt`,
-      (updated.match(new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + 'social-preview\\.png\\?v=2', 'g')) || []).length, 2);
+      (updated.match(new RegExp(expected.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + 'social-preview-yc\\.png\\?v=3', 'g')) || []).length, 2);
     assertEq(`${expected}: dashboard code is unchanged`,
       updated.slice(updated.indexOf('<script>')), HTML.slice(HTML.indexOf('<script>')));
     execFileSync('bash', [sharingScript], { env, encoding: 'utf8' });
@@ -636,7 +724,7 @@ try {
 
 async function testPromptCopy() {
   const prompt = 'Automate "the toil".\nPreserve the issue context.';
-  const successMessage = '🚀 Prompt copied — paste into GitHub Copilot or Microsoft 365 Copilot.';
+  const successMessage = '🚀 Prompt copied — paste into GitHub Copilot.';
   const failureMessage = 'Unable to copy the prompt. Allow clipboard access and try again.';
   for (const mode of ['clipboard', 'fallback', 'no-api', 'denied', 'throws', 'missing']) {
     const messages = [], tracked = [], writes = [], removed = [];
