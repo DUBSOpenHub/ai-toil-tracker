@@ -10,10 +10,7 @@
 
 **Do not** open a public GitHub issue for security vulnerabilities.
 
-| Channel | Link |
-|---------|------|
-| Email | **security@dubsopenhub.com** |
-| GitHub Private Reporting | [Open a security advisory](https://github.com/DUBSOpenHub/ai-toil-tracker/security/advisories/new) |
+Use [GitHub private vulnerability reporting](https://github.com/DUBSOpenHub/ai-toil-tracker/security/advisories/new) to send details privately to the repository maintainers.
 
 ### What to Include
 
