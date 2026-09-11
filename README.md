@@ -1,4 +1,10 @@
-# 🤖 AI Toil Tracker
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/brand/ai-toil-tracker-white-text.png">
+    <source media="(prefers-color-scheme: light)" srcset="docs/assets/brand/ai-toil-tracker-dark-text.png">
+    <img src="docs/assets/brand/ai-toil-tracker-white-text.png" alt="AI Toil Tracker" width="620">
+  </picture>
+</p>
 
 **Find the work slowing your team down.**
 
@@ -25,20 +31,19 @@ Every team has repetitive work - manual tasks that consume time and could be han
 
 > The demo uses sample data. Status and team-name edits stay in your browser; sharing its URL does not share those edits.
 
-### Dashboard screenshot
+### Dashboard screenshots
+
+**Desktop**
 
 <p align="center">
   <img src="docs/assets/dashboard-preview.png" alt="Desktop dashboard with automation progress, shared team time drains, and monthly effort" width="960">
 </p>
 
-<details>
-<summary>📱 Mobile dashboard screenshot</summary>
+**Mobile**
 
 <p align="center">
   <img src="docs/assets/dashboard-mobile.png" alt="Mobile dashboard showing the summary cards and a single ranked row of time drains" width="360">
 </p>
-
-</details>
 
 <details>
 <summary>Presentation artwork and transparent logos</summary>
